@@ -1,0 +1,69 @@
+<div class="container-fluid">
+
+    <div class="page-header">
+        <h2>Block</h2>
+    </div>
+
+    <div class="form-group">
+
+        <div class="col-md-4">
+
+            <label for="district">
+        District <span class="required">*</span>
+    </label>
+
+        <select id="district" class="form-select" (change)="onDistrictChange($event)">
+
+        <option value="">-- Select District --</option>
+
+        @for(item of districts; track item.distCode){
+
+            <option [value]="item.distCode">
+                {{item.distName}}
+            </option>
+
+        }
+
+    </select>
+
+        </div>
+
+    </div>
+
+    <table class="table table-bordered table-striped">
+
+        <thead>
+
+            <tr>
+
+                <th>Block Code</th>
+
+                <th>Block Name</th>
+
+                <th>Hindi Name</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @for(block of blocks; track block.blockCode){
+
+            <tr>
+
+                <td>{{block.blockCode}}</td>
+
+                <td>{{block.blockName}}</td>
+
+                <td>{{block.blockNameHN}}</td>
+
+            </tr>
+
+            }
+
+        </tbody>
+
+    </table>
+
+</div>

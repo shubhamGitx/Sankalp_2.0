@@ -1,0 +1,406 @@
+<div class="dashboard-container">
+
+  <!-- ============================================================ -->
+  <!-- PAGE HEADER -->
+  <!-- ============================================================ -->
+  <div class="dashboard-header">
+    <div class="header-titles">
+      <h2>Sankalp Setu &bull; Registration Dashboard</h2>
+      <p class="subtitle">Real-time applicant registrations, rural vs. urban distribution, and district coverage</p>
+    </div>
+
+    <div class="header-actions">
+      <!-- Area Filter Toggle Buttons -->
+      <div class="area-filter-group">
+        <button
+          type="button"
+          class="filter-pill"
+          [class.active]="selectedAreaFilter === 'ALL'"
+          (click)="setAreaFilter('ALL')">
+          All Areas
+        </button>
+        <button
+          type="button"
+          class="filter-pill rural"
+          [class.active]="selectedAreaFilter === 'RURAL'"
+          (click)="setAreaFilter('RURAL')">
+          🌾 Rural (ग्रामीण)
+        </button>
+        <button
+          type="button"
+          class="filter-pill urban"
+          [class.active]="selectedAreaFilter === 'URBAN'"
+          (click)="setAreaFilter('URBAN')">
+          🏙️ Urban (शहरी)
+        </button>
+      </div>
+
+      <button type="button" class="btn-refresh" (click)="loadDashboard()" [disabled]="loading">
+        <span class="refresh-icon" [class.spinning]="loading">&#x21bb;</span> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading & Error States -->
+  @if (loading && !summary) {
+    <div class="state-card loading-state">
+      <div class="spinner"></div>
+      <p>Loading applicant statistics and area summaries...</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error-state">
+      <span class="error-icon">&times;</span>
+      <p>{{ errorMessage }}</p>
+      <button class="btn-retry" (click)="loadDashboard()">Retry</button>
+    </div>
+  }
+
+  @if (summary) {
+
+    <!-- ============================================================ -->
+    <!-- 1. SUMMARY KPI CARDS -->
+    <!-- ============================================================ -->
+    <div class="kpi-grid">
+
+      <!-- Total Registered Applicants -->
+      <div class="kpi-card card-total">
+        <div class="kpi-icon-box total-bg">👥</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Total Registered Applicants</span>
+          <h3 class="kpi-value">{{ summary.totalRegisteredApplicants | number }}</h3>
+          <span class="kpi-sub">Citizen Registrations</span>
+        </div>
+      </div>
+
+      <!-- Rural Applicants -->
+      <div class="kpi-card card-rural">
+        <div class="kpi-icon-box rural-bg">🌾</div>
+        <div class="kpi-content">
+          <div class="kpi-header-flex">
+            <span class="kpi-label">Rural Registered (ग्रामीण)</span>
+            <span class="kpi-badge badge-rural">{{ summary.areaWise.ruralPercentage }}%</span>
+          </div>
+          <h3 class="kpi-value">{{ summary.areaWise.ruralCount | number }}</h3>
+          <div class="kpi-bar-track">
+            <div class="kpi-bar-fill rural-fill" [style.width.%]="summary.areaWise.ruralPercentage"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Urban Applicants -->
+      <div class="kpi-card card-urban">
+        <div class="kpi-icon-box urban-bg">🏙️</div>
+        <div class="kpi-content">
+          <div class="kpi-header-flex">
+            <span class="kpi-label">Urban Registered (शहरी)</span>
+            <span class="kpi-badge badge-urban">{{ summary.areaWise.urbanPercentage }}%</span>
+          </div>
+          <h3 class="kpi-value">{{ summary.areaWise.urbanCount | number }}</h3>
+          <div class="kpi-bar-track">
+            <div class="kpi-bar-fill urban-fill" [style.width.%]="summary.areaWise.urbanPercentage"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beneficiary Schemes Covered -->
+      <div class="kpi-card card-beneficiary">
+        <div class="kpi-icon-box ben-bg">📜</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Portal Beneficiaries</span>
+          <h3 class="kpi-value">{{ summary.totalBeneficiaries | number }}</h3>
+          <span class="kpi-sub">eLabharthi / Schemes</span>
+        </div>
+      </div>
+
+      <!-- Geographic Reach -->
+      <div class="kpi-card card-geo">
+        <div class="kpi-icon-box geo-bg">🗺️</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Geographic Coverage</span>
+          <h3 class="kpi-value">{{ summary.totalDistricts }} <small>Districts</small></h3>
+          <span class="kpi-sub">{{ summary.totalBlocks }} Blocks across Bihar</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 2. AREA-WISE DISTRIBUTION BREAKDOWN -->
+    <!-- ============================================================ -->
+    <div class="analytics-row">
+
+      <!-- Area-wise Progress Visualizer -->
+      <div class="panel area-ratio-panel">
+        <div class="panel-header">
+          <div>
+            <h3>Area-Wise Registration Ratio</h3>
+            <span class="panel-sub">Proportional split between Rural and Urban demographics</span>
+          </div>
+        </div>
+
+        <div class="ratio-bar-wrapper">
+          <div class="ratio-bar">
+            <div
+              class="ratio-segment rural-segment"
+              [style.width.%]="summary.areaWise.ruralPercentage"
+              title="Rural: {{ summary.areaWise.ruralPercentage }}%">
+            </div>
+            <div
+              class="ratio-segment urban-segment"
+              [style.width.%]="summary.areaWise.urbanPercentage"
+              title="Urban: {{ summary.areaWise.urbanPercentage }}%">
+            </div>
+          </div>
+
+          <div class="ratio-legend">
+            <div class="legend-item">
+              <span class="legend-dot rural-dot"></span>
+              <span class="legend-label">Rural Areas:</span>
+              <strong>{{ summary.areaWise.ruralCount }} ({{ summary.areaWise.ruralPercentage }}%)</strong>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot urban-dot"></span>
+              <span class="legend-label">Urban Areas:</span>
+              <strong>{{ summary.areaWise.urbanCount }} ({{ summary.areaWise.urbanPercentage }}%)</strong>
+            </div>
+            @if (summary.areaWise.unspecifiedCount > 0) {
+              <div class="legend-item">
+                <span class="legend-dot other-dot"></span>
+                <span class="legend-label">Unspecified:</span>
+                <strong>{{ summary.areaWise.unspecifiedCount }}</strong>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Gender & Demographic Chips -->
+        <div class="demographics-grid">
+          <div class="demo-box">
+            <h4>Gender Breakdown</h4>
+            <div class="chips-container">
+              @for (g of summary.genderWise; track g.name) {
+                <div class="demo-chip">
+                  <span class="chip-name">{{ g.name }}</span>
+                  <span class="chip-val">{{ g.count }} ({{ g.percentage }}%)</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="demo-box">
+            <h4>Social Category Breakdown</h4>
+            <div class="chips-container">
+              @for (c of summary.categoryWise; track c.name) {
+                <div class="demo-chip">
+                  <span class="chip-name">{{ c.name }}</span>
+                  <span class="chip-val">{{ c.count }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 3. DISTRICT-WISE & BLOCK-WISE DRILLDOWN SECTION -->
+    <!-- ============================================================ -->
+    <div class="drilldown-grid">
+
+      <!-- District Wise Table Panel -->
+      <div class="panel district-panel">
+        <div class="panel-header table-panel-header">
+          <div>
+            <h3>District-Wise Registered Applicants</h3>
+            <span class="panel-sub">Select any district to inspect block-wise registrations</span>
+          </div>
+
+          <div class="search-box">
+            <input
+              type="text"
+              placeholder="Search district..."
+              [(ngModel)]="districtSearch"
+              class="search-input" />
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>District Name</th>
+                <th>Total</th>
+                <th>Rural</th>
+                <th>Urban</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of filteredDistricts; track d.districtCode) {
+                <tr [class.selected-row]="selectedDistrict?.districtCode === d.districtCode">
+                  <td class="font-mono">{{ d.districtCode }}</td>
+                  <td>
+                    <strong>{{ d.districtName }}</strong>
+                    @if (d.districtNameHn) {
+                      <span class="hindi-text">({{ d.districtNameHn }})</span>
+                    }
+                  </td>
+                  <td>
+                    <span class="count-pill" [class.highlight]="d.totalRegistered > 0">
+                      {{ d.totalRegistered }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="area-pill rural-pill">{{ d.ruralCount }}</span>
+                  </td>
+                  <td>
+                    <span class="area-pill urban-pill">{{ d.urbanCount }}</span>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn-select-dist"
+                      [class.btn-active-dist]="selectedDistrict?.districtCode === d.districtCode"
+                      (click)="selectDistrict(d)">
+                      {{ selectedDistrict?.districtCode === d.districtCode ? 'Selected ✓' : 'View Blocks →' }}
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center empty-state">No matching districts found.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Block-Wise Drilldown Panel -->
+      <div class="panel block-panel">
+        <div class="panel-header">
+          <div>
+            <h3>
+              Block-Wise Registrations
+              @if (selectedDistrict) {
+                <span class="dist-badge">{{ selectedDistrict.districtName }}</span>
+              }
+            </h3>
+            <span class="panel-sub">
+              @if (selectedDistrict) {
+                Showing all blocks under {{ selectedDistrict.districtName }}
+              } @else {
+                Select a district on the left to view blocks
+              }
+            </span>
+          </div>
+        </div>
+
+        @if (blocksLoading) {
+          <div class="state-card loading-state inline-loading">
+            <div class="spinner small"></div>
+            <p>Loading blocks...</p>
+          </div>
+        } @else if (blocksList.length > 0) {
+          <div class="table-responsive block-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Block Name</th>
+                  <th>Total</th>
+                  <th>Rural</th>
+                  <th>Urban</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (b of blocksList; track b.blockCode) {
+                  <tr>
+                    <td class="font-mono">{{ b.blockCode }}</td>
+                    <td>
+                      <strong>{{ b.blockName }}</strong>
+                      @if (b.blockNameHn) {
+                        <span class="hindi-text">({{ b.blockNameHn }})</span>
+                      }
+                    </td>
+                    <td>
+                      <span class="count-pill" [class.highlight]="b.totalRegistered > 0">
+                        {{ b.totalRegistered }}
+                      </span>
+                    </td>
+                    <td><span class="area-pill rural-pill">{{ b.ruralCount }}</span></td>
+                    <td><span class="area-pill urban-pill">{{ b.urbanCount }}</span></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-selection">
+            <div class="empty-icon">📍</div>
+            <p>No block data loaded yet. Select a district from the list.</p>
+          </div>
+        }
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 4. RECENTLY REGISTERED APPLICANTS -->
+    <!-- ============================================================ -->
+    <div class="panel recent-panel">
+      <div class="panel-header">
+        <div>
+          <h3>Recently Registered Applicants</h3>
+          <span class="panel-sub">Latest user registrations submitted through Sankalp Setu</span>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Applicant Name</th>
+              <th>Mobile</th>
+              <th>District</th>
+              <th>Block</th>
+              <th>Area Type</th>
+              <th>Registration Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of filteredRecentApplicants; track app.userId) {
+              <tr>
+                <td class="font-mono">#{{ app.userId }}</td>
+                <td><strong>{{ app.name }}</strong></td>
+                <td class="font-mono">{{ app.maskedMobile }}</td>
+                <td>{{ app.districtName }}</td>
+                <td>{{ app.blockName }}</td>
+                <td>
+                  <span
+                    class="badge-area"
+                    [class.badge-rural]="app.areaType === 'Rural'"
+                    [class.badge-urban]="app.areaType === 'Urban'">
+                    {{ app.areaType === 'Rural' ? '🌾 Rural (ग्रामीण)' : (app.areaType === 'Urban' ? '🏙️ Urban (शहरी)' : app.areaType) }}
+                  </span>
+                </td>
+                <td>{{ app.entryDate | date:'medium' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="text-center empty-state">No recent applicant records available.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  }
+
+</div>

@@ -1,0 +1,43 @@
+<div class="district">
+ <div class="page-header">
+    <h2>District Master</h2>
+</div>
+    <hr>
+
+    <table class="table table-bordered">
+
+    <thead>
+
+        <tr>
+
+            <th>District Code</th>
+
+            <th>District Name</th>
+
+            <th>Hindi Name</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @for(item of districts; track item.distCode){
+
+        <tr>
+
+            <td>{{item.distCode}}</td>
+
+            <td>{{item.distName}}</td>
+
+            <td>{{item.distNameHN}}</td>
+
+        </tr>
+
+        }
+
+    </tbody>
+
+</table>
+
+</div>

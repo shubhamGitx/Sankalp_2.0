@@ -1,0 +1,239 @@
+<div class="home-layout">
+<div class="top-bar">
+    <div class="container top-content">
+      <span><i class="fa fa-envelope"></i>&nbsp;md-jjh-bih[at]gov[dot]in</span>
+
+      <div class="top-links">
+        <span>हिन्दी</span>
+        <span>|</span>
+        <span>English</span>
+      </div>
+    </div>
+  </div>
+    <!-- ================= HEADER ================= -->
+
+    <header class="main-header">
+
+    <div class="container header-content">
+
+      <div class="brand">
+
+        <div class="logo">
+           <img src="images/logo.png" alt="Logo" width="50" height="50">
+        </div>
+
+        <div class="brand-text">
+          <h1> <span style="color: #0090E3">SANKALP SETU</span></h1>
+          <p>Government of Bihar</p>
+        </div>
+
+      </div>
+
+      <button class="login-btn" type="button">
+        <span class="login-icon">↪</span>
+        Official Login
+      </button>
+
+    </div>
+
+  </header>
+
+
+    <!-- ================= NAVIGATION ================= -->
+
+    <nav class="navigation">
+
+    <div class="container nav-content">
+
+      <a routerLink="/home" class="active">
+            Home
+        </a>
+
+         <!-- =========================
+             ABOUT DROPDOWN
+        ========================== -->
+
+        <div class="nav-item">
+
+            <a href="javascript:void(0)">
+                About
+
+                <span class="dropdown-arrow">
+                    ▼
+                </span>
+            </a>
+
+            <ul class="dropdown-menu">
+
+                <li>
+                    <a routerLink="/orgstructure">
+                        Structure
+                    </a>
+                </li>
+
+                <li>
+                    <a routerLink="/about">
+                         Objectives
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        Rules
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+        
+        <a routerLink="/gallery">
+            Gallery
+        </a>
+
+
+        <!-- =========================
+             REPORTS DROPDOWN
+        ========================== -->
+
+        <div class="nav-item">
+
+            <a href="javascript:void(0)">
+                Reports
+
+                <span class="dropdown-arrow">
+                    ▼
+                </span>
+            </a>
+
+            <ul class="dropdown-menu">
+
+                <li>
+                    <a href="#">
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        Inspected Water Bodies
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        Inspected Well
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        Inspected Chapakal
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <!-- =========================
+             DOWNLOAD DROPDOWN
+        ========================== -->
+
+        <div class="nav-item">
+
+            <a href="javascript:void(0)">
+                Downloads
+
+                <span class="dropdown-arrow">
+                    ▼
+                </span>
+            </a>
+
+            <ul class="dropdown-menu">
+
+                <li>
+                    <a href="pdf/JJH_ComponentsDept.pdf" target="_blank"  rel="noopener">
+                        JJH Components
+                    </a>
+                </li>
+
+                <li>
+                    <a href="pdf/JJH_MIS_GIS.pdf" target="_blank"  rel="noopener">
+                        JJH MIS & GIS
+                    </a>
+                </li>
+
+                <li>
+                    <a href="https://play.google.com/store/apps/details?id=bih.in.jaljeevanharyali" target="_blank"  rel="noopener">
+                        Mobile App (From Play Store)
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <a href="#">
+            Contact Us
+        </a>
+
+      <button
+        class="nav-login" type="button" routerLink="/login">
+
+        Login
+
+      </button>
+
+    </div>
+
+  </nav>
+
+
+
+    <!-- ================= PAGE CONTENT ================= -->
+
+    <main class="home-content">
+
+        <router-outlet></router-outlet>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <!-- FOOTER -->
+  <footer id="contact" class="footer">
+
+    <div class="container footer-content">
+
+      <div>
+
+        <h3>Sankalp Setu</h3>
+
+        <p>
+          Government of Bihar
+        </p>
+
+      </div>
+
+      <div class="footer-right">
+
+        <p>
+          © 2026 Government of Bihar
+        </p>
+
+        <p>
+          All Rights Reserved
+        </p>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+</div>

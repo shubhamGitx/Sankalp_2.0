@@ -1,0 +1,172 @@
+<section id="statistics" class="statistics">
+<div class="login-page">
+  <div class="login-wrapper">  
+    <div class="page-header">
+
+        <div>
+            <h2>Gallery</h2>
+           
+        </div>
+
+        <div class="header-icon">
+            🖼️
+        </div>  
+
+    </div>
+    <!-- ========================================= -->
+    <!-- EXISTING GALLERY -->
+    <!-- ========================================= -->
+
+    <div class="gallery-section">
+        <div class="section-header">
+            @if (galleryList.length > 0) {
+                <div class="image-count">
+                    {{ galleryList.length }}
+                    <span>
+                        Images
+                    </span>
+
+                </div>
+            }
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- GALLERY GRID -->
+        <!-- ============================= -->
+
+        @if (galleryList.length > 0) {
+
+            <div class="gallery-grid">
+
+                @for (
+                    item of galleryList;
+                    track item.gid
+                ) {
+
+                    <div class="gallery-card">
+
+
+                        <!-- IMAGE -->
+
+                        <div class="gallery-image">
+
+                            <img
+                                [src]="'https://localhost:7279/' + item.imagePath"
+                                [alt]="item.title || 'Gallery image'"
+                                loading="lazy">
+
+
+                            <!-- ORDER BADGE -->
+
+                            <div class="order-badge">
+
+                                #{{ item.displayOrder }}
+
+                            </div>
+
+
+                            <!-- HOVER OVERLAY -->
+
+                            <div class="image-overlay">
+                                <button type="button" class="view-image-button" (click)="openImage(item)">
+                                    <span class="view-icon">🔍</span>
+                                    <span>View Image</span>
+                                </button>
+                            </div>
+
+                        </div>
+
+
+                        <!-- INFORMATION -->
+
+                        <div class="gallery-info">
+                            <div class="gallery-meta">
+                                <span>
+                                    📅
+                                    {{ item.createdOn | date:'dd-MMM-yyyy' }}
+                                </span>
+                                <span
+                                    class="status-badge"
+                                    [class.active]="item.status === 'Y'">
+
+                                    @if (item.status === 'Y') {
+                                        Active
+                                    }
+                                    @else {
+                                        Inactive
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+        }
+        @else {
+
+            <!-- EMPTY STATE -->
+
+            <div class="empty-gallery">
+
+                <div class="empty-icon">
+                    🖼️
+                </div>
+
+                <h4>
+                    No Gallery Images
+                </h4>
+
+                <p>
+                    Upload your first image to display it here.
+                </p>
+
+            </div>
+
+        }
+
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ========================================= -->
+<!-- LARGE IMAGE MODAL -->
+<!-- ========================================= -->
+
+@if (selectedImage) {
+
+    <div
+        class="image-modal"
+        (click)="closeImage()">
+
+        <div
+            class="image-modal-content"
+            (click)="$event.stopPropagation()">
+
+            <button
+                type="button"
+                class="modal-close"
+                (click)="closeImage()">
+                ×
+            </button>
+
+            <img
+                [src]="selectedImage"
+                [alt]="selectedImageTitle"
+                class="large-gallery-image">
+
+            @if (selectedImageTitle) {
+
+                <div class="modal-title">
+                    {{ selectedImageTitle }}
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+}

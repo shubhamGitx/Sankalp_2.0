@@ -1,0 +1,480 @@
+<div class="gallery-admin">
+    <!-- ========================================= -->
+    <!-- PAGE HEADER -->
+    <!-- ========================================= -->
+
+    <div class="page-header">
+
+        <div>
+            <h2>Gallery Management</h2>
+            <p>
+                Upload and manage images for Sankalp Setu.
+            </p>
+        </div>
+
+        <div class="header-icon">
+            🖼️
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- SUCCESS MESSAGE -->
+    <!-- ========================================= -->
+
+    @if (message) {
+
+        <div class="alert success-message">
+            <span class="alert-icon">✓</span>
+
+            <span>
+                {{ message }}
+            </span>
+        </div>
+
+    }
+
+
+    <!-- ========================================= -->
+    <!-- ERROR MESSAGE -->
+    <!-- ========================================= -->
+
+    @if (errorMessage) {
+
+        <div class="alert error-message">
+            <span class="alert-icon">!</span>
+
+            <span>
+                {{ errorMessage }}
+            </span>
+        </div>
+
+    }
+
+
+    <!-- ========================================= -->
+    <!-- UPLOAD SECTION -->
+    <!-- ========================================= -->
+
+    <div class="upload-card">
+
+        <div class="card-header">
+
+            <div class="card-icon">
+                📷
+            </div>
+
+            <div>
+
+                <h3>Add Gallery Image</h3>
+
+                <p>
+                    Add a new image to the Sankalp Setu gallery.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form
+            [formGroup]="galleryForm"
+            (ngSubmit)="upload()">
+
+
+            <!-- ============================= -->
+            <!-- TITLE -->
+            <!-- ============================= -->
+
+            <div class="form-group">
+
+                <label>
+                    Image Title
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    formControlName="title"
+                    placeholder="Enter image title"
+                    autocomplete="off">
+
+                @if (
+                    galleryForm.controls.title.touched &&
+                    galleryForm.controls.title.invalid
+                ) {
+
+                    <div class="validation-error">
+                        Please enter an image title.
+                    </div>
+
+                }
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- DESCRIPTION -->
+            <!-- ============================= -->
+
+            <div class="form-group">
+
+                <label>
+                    Description
+                </label>
+
+                <textarea
+                    formControlName="description"
+                    placeholder="Enter image description"
+                    rows="4">
+                </textarea>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- DISPLAY ORDER -->
+            <!-- ============================= -->
+
+            <div class="form-group">
+
+                <label>
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    formControlName="displayOrder"
+                    min="0">
+
+                <small class="field-help">
+                    Lower numbers will appear first.
+                </small>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- IMAGE UPLOAD -->
+            <!-- ============================= -->
+
+            <div class="form-group">
+
+                <label>
+                    Select Image
+                    <span class="required">*</span>
+                </label>
+
+
+                <div class="file-upload">
+
+                    <input
+                        id="galleryImage"
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.webp"
+                        (change)="onFileSelected($event)">
+
+                    <label
+                        for="galleryImage"
+                        class="file-label">
+
+                        <span class="upload-icon">
+                            ⬆
+                        </span>
+
+                        <span>
+
+                            <strong>
+                                Choose Image
+                            </strong>
+
+                            <small>
+                                JPG, PNG or WEBP · Maximum 5 MB
+                            </small>
+
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- IMAGE PREVIEW -->
+            <!-- ============================= -->
+
+            @if (previewUrl) {
+
+                <div class="preview-section">
+
+                    <div class="preview-header">
+
+                        <span>
+                            Image Preview
+                        </span>
+
+                    </div>
+
+                    <div class="preview-container">
+
+                        <img
+                            [src]="previewUrl"
+                            alt="Selected image preview">
+
+                    </div>
+
+                </div>
+
+            }
+
+
+            <!-- ============================= -->
+            <!-- UPLOAD BUTTON -->
+            <!-- ============================= -->
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="upload-button"
+                    [disabled]="loading">
+
+                    @if (loading) {
+
+                        <span class="spinner"></span>
+
+                        Uploading...
+
+                    }
+                    @else {
+
+                        <span>⬆</span>
+
+                        Upload Image
+
+                    }
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- EXISTING GALLERY -->
+    <!-- ========================================= -->
+
+    <div class="gallery-section">
+
+
+        <div class="section-header">
+
+            <div>
+
+                <h3>
+                    Gallery Images
+                </h3>
+
+                <p>
+                    Manage uploaded gallery images.
+                </p>
+
+            </div>
+
+
+            @if (galleryList.length > 0) {
+
+                <div class="image-count">
+
+                    {{ galleryList.length }}
+
+                    <span>
+                        Images
+                    </span>
+
+                </div>
+
+            }
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- GALLERY GRID -->
+        <!-- ============================= -->
+
+        @if (galleryList.length > 0) {
+
+            <div class="gallery-grid">
+
+                @for (
+                    item of galleryList;
+                    track item.gid
+                ) {
+
+                    <div class="gallery-card">
+
+
+                        <!-- IMAGE -->
+
+                        <div class="gallery-image">
+
+                            <img
+                                [src]="'https://localhost:7279/' + item.imagePath"
+                                [alt]="item.title || 'Gallery image'"
+                                loading="lazy">
+
+
+                            <!-- ORDER BADGE -->
+
+                            <div class="order-badge">
+
+                                #{{ item.displayOrder }}
+
+                            </div>
+
+
+                            <!-- HOVER OVERLAY -->
+
+                            <div class="image-overlay">
+
+    <button
+        type="button"
+        class="view-image-button"
+        (click)="openImage(item)">
+
+        <span class="view-icon">🔍</span>
+
+        <span>View Image</span>
+
+    </button>
+
+</div>
+
+                        </div>
+
+
+                        <!-- INFORMATION -->
+
+                        <div class="gallery-info">
+
+                            <h4>
+
+                                {{ item.title || 'Untitled Image' }}
+
+                            </h4>
+
+
+                            @if (item.description) {
+
+                                <p>
+
+                                    {{ item.description }}
+
+                                </p>
+
+                            }
+
+
+                            <div class="gallery-meta">
+
+                                <span>
+                                    📅
+                                    {{ item.createdOn | date:'dd MMM yyyy' }}
+                                </span>
+
+                                <span
+                                    class="status-badge"
+                                    [class.active]="item.status === 'Y'">
+
+                                    @if (item.status === 'Y') {
+                                        Active
+                                    }
+                                    @else {
+                                        Inactive
+                                    }
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+        @else {
+
+            <!-- EMPTY STATE -->
+
+            <div class="empty-gallery">
+
+                <div class="empty-icon">
+                    🖼️
+                </div>
+
+                <h4>
+                    No Gallery Images
+                </h4>
+
+                <p>
+                    Upload your first image to display it here.
+                </p>
+
+            </div>
+
+        }
+
+    </div>
+</div>
+
+
+<!-- ========================================= -->
+<!-- LARGE IMAGE MODAL -->
+<!-- ========================================= -->
+
+@if (selectedImage) {
+
+    <div
+        class="image-modal"
+        (click)="closeImage()">
+
+        <div
+            class="image-modal-content"
+            (click)="$event.stopPropagation()">
+
+            <button
+                type="button"
+                class="modal-close"
+                (click)="closeImage()">
+                ×
+            </button>
+
+            <img
+                [src]="selectedImage"
+                [alt]="selectedImageTitle"
+                class="large-gallery-image">
+
+            @if (selectedImageTitle) {
+
+                <div class="modal-title">
+                    {{ selectedImageTitle }}
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+}

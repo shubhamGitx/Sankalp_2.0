@@ -1,0 +1,259 @@
+<section id="statistics" class="statistics">
+<div class="login-page">
+
+  <!-- Background decoration -->
+  <div class="background-circle circle-one"></div>
+  <div class="background-circle circle-two"></div>
+
+  <div class="login-wrapper">
+
+    <!-- LEFT SIDE -->
+    <div class="login-info">
+
+      <div class="brand-logo">
+        <img src="images/logo.png" alt="Logo" width="50" height="50">
+      </div>
+
+      <div class="brand-title">
+        
+        <h1>Sankalp Setu</h1>
+        <p>Government of Bihar</p>
+      </div>
+
+      <div class="welcome-content">
+
+        <h3>Welcome Back!</h3>
+
+        <p>
+          Login to access the Sankalp Setu
+          management portal and monitor mission activities.
+        </p>
+
+      </div>
+
+      <div class="mission-points">
+
+        <div class="mission-item">
+          <span class="mission-icon">💧</span>
+          <span>Water Conservation</span>
+        </div>
+
+        <div class="mission-item">
+          <span class="mission-icon">🌱</span>
+          <span>Environmental Protection</span>
+        </div>
+
+        <div class="mission-item">
+          <span class="mission-icon">🌳</span>
+          <span>Green Bihar</span>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- RIGHT SIDE -->
+    <div class="login-card">
+
+      <div class="login-header">
+
+        <div class="user-icon">
+          👤
+        </div>
+
+        <h2>Sign In</h2>
+
+        <p>
+          Login to your Sankalp Setu account
+        </p>
+
+      </div>
+
+
+      <form
+        [formGroup]="loginForm"
+        (ngSubmit)="login()"
+        autocomplete="off">
+
+
+        <!-- USER ID -->
+        <div class="form-group">
+
+          <label for="userId">
+            User ID
+          </label>
+
+          <div class="input-wrapper">
+
+            <span class="input-icon">
+              👤
+            </span>
+
+            <input
+              id="userId"
+              type="text"
+              formControlName="userId"
+              placeholder="Enter User ID"
+              autocomplete="username">
+
+          </div>
+
+          @if (
+            loginForm.controls.userId.touched &&
+            loginForm.controls.userId.invalid
+          ) {
+
+            <small class="error-message">
+              User ID is required
+            </small>
+
+          }
+
+        </div>
+
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+
+          <label for="password">
+            Password
+          </label>
+
+          <div class="input-wrapper">
+
+            <span class="input-icon">
+              🔒
+            </span>
+
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="Enter Password"
+              autocomplete="current-password">
+
+          </div>
+
+          @if (
+            loginForm.controls.password.touched &&
+            loginForm.controls.password.invalid
+          ) {
+
+            <small class="error-message">
+              Password is required
+            </small>
+
+          }
+
+        </div>
+
+
+        <!-- CAPTCHA -->
+        <div class="form-group">
+
+          <label>
+            Security Verification
+          </label>
+
+          <div class="captcha-row">
+
+            <div class="captcha-display">
+
+              <span>
+                {{ captchaText }}
+              </span>
+
+            </div>
+
+            <button
+              type="button"
+              class="refresh-btn"
+              title="Refresh CAPTCHA"
+              (click)="generateCaptcha()">
+
+              ↻
+
+            </button>
+
+          </div>
+
+          <div class="captcha-input">
+
+            <span class="input-icon">
+              🔐
+            </span>
+
+            <input
+              type="text"
+              formControlName="captcha"
+              placeholder="Enter CAPTCHA"
+              autocomplete="off">
+
+          </div>
+
+          @if (
+            loginForm.controls.captcha.touched &&
+            loginForm.controls.captcha.invalid
+          ) {
+
+            <small class="error-message">
+              CAPTCHA is required
+            </small>
+
+          }
+
+        </div>
+
+
+        <!-- REMEMBER ME -->
+        <div class="login-options">
+
+          <label class="remember">
+
+            <input
+              type="checkbox"
+              formControlName="rememberMe">
+
+            <span>
+              Remember Me
+            </span>
+
+          </label>
+
+          <a href="javascript:void(0)">
+            Forgot Password?
+          </a>
+
+        </div>
+
+
+        <!-- LOGIN BUTTON -->
+        <button
+          type="submit"
+          class="login-submit">
+
+          <span>
+            Login
+          </span>
+
+          <span class="arrow">
+            →
+          </span>
+
+        </button>
+
+
+        <div class="secure-login">
+
+          🔒 Secure Login
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+</div>
+</section>
