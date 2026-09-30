@@ -71,6 +71,46 @@
   margin-top: 4px;
 }
 
+/* Sidebar Toggle Button (collapses / expands) */
+.sidebar-toggle-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 4px auto 2px;
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-toggle-btn:hover {
+  background: rgba(0, 245, 196, 0.22);
+  border-color: #00f5c4;
+  transform: scale(1.06);
+}
+
+.sidebar-toggle-btn:active {
+  transform: scale(0.94);
+}
+
+.sidebar-toggle-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.sidebar-toggle-btn svg.rotate {
+  transform: rotate(180deg);
+}
+
+.sidebar-wrapper.collapsed .sidebar-toggle-btn {
+  margin-top: 10px;
+}
+
 /* Nav List */
 .nav-list {
   list-style: none;

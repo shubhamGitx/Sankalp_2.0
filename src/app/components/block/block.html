@@ -1,69 +1,157 @@
-<div class="container-fluid">
+<div class="block-page">
 
-    <div class="page-header">
-        <h2>Block</h2>
-    </div>
+  <!-- ================= TOP TOOLBAR & CONTROLS ================= -->
+  <div class="table-toolbar-card">
 
-    <div class="form-group">
+    <div class="toolbar-left">
 
-        <div class="col-md-4">
-
-            <label for="district">
-        District <span class="required">*</span>
-    </label>
-
-        <select id="district" class="form-select" (change)="onDistrictChange($event)">
-
-        <option value="">-- Select District --</option>
-
-        @for(item of districts; track item.distCode){
-
-            <option [value]="item.distCode">
-                {{item.distName}}
-            </option>
-
-        }
-
-    </select>
-
+      <!-- District Filter Dropdown -->
+      <div class="district-filter">
+        <label for="district" class="district-label">District <span class="required">*</span></label>
+        <div class="district-select-box">
+          <select id="district" class="district-select" (change)="onDistrictChange($event)">
+            <option value="">-- Select District --</option>
+            @for (item of districts; track item.distCode) {
+              <option [value]="item.distCode">{{ item.distName }}</option>
+            }
+          </select>
+          <svg class="dropdown-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
         </div>
+      </div>
 
+      <!-- Search Input Box -->
+      <div class="search-pill-box">
+        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="text"
+          placeholder="Search blocks..."
+          class="search-pill-input"
+          (input)="onSearch($event)"
+          [value]="searchTerm">
+        @if (searchTerm) {
+          <button type="button" class="search-clear-btn" title="Clear search" (click)="clearSearch()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        }
+      </div>
     </div>
 
-    <table class="table table-bordered table-striped">
+    <div class="toolbar-actions-group">
+      <button type="button" class="action-circle-btn" title="Refresh" (click)="onRefresh()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="17 1 21 5 17 9"></polyline>
+          <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+          <polyline points="7 23 3 19 7 15"></polyline>
+          <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+        </svg>
+      </button>
+
+      <button type="button" class="export-pill-btn" title="Export Data" (click)="onExport()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Export</span>
+      </button>
+    </div>
+
+  </div>
+
+  <div class="grid-table-card">
+
+    <div class="table-responsive">
+      <table class="modern-grid-table">
 
         <thead>
+          <tr class="header-row">
+            <th class="th-sortable">
+              <span>Block Code</span>
+              <span class="sort-indicator">&#x21c5;</span>
+            </th>
 
-            <tr>
+            <th class="th-sortable">
+              <span>Block Name</span>
+              <span class="sort-indicator">&#x21c5;</span>
+            </th>
 
-                <th>Block Code</th>
-
-                <th>Block Name</th>
-
-                <th>Hindi Name</th>
-
-            </tr>
-
+            <th class="th-sortable">
+              <span>Hindi Name</span>
+              <span class="sort-indicator">&#x21c5;</span>
+            </th>
+          </tr>
         </thead>
 
         <tbody>
+          @for (block of filteredBlocks; track block.blockCode) {
+            <tr class="data-row">
 
-            @for(block of blocks; track block.blockCode){
+              <!-- Block Code -->
+              <td class="td-secondary">
+                <span class="dept-text">{{ block.blockCode }}</span>
+              </td>
 
-            <tr>
+              <td class="td-name">
+                <div class="user-cell">
+                  <div
+                    class="avatar-circle"
+                    [style.background-color]="getAvatarColor(block.blockName)"
+                    [style.color]="getAvatarTextColor(block.blockName)">
+                    {{ getInitials(block.blockName) }}
+                  </div>
+                  <span class="name-text">{{ block.blockName }}</span>
+                </div>
+              </td>
 
-                <td>{{block.blockCode}}</td>
-
-                <td>{{block.blockName}}</td>
-
-                <td>{{block.blockNameHN}}</td>
+              <td class="td-secondary">
+                <span class="subtext-muted">{{ block.blockNameHN }}</span>
+              </td>
 
             </tr>
+          }
 
-            }
-
+          @if (!selectedDistCode) {
+            <tr>
+              <td colspan="3" class="empty-state-cell">
+                <div class="empty-msg">
+                  <span class="empty-icon">&#x1f4cb;</span>
+                  <p>Select a district to view its blocks.</p>
+                </div>
+              </td>
+            </tr>
+          } @else if (blocks.length === 0) {
+            <tr>
+              <td colspan="3" class="empty-state-cell">
+                <div class="empty-msg">
+                  <span class="empty-icon">&#x21bb;</span>
+                  <p>Loading block records...</p>
+                </div>
+              </td>
+            </tr>
+          } @else if (filteredBlocks.length === 0) {
+            <tr>
+              <td colspan="3" class="empty-state-cell">
+                <div class="empty-msg">
+                  <span class="empty-icon">&#x1f50d;</span>
+                  <p>No blocks match "{{ searchTerm }}".</p>
+                </div>
+              </td>
+            </tr>
+          }
         </tbody>
 
-    </table>
+      </table>
+    </div>
+
+  </div>
 
 </div>
+

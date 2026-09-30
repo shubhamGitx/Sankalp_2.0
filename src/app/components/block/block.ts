@@ -21,6 +21,18 @@ export class BlockComponent implements OnInit {
 
   districts: any[] = [];
   blocks: any[] = [];
+  selectedDistCode = '';
+  searchTerm = '';
+
+  get filteredBlocks(): any[] {
+    const q = this.searchTerm.trim().toLowerCase();
+    if (!q) return this.blocks;
+    return this.blocks.filter(b =>
+      (b.blockCode || '').toLowerCase().includes(q) ||
+      (b.blockName || '').toLowerCase().includes(q) ||
+      (b.blockNameHN || '').toLowerCase().includes(q)
+    );
+  }
 
   ngOnInit(): void {
 
@@ -59,17 +71,20 @@ export class BlockComponent implements OnInit {
 
   onDistrictChange(event: any) {
 
-    const distCode = event.target.value;
+    this.selectedDistCode = event.target.value;
 
-    if (distCode === '') {
+    if (this.selectedDistCode === '') {
 
       this.blocks = [];
+      this.searchTerm = '';
+      this.cdr.detectChanges();
 
       return;
 
     }
 
-    this.loadBlocks(distCode);
+    this.searchTerm = '';
+    this.loadBlocks(this.selectedDistCode);
 
   }
 
@@ -111,6 +126,84 @@ export class BlockComponent implements OnInit {
 
     });
 
+  }
+
+  // Search helpers
+  onSearch(event: Event): void {
+    this.searchTerm = (event.target as HTMLInputElement).value || '';
+    this.cdr.detectChanges();
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.cdr.detectChanges();
+  }
+
+  onRefresh(): void {
+    this.searchTerm = '';
+    if (this.selectedDistCode) {
+      this.loadBlocks(this.selectedDistCode);
+    } else {
+      this.blocks = [];
+    }
+    this.cdr.detectChanges();
+  }
+
+  onExport(): void {
+    const rows = this.filteredBlocks;
+    if (!rows.length) return;
+
+    const header = ['Block Code', 'Block Name', 'Hindi Name'];
+    const lines = rows.map(b =>
+      [this.escapeCsv(b.blockCode), this.escapeCsv(b.blockName), this.escapeCsv(b.blockNameHN)].join(',')
+    );
+    const csv = '\uFEFF' + header.join(',') + '\r\n' + lines.join('\r\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'block-master.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
+  private escapeCsv(value: string): string {
+    const v = (value ?? '').toString();
+    return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }
+
+  getInitials(name: string): string {
+    if (!name) return 'BL';
+    const parts = name.trim().split(' ');
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  getAvatarColor(name: string): string {
+    const colors = [
+      '#e0e7ff', '#fce7f3', '#fef3c7', '#dcfce7', '#e0f2fe', '#f3e8ff', '#fee2e2'
+    ];
+    let hash = 0;
+    for (let i = 0; i < (name || '').length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  getAvatarTextColor(name: string): string {
+    const textColors = [
+      '#4338ca', '#be185d', '#b45309', '#15803d', '#0369a1', '#7e22ce', '#b91c1c'
+    ];
+    let hash = 0;
+    for (let i = 0; i < (name || '').length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return textColors[Math.abs(hash) % textColors.length];
   }
 
 }

@@ -18,6 +18,11 @@ export class Login {
   private cryptoService = inject(CryptoService);
   private router = inject(Router);
   captchaText = '';
+  showPassword = false;
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   ngOnInit() {
   this.generateCaptcha();

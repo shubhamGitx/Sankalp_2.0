@@ -14,6 +14,17 @@
       <span class="user-email">admin@jjhm.gov.in</span>
     </div>
 
+    <!-- Sidebar Toggle (collapses / expands the sidebar) -->
+    <button class="sidebar-toggle-btn"
+            [title]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+            [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+            (click)="onToggle()">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+           stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" [class.rotate]="collapsed">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
     <!-- Navigation List -->
     <ul class="nav-list">
 

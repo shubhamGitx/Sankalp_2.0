@@ -1,43 +1,133 @@
-<div class="district">
- <div class="page-header">
-    <h2>District Master</h2>
-</div>
-    <hr>
+<div class="district-page">
 
-    <table class="table table-bordered">
+  <!-- ================= TOP TOOLBAR & CONTROLS ================= -->
+  <div class="table-toolbar-card">
+    
+    <!-- Search Input Box -->
+    <div class="search-pill-box">
+      <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search districts..."
+        class="search-pill-input"
+        (input)="onSearch($event)"
+        [value]="searchTerm">
+      @if (searchTerm) {
+        <button type="button" class="search-clear-btn" title="Clear search" (click)="clearSearch()">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      }
+    </div>
 
-    <thead>
+    <!-- Right Action Buttons (⇄, Export) -->
+    <div class="toolbar-actions-group">
+      <!-- Refresh Button -->
+      <button type="button" class="action-circle-btn" title="Refresh" (click)="onRefresh()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="17 1 21 5 17 9"></polyline>
+          <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+          <polyline points="7 23 3 19 7 15"></polyline>
+          <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+        </svg>
+      </button>
 
-        <tr>
+      <!-- Export Button -->
+      <button type="button" class="export-pill-btn" title="Export Data" (click)="onExport()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Export</span>
+      </button>
+    </div>
 
-            <th>District Code</th>
+  </div>
 
-            <th>District Name</th>
 
-            <th>Hindi Name</th>
+  <div class="grid-table-card">
 
-        </tr>
+    <div class="table-responsive">
+      <table class="modern-grid-table">
 
-    </thead>
+        <thead>
+          <tr class="header-row">
+            <!-- District Code -->
+            <th class="th-sortable">
+              <span>District Code</span>
+              <span class="sort-indicator">&#x21c5;</span>
+            </th>
 
-    <tbody>
+            <th class="th-sortable">
+              <span>District Name</span>
+              <span class="sort-indicator">&#x21c5;</span>
+            </th>
 
-        @for(item of districts; track item.distCode){
+            <th class="th-sortable">
+              <span>Hindi Name</span>
+              <span class="sort-indicator">&#x21c5;</span>
+            </th>
+          </tr>
+        </thead>
 
-        <tr>
+        <tbody>
+          @for (item of filteredDistricts; track item.distCode) {
+            <tr class="data-row">
 
-            <td>{{item.distCode}}</td>
+              <td class="td-secondary">
+                <span class="dept-text">{{ item.distCode }}</span>
+              </td>
 
-            <td>{{item.distName}}</td>
+              <td class="td-name">
+                <div class="user-cell">
+                  <div
+                    class="avatar-circle"
+                    [style.background-color]="getAvatarColor(item.distName)"
+                    [style.color]="getAvatarTextColor(item.distName)">
+                    {{ getInitials(item.distName) }}
+                  </div>
+                  <span class="name-text">{{ item.distName }}</span>
+                </div>
+              </td>
 
-            <td>{{item.distNameHN}}</td>
+              <!-- Hindi Name -->
+              <td class="td-secondary">
+                <span class="subtext-muted">{{ item.distNameHN }}</span>
+              </td>
 
-        </tr>
+            </tr>
+          }
 
-        }
+          @if (districts.length === 0) {
+            <tr>
+              <td colspan="3" class="empty-state-cell">
+                <div class="empty-msg">
+                  <span class="empty-icon">&#x21bb;</span>
+                  <p>Loading district records...</p>
+                </div>
+              </td>
+            </tr>
+          } @else if (filteredDistricts.length === 0) {
+            <tr>
+              <td colspan="3" class="empty-state-cell">
+                <div class="empty-msg">
+                  <span class="empty-icon">&#x1f50d;</span>
+                  <p>No districts match "{{ searchTerm }}".</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
 
-    </tbody>
+      </table>
+    </div>
 
-</table>
+  </div>
 
 </div>

@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -11,8 +11,13 @@ import { Router } from '@angular/router';
 })
 export class Sidebar {
   @Input() collapsed = false;
+  @Output() toggle = new EventEmitter<void>();
 
   private router = inject(Router);
+
+  onToggle(): void {
+    this.toggle.emit();
+  }
 
   isActive(path: string): boolean {
     return this.router.url === path;

@@ -4,16 +4,10 @@
 </app-header>
 
 <div class="layout">
-  <app-sidebar [collapsed]="collapsed"></app-sidebar>
+  <app-sidebar [collapsed]="collapsed" (toggle)="toggleSidebar()"></app-sidebar>
 
   <div class="main-wrapper" [class.expanded]="collapsed">
     <main class="content">
-      <button class="toggle-btn" (click)="toggleSidebar()" title="Toggle sidebar">
-        <span class="line saffron"></span>
-        <span class="line white"></span>
-        <span class="line green"></span>
-      </button>
-
       <router-outlet></router-outlet>
     </main>
 
