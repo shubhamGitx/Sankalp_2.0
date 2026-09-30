@@ -1,52 +1,42 @@
 import { Component, Input, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [CommonModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
 export class Sidebar {
-   @Input()
-  collapsed = false;
+  @Input() collapsed = false;
 
-  masterOpen = false;
-  userOpen = false;
-  attendanceOpen = false;
+  private router = inject(Router);
 
-  toggleMaster() {
-    this.masterOpen = !this.masterOpen;
+  isActive(path: string): boolean {
+    return this.router.url === path;
   }
 
-  toggleUser() {
-    this.userOpen = !this.userOpen;
-  }
-
-  toggleAttendance() {
-    this.attendanceOpen = !this.attendanceOpen;
-  }
-  
-   private router = inject(Router);
-   
-openDashboard() {
+  openDashboard() {
     this.router.navigate(['/dashboard']);
   }
-  
-     openDistrict() {
-    this.router.navigate(['/district']);    
+
+  openDistrict() {
+    this.router.navigate(['/district']);
   }
 
-   openBlock() {
-    this.router.navigate(['/block']);    
+  openBlock() {
+    this.router.navigate(['/block']);
   }
 
-   openGallery() {
-    this.router.navigate(['/gallery-admin']);    
+  openGallery() {
+    this.router.navigate(['/gallery-admin']);
   }
-   openLogin() {
+
+  openLogin() {
     localStorage.clear();
-    this.router.navigate(['/login']); 
-   }
+    this.router.navigate(['/login']);
+  }
 }
+

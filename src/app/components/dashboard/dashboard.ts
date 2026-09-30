@@ -1,124 +1,137 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboardservice';
-import {
-  DashboardSummaryData,
-  DistrictWiseApplicant,
-  BlockWiseApplicant,
-  RecentApplicant
-} from '../../models/DashboardSummary';
+import { CryptoService } from '../../services/crypto.service';
+
+interface ActivityItem {
+  date: string;
+  time: string;
+  user: string;
+  action: string;
+  subtext: string;
+  badgeColor: 'pink' | 'purple' | 'cyan' | 'orange' | 'green';
+  status: string;
+  statusClass: string;
+}
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
 export class Dashboard implements OnInit {
+
   private dashboardService = inject(DashboardService);
+  private cryptoService = inject(CryptoService);
   private cdr = inject(ChangeDetectorRef);
 
-  summary: DashboardSummaryData | null = null;
-  loading: boolean = true;
-  errorMessage: string = '';
+  dashboard: any = {
+    DistrictCount: 0,
+    BlockCount: 0,
+    PanchayatCount: 0,
+    AwayabCount: 0,
+    DepartmentCount: 0,
+    SchemeCount: 0
+  };
 
-  // Filter & Search states
-  districtSearch: string = '';
-  selectedAreaFilter: 'ALL' | 'RURAL' | 'URBAN' = 'ALL';
+  selectedPeriod: string = 'MONTHLY';
+  readonly periods: string[] = ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'];
 
-  // District-to-Block Drilldown state
-  selectedDistrict: DistrictWiseApplicant | null = null;
-  blocksList: BlockWiseApplicant[] = [];
-  blocksLoading: boolean = false;
+  recentActivities: ActivityItem[] = [
+    {
+      date: '03-Aug-2026',
+      time: '4:29 Mins Ago',
+      user: 'Admin',
+      action: 'Logged In',
+      subtext: 'Admin: Logged into dashboard',
+      badgeColor: 'pink',
+      status: 'Active',
+      statusClass: 'badge-pink'
+    },
+    {
+      date: '03-Aug-2026',
+      time: '1 hr Ago',
+      user: 'District User',
+      action: 'Added District',
+      subtext: 'District User: Created District Record',
+      badgeColor: 'purple',
+      status: 'Open',
+      statusClass: 'badge-purple'
+    },
+    {
+      date: '03-Aug-2026',
+      time: '2 hrs Ago',
+      user: 'Block User',
+      action: 'Updated Block',
+      subtext: 'Block User: Updated Block Details',
+      badgeColor: 'cyan',
+      status: 'Updated',
+      statusClass: 'badge-cyan'
+    },
+    {
+      date: '02-Aug-2026',
+      time: '1 day Ago',
+      user: 'Panchayat User',
+      action: 'Verified Panchayat',
+      subtext: 'Panchayat User: Synchronized data',
+      badgeColor: 'orange',
+      status: 'Pending',
+      statusClass: 'badge-orange'
+    },
+    {
+      date: '01-Aug-2026',
+      time: '3 days Ago',
+      user: 'Admin',
+      action: 'Scheme Verified',
+      subtext: 'Admin: Approved Scheme Data',
+      badgeColor: 'green',
+      status: 'Closed',
+      statusClass: 'badge-green'
+    }
+  ];
 
   ngOnInit(): void {
     this.loadDashboard();
   }
 
+  selectPeriod(period: string): void {
+    this.selectedPeriod = period;
+  }
+
+  get totalUnits(): number {
+    return (
+      (this.dashboard?.DistrictCount || 0) +
+      (this.dashboard?.BlockCount || 0) +
+      (this.dashboard?.PanchayatCount || 0) +
+      (this.dashboard?.AwayabCount || 0) +
+      (this.dashboard?.DepartmentCount || 0) +
+      (this.dashboard?.SchemeCount || 0)
+    );
+  }
+
   loadDashboard(): void {
-    this.loading = true;
-    this.errorMessage = '';
+    const clientAES = localStorage.getItem('clientAES') || '';
 
     this.dashboardService.getSummary().subscribe({
-      next: (res) => {
-        this.loading = false;
-        if (res && res.status && res.data) {
-          this.summary = res.data;
-
-          // Auto-select first district with registrations if available
-          if (this.summary.districtWise && this.summary.districtWise.length > 0) {
-            const activeDist = this.summary.districtWise.find(d => d.totalRegistered > 0) || this.summary.districtWise[0];
-            this.selectDistrict(activeDist);
-          }
-        } else {
-          this.errorMessage = res?.message || 'Unable to load dashboard data.';
+      next: (res: any) => {
+        if (res?.status && res?.data) {
+          this.dashboard = {
+            DistrictCount: Number(this.cryptoService.decryptAES(res.data.districtCount, clientAES)) || 0,
+            BlockCount: Number(this.cryptoService.decryptAES(res.data.blockCount, clientAES)) || 0,
+            PanchayatCount: Number(this.cryptoService.decryptAES(res.data.panchayatCount, clientAES)) || 0,
+            AwayabCount: Number(this.cryptoService.decryptAES(res.data.awayabCount, clientAES)) || 0,
+            DepartmentCount: Number(this.cryptoService.decryptAES(res.data.departmentCount, clientAES)) || 0,
+            SchemeCount: Number(this.cryptoService.decryptAES(res.data.schemeCount, clientAES)) || 0
+          };
+          console.log(this.dashboard);
+          this.cdr.detectChanges();
         }
-        this.cdr.detectChanges();
       },
       error: (err) => {
-        this.loading = false;
-        console.error('Failed to load dashboard:', err);
-        this.errorMessage = 'Unable to connect to SankalpAPI dashboard service.';
-        this.cdr.detectChanges();
+        console.error('Failed to load dashboard summary', err);
       }
     });
-  }
-
-  selectDistrict(district: DistrictWiseApplicant): void {
-    this.selectedDistrict = district;
-    this.blocksLoading = true;
-    this.blocksList = [];
-
-    this.dashboardService.getBlockWise(district.districtCode).subscribe({
-      next: (res) => {
-        this.blocksLoading = false;
-        if (res && res.status && res.data) {
-          this.blocksList = res.data;
-        }
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.blocksLoading = false;
-        console.error('Failed to load block data:', err);
-        this.cdr.detectChanges();
-      }
-    });
-  }
-
-  setAreaFilter(filter: 'ALL' | 'RURAL' | 'URBAN'): void {
-    this.selectedAreaFilter = filter;
-  }
-
-  get filteredDistricts(): DistrictWiseApplicant[] {
-    if (!this.summary?.districtWise) return [];
-    let list = this.summary.districtWise;
-
-    if (this.districtSearch.trim()) {
-      const q = this.districtSearch.trim().toLowerCase();
-      list = list.filter(d =>
-        d.districtName.toLowerCase().includes(q) ||
-        (d.districtNameHn && d.districtNameHn.toLowerCase().includes(q)) ||
-        d.districtCode.includes(q)
-      );
-    }
-
-    if (this.selectedAreaFilter === 'RURAL') {
-      list = list.filter(d => d.ruralCount > 0);
-    } else if (this.selectedAreaFilter === 'URBAN') {
-      list = list.filter(d => d.urbanCount > 0);
-    }
-
-    return list;
-  }
-
-  get filteredRecentApplicants(): RecentApplicant[] {
-    if (!this.summary?.recentApplicants) return [];
-    if (this.selectedAreaFilter === 'ALL') {
-      return this.summary.recentApplicants;
-    }
-    const targetArea = this.selectedAreaFilter === 'RURAL' ? 'Rural' : 'Urban';
-    return this.summary.recentApplicants.filter(a => a.areaType === targetArea);
   }
 }

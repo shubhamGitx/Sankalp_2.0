@@ -1,4 +1,7 @@
-<app-header></app-header>
+<app-header
+    [collapsed]="collapsed"
+    (toggle)="toggleSidebar()">
+</app-header>
 
 <div class="layout">
   <app-sidebar [collapsed]="collapsed"></app-sidebar>

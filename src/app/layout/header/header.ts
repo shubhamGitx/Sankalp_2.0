@@ -1,30 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class Header {
+  @Input() collapsed = false;
+  @Output() toggle = new EventEmitter<void>();
 
   constructor(private router: Router) {}
 
+  onToggle(): void {
+    this.toggle.emit();
+  }
+
   logout(): void {
-    // alert('Logout Clicked');
-    // Remove all saved data
     localStorage.clear();
-    // or
-    // localStorage.removeItem('token');
-    // localStorage.removeItem('UserId');
-    // localStorage.removeItem('UserName');
-
-    // Redirect to Login page
     this.router.navigate(['/login']);
-
-    // Alternatively
-    // this.router.navigate(['/login']);
   }
 }
+

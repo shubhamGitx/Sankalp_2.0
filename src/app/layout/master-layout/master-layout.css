@@ -1,7 +1,7 @@
 :host {
   --header-height: 60px;
-  --sidebar-width: 220px;
-  --sidebar-width-collapse: 70px;
+  --sidebar-width: 300px;
+  --sidebar-width-collapse: 75px;
   display: block;
 }
 
@@ -13,8 +13,8 @@
 
 .main-wrapper {
   margin-top: 60px;
-  margin-left: 220px;
-  width: calc(100% - 220px);
+  margin-left: 300px;
+  width: calc(100% - 300px);
   min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
@@ -24,8 +24,8 @@
 }
 
 .main-wrapper.expanded {
-  margin-left: 70px;
-  width: calc(100% - 70px);
+  margin-left: 75px;
+  width: calc(100% - 75px);
 }
 
 .content {

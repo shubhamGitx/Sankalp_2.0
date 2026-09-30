@@ -4,76 +4,174 @@
   left: 0;
   right: 0;
   height: 60px;
-  background: linear-gradient(90deg, #07475d 0%, #053344 50%, #042835 100%);
-  color: #f8fafc;
+  background: linear-gradient(90deg, #1b6854 0%, #247d66 100%);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 1000;
+  box-shadow: 0 2px 14px rgba(22, 88, 70, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 21px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: #ffffff;
-}
-
-.logo img {
-  border-radius: 4px;
-  display: block;
-}
-
-.user {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  color: #e2e8f0;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.user-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.user-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+.logo-box {
+  width: 300px;
+  height: 60px;
+  background: #1b6854;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7dd3fc;
+  gap: 10px;
+  color: #ffffff;
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.logo-box.collapsed {
+  width: 75px;
+}
+
+.logo-emblem {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(45, 212, 191, 0.2);
+  border: 1.5px solid #2dd4bf;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffd200;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.navbar-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 100%;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.hamburger-btn {
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-icon-badge-wrap {
+  position: relative;
+  color: #e2e8f0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.badge-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 15px;
+  height: 15px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+.count-blue {
+  background: #00f2fe;
+  color: #0c382f;
+}
+
+.count-pink {
+  background: #ff3b7b;
+  color: #ffffff;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.avatar-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid #2dd4bf;
+  background: #0d3830;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
 }
 
 .logout-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: #f1f5f9;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 6px 14px;
+  border: none;
+  background: #ef4444;
+  color: #ffffff;
+  padding: 4px 10px;
   border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 11px;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
 }
 
 .logout-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.4);
-  color: #fca5a5;
-  transform: translateY(-1px);
+  opacity: 0.9;
 }
+
+.nav-icon-wrap {
+  color: #5eead4;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
