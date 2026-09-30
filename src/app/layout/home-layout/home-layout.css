@@ -338,6 +338,21 @@
 
 
 
+.nav-register {
+    border: 1px solid #ff9933;
+    background: #ff9933;
+    color: #ffffff;
+    padding: 7px 18px;
+    border-radius: 5px;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.nav-register:hover { background: #ffffff; color: #075985; }
+
+
+
 .welcome-badge {
   display: inline-block;
 

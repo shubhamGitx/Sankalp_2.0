@@ -187,6 +187,13 @@
 
       </button>
 
+      <button
+        class="nav-register" type="button" (click)="openOtpLogin()">
+
+        Register
+
+      </button>
+
     </div>
 
   </nav>
@@ -235,5 +242,17 @@
 
   </footer>
 
+  <app-otp-login-modal
+    [isOpen]="isLoginModalOpen"
+    (close)="closeOtpLogin()"
+    (verified)="onOtpVerified($event)">
+  </app-otp-login-modal>
+
+  <app-user-register-modal
+    [isOpen]="isRegisterModalOpen"
+    [mobileNo]="registerContext.mobileNo"
+    [deviceId]="registerContext.deviceId"
+    (close)="closeRegisterModal()">
+  </app-user-register-modal>
 
 </div>
