@@ -56,24 +56,49 @@
           <h3>Location Details</h3>
           <div class="rego-grid">
             <div class="field">
-              <label for="distCode">District Code</label>
-              <input id="distCode" formControlName="distCode" type="number" min="0" />
+              <label for="distCode">District</label>
+              <select id="distCode" formControlName="distCode" (change)="onDistrictChange()">
+                <option value="" disabled>Select District</option>
+                @for (d of districts; track d.code) {
+                  <option [value]="d.code">{{ d.name }}</option>
+                }
+              </select>
             </div>
             <div class="field">
-              <label for="blockCode">Block Code</label>
-              <input id="blockCode" formControlName="blockCode" type="number" min="0" />
+              <label for="blockCode">Block</label>
+              <select id="blockCode" formControlName="blockCode" (change)="onBlockChange()">
+                <option value="" disabled>Select Block</option>
+                @for (b of blocks; track b.code) {
+                  <option [value]="b.code">{{ b.name }}</option>
+                }
+              </select>
             </div>
             <div class="field">
-              <label for="panchayatCode">Panchayat Code</label>
-              <input id="panchayatCode" formControlName="panchayatCode" type="number" min="0" />
+              <label for="panchayatCode">Panchayat</label>
+              <select id="panchayatCode" formControlName="panchayatCode" (change)="onPanchayatChange()">
+                <option value="" disabled>Select Panchayat</option>
+                @for (p of panchayats; track p.code) {
+                  <option [value]="p.code">{{ p.name }}</option>
+                }
+              </select>
             </div>
             <div class="field">
               <label for="areaType">Area Type</label>
-              <input id="areaType" formControlName="areaType" type="text" placeholder="e.g. Rural / Urban" />
+              <select id="areaType" formControlName="areaType">
+                <option value="" disabled>Select Area Type</option>
+                @for (a of areaTypeOptions; track a.code) {
+                  <option [value]="a.code">{{ a.label }}</option>
+                }
+              </select>
             </div>
             <div class="field">
-              <label for="villCode">Village Code</label>
-              <input id="villCode" formControlName="villCode" type="number" min="0" />
+              <label for="villCode">Village</label>
+              <select id="villCode" formControlName="villCode">
+                <option value="" disabled>Select Village</option>
+                @for (v of villages; track v.code) {
+                  <option [value]="v.code">{{ v.name }}</option>
+                }
+              </select>
             </div>
             <div class="field">
               <label for="wardCode">Ward Code</label>
@@ -86,24 +111,49 @@
           <h3>Demographics</h3>
           <div class="rego-grid">
             <div class="field">
-              <label for="genderCode">Gender Code</label>
-              <input id="genderCode" formControlName="genderCode" type="number" min="0" />
+              <label for="genderCode">Gender</label>
+              <select id="genderCode" formControlName="genderCode">
+                <option value="" disabled>Select Gender</option>
+                @for (g of genders; track g.code) {
+                  <option [value]="g.code">{{ g.name }}</option>
+                }
+              </select>
             </div>
             <div class="field">
-              <label for="ageGroupId">Age Group ID</label>
-              <input id="ageGroupId" formControlName="ageGroupId" type="number" min="0" />
+              <label for="ageGroupId">Age Group</label>
+              <select id="ageGroupId" formControlName="ageGroupId">
+                <option value="" disabled>Select Age Group</option>
+                @for (a of ageGroups; track a.code) {
+                  <option [value]="a.code">{{ a.name }}</option>
+                }
+              </select>
             </div>
             <div class="field">
-              <label for="categoryId">Category ID</label>
-              <input id="categoryId" formControlName="categoryId" type="number" min="0" />
+              <label for="categoryId">Category</label>
+              <select id="categoryId" formControlName="categoryId">
+                <option value="" disabled>Select Category</option>
+                @for (c of categories; track c.code) {
+                  <option [value]="c.code">{{ c.name }}</option>
+                }
+              </select>
             </div>
             <div class="field">
-              <label for="qualificationId">Qualification ID</label>
-              <input id="qualificationId" formControlName="qualificationId" type="number" min="0" />
+              <label for="qualificationId">Qualification</label>
+              <select id="qualificationId" formControlName="qualificationId">
+                <option value="" disabled>Select Qualification</option>
+                @for (q of qualifications; track q.code) {
+                  <option [value]="q.code">{{ q.name }}</option>
+                }
+              </select>
             </div>
             <div class="field">
-              <label for="occupationId">Occupation ID</label>
-              <input id="occupationId" formControlName="occupationId" type="number" min="0" />
+              <label for="occupationId">Occupation</label>
+              <select id="occupationId" formControlName="occupationId">
+                <option value="" disabled>Select Occupation</option>
+                @for (o of occupations; track o.code) {
+                  <option [value]="o.code">{{ o.name }}</option>
+                }
+              </select>
             </div>
           </div>
         </div>
@@ -111,18 +161,16 @@
         <!-- ============ INTERESTS ============ -->
         <div class="rego-section">
           <h3>Interests</h3>
-          <div class="interest-group">
-            @for (opt of interestOptions; track opt.value) {
-              <label class="interest-item">
-                <input
-                  type="checkbox"
-                  [checked]="isInterestSelected(opt.value)"
-                  (change)="toggleInterest(opt.value)" />
-                <span>{{ opt.label }}</span>
-              </label>
-            }
+          <div class="field">
+            <label for="interest">Interest</label>
+            <select id="interest" formControlName="interests">
+              <option value="" disabled>Select Interest</option>
+              @for (opt of interests; track opt.code) {
+                <option [value]="opt.code">{{ opt.name }}</option>
+              }
+            </select>
           </div>
-          <small class="hint">Select one or more interests that apply to you.</small>
+          <small class="hint">Select the interest that applies to you.</small>
         </div>
 
         @if (errorMessage) {

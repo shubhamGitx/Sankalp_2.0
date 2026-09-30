@@ -16,6 +16,10 @@ import {
 import { Router } from '@angular/router';
 
 import { RegisterService } from '../../services/register.service';
+import { DistrictService } from '../../services/district';
+import { BlockService } from '../../services/block';
+import { MasterService } from '../../services/master';
+import { CryptoService } from '../../services/crypto.service';
 import { UserRegisterRequest } from '../../models/register';
 
 @Component({
@@ -28,6 +32,10 @@ import { UserRegisterRequest } from '../../models/register';
 export class UserRegisterModal implements OnChanges {
 
   private registerService = inject(RegisterService);
+  private districtService = inject(DistrictService);
+  private blockService = inject(BlockService);
+  private masterService = inject(MasterService);
+  private cryptoService = inject(CryptoService);
   private router = inject(Router);
 
   @Input() isOpen = false;
@@ -39,11 +47,22 @@ export class UserRegisterModal implements OnChanges {
   errorMessage = '';
   successMessage = '';
 
-  interestOptions = [
-    { label: 'Water Conservation', value: 0 },
-    { label: 'Afforestation', value: 1 },
-    { label: 'Soil Health', value: 2 },
-    { label: 'Renewable Energy', value: 3 },
+  districts: { code: string; name: string; nameHN?: string }[] = [];
+  blocks: { code: string; name: string }[] = [];
+  panchayats: { code: string; name: string }[] = [];
+  villages: { code: string; name: string }[] = [];
+
+  genders: { code: string; name: string }[] = [];
+  ageGroups: { code: string; name: string }[] = [];
+  categories: { code: string; name: string }[] = [];
+  qualifications: { code: string; name: string }[] = [];
+  occupations: { code: string; name: string }[] = [];
+  interests: { code: string; name: string }[] = [];
+
+  
+  areaTypeOptions: { code: string; label: string }[] = [
+    { code: 'R', label: 'Rural' },
+    { code: 'U', label: 'Urban' },
   ];
 
   registerForm = new FormGroup({
@@ -57,18 +76,18 @@ export class UserRegisterModal implements OnChanges {
       Validators.minLength(6),
     ]),
     email: new FormControl('', [Validators.email]),
-    interests: new FormControl<number[]>([]),
-    distCode: new FormControl(0),
-    blockCode: new FormControl(0),
-    panchayatCode: new FormControl(0),
+    interests: new FormControl(''),
+    distCode: new FormControl(''),
+    blockCode: new FormControl(''),
+    panchayatCode: new FormControl(''),
     areaType: new FormControl(''),
-    villCode: new FormControl(0),
+    villCode: new FormControl(''),
     wardCode: new FormControl(''),
-    genderCode: new FormControl(0),
-    ageGroupId: new FormControl(0),
-    categoryId: new FormControl(0),
-    qualificationId: new FormControl(0),
-    occupationId: new FormControl(0),
+    genderCode: new FormControl(''),
+    ageGroupId: new FormControl(''),
+    categoryId: new FormControl(''),
+    qualificationId: new FormControl(''),
+    occupationId: new FormControl(''),
     deviceId: new FormControl(''),
     entryBy: new FormControl(''),
   });
@@ -76,6 +95,10 @@ export class UserRegisterModal implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen'] && changes['isOpen'].currentValue === true) {
       this.reset();
+      this.loadDistricts();
+      this.loadDemographics();
+      this.loadQualificationAndOccupation();
+      this.loadInterests();
       this.registerForm.patchValue({
         mobileNo: this.mobileNo,
         deviceId: this.deviceId,
@@ -88,35 +111,230 @@ export class UserRegisterModal implements OnChanges {
     this.loading = false;
     this.errorMessage = '';
     this.successMessage = '';
+    this.districts = [];
+    this.blocks = [];
+    this.panchayats = [];
+    this.villages = [];
+    this.genders = [];
+    this.ageGroups = [];
+    this.categories = [];
+    this.qualifications = [];
+    this.occupations = [];
+    this.interests = [];
     this.registerForm.reset({
-      interests: [],
-      distCode: 0,
-      blockCode: 0,
-      panchayatCode: 0,
-      villCode: 0,
-      genderCode: 0,
-      ageGroupId: 0,
-      categoryId: 0,
-      qualificationId: 0,
-      occupationId: 0,
+      interests: '',
+      distCode: '',
+      blockCode: '',
+      panchayatCode: '',
+      villCode: '',
+      genderCode: '',
+      ageGroupId: '',
+      categoryId: '',
+      qualificationId: '',
+      occupationId: '',
     });
   }
 
-  toggleInterest(value: number): void {
-    const list = this.registerForm.controls.interests.value ?? [];
-    const idx = list.indexOf(value);
-    if (idx >= 0) {
-      list.splice(idx, 1);
-    } else {
-      list.push(value);
+
+
+  private firstValue(obj: any, keys: string[]): string {
+    for (const k of keys) {
+      const v = obj?.[k];
+      if (v !== undefined && v !== null && v !== '') {
+        return v;
+      }
     }
-    this.registerForm.controls.interests.setValue([...list]);
+    return '';
   }
 
-  isInterestSelected(value: number): boolean {
-    return (this.registerForm.controls.interests.value ?? []).includes(value);
+  private decrypt(value: string): string {
+    if (!value) return '';
+    const clientAES = localStorage.getItem('clientAES') || '';
+    try {
+      const decrypted = this.cryptoService.decryptAES(value, clientAES);
+      return decrypted || value;
+    } catch {
+      return value;
+    }
   }
-register(): void {
+
+  loadDistricts(): void {
+    this.districtService.getDistrictList().subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.districts = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['district_code', 'District_Code', 'district_Code', 'districtcode', 'distCode', 'districtCode'])),
+            name: this.decrypt(this.firstValue(item, ['district_name', 'District_Name', 'district_Name', 'districtname', 'distName', 'districtName'])),
+            nameHN: this.decrypt(this.firstValue(item, ['district_name_hn', 'District_Name_Hn', 'District_Name_HN', 'district_Name_HN', 'district_Name_Hn', 'districtNameHN'])),
+          }));
+        }
+      },
+      error: (err) => console.error('Failed to load districts', err),
+    });
+  }
+
+  loadBlocks(distCode: string): void {
+    this.blocks = [];
+    if (!distCode) return;
+    this.blockService.getBlockList(distCode).subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.blocks = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['blockcode', 'BlockCode', 'blockCode', 'block_Code'])),
+            name: this.decrypt(this.firstValue(item, ['blockname', 'BlockName', 'blockName', 'block_Name'])),
+          }));
+        }
+      },
+      error: (err) => console.error('Failed to load blocks', err),
+    });
+  }
+
+  loadPanchayats(blockCode: string): void {
+    this.panchayats = [];
+    if (!blockCode) return;
+    this.masterService.getPanchayatList(blockCode).subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.panchayats = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['panchayatcode', 'PanchayatCode', 'panchayatCode', 'panchayat_Code'])),
+            name: this.decrypt(this.firstValue(item, ['panchayatname', 'PanchayatName', 'panchayatName', 'panchayat_Name'])),
+          }));
+        }
+      },
+      error: (err) => console.error('Failed to load panchayats', err),
+    });
+  }
+
+  loadVillages(panchayatCode: string): void {
+    this.villages = [];
+    if (!panchayatCode) return;
+    console.log('Loading villages for panchayatCode:', panchayatCode);
+    this.masterService.getVillageList(panchayatCode).subscribe({
+      next: (res: any) => {
+        console.log('Village API response:', res);
+        if (res?.status && Array.isArray(res.data)) {
+          this.villages = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['villcode', 'villCode', 'VillCode', 'VILLCODE', 'villageCode', 'VillageCode', 'vill_Code'])),
+            name: this.decrypt(this.firstValue(item, ['villname', 'villName', 'VillName', 'VILLNAME', 'villageName', 'VillageName', 'vill_Name'])),
+          }));
+        } else {
+          console.warn('Villages not populated. status:', res?.status, 'data:', res?.data);
+        }
+      },
+      error: (err) => console.error('Failed to load villages', err),
+    });
+  }
+
+  loadDemographics(): void {
+    this.masterService.getGenderList().subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.genders = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['gender_code', 'gender_Code', 'genderCode', 'GenderCode'])),
+            name: this.decrypt(this.firstValue(item, ['gender_name', 'gender_Name', 'genderName', 'GenderName'])),
+          }));
+        }
+      },
+      error: (err) => console.error('Failed to load genders', err),
+    });
+
+    this.masterService.getAgeGroupList().subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.ageGroups = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['id', 'age_group_id', 'ageGroupId', 'age_Group_Id'])),
+            name: this.decrypt(this.firstValue(item, ['age_group_name', 'ageGroupName', 'ageGroup_Name'])),
+          }));
+        }
+      },
+      error: (err) => console.error('Failed to load age groups', err),
+    });
+
+    this.masterService.getCategoryList().subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.categories = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['category_id', 'category_Id', 'categoryId', 'CategoryID'])),
+            name: this.decrypt(this.firstValue(item, ['category_name', 'category_Name', 'categoryName', 'category'])),
+          }));
+        }
+      },
+      error: (err) => console.error('Failed to load categories', err),
+    });
+  }
+
+  loadQualificationAndOccupation(): void {
+    this.masterService.getQualificationList().subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.qualifications = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['qualification_id', 'qualification_Id', 'qualificationId', 'QualificationID'])),
+            name: this.decrypt(this.firstValue(item, ['qualification_name', 'qualification_Name', 'qualificationName'])),
+          }));
+        }
+      },
+      error: (err) => console.error('Failed to load qualifications', err),
+    });
+
+    this.masterService.getOccupationList().subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.occupations = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['occupation_id', 'occupation_Id', 'occupationId', 'OccupationID'])),
+            name: this.decrypt(this.firstValue(item, ['occupation_name', 'occupation_Name', 'occupationName'])),
+          }));
+        }
+      },
+      error: (err) => console.error('Failed to load occupations', err),
+    });
+  }
+
+  loadInterests(): void {
+    this.masterService.getInterestList().subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.interests = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['interest_id', 'interest_Id', 'interestId', 'InterestID'])),
+            name: this.decrypt(this.firstValue(item, ['interest_name', 'interest_Name', 'interestName'])),
+          }));
+        }
+      },
+      error: (err) => console.error('Failed to load interests', err),
+    });
+  }
+
+ 
+  onDistrictChange(): void {
+    this.registerForm.patchValue({ blockCode: '', panchayatCode: '', villCode: '' });
+    this.blocks = [];
+    this.panchayats = [];
+    this.villages = [];
+    const code = this.registerForm.controls.distCode.value;
+    if (code) {
+      this.loadBlocks(code);
+    }
+  }
+
+  onBlockChange(): void {
+    this.registerForm.patchValue({ panchayatCode: '', villCode: '' });
+    this.panchayats = [];
+    this.villages = [];
+    const code = this.registerForm.controls.blockCode.value;
+    if (code) {
+      this.loadPanchayats(code);
+    }
+  }
+
+  onPanchayatChange(): void {
+    this.registerForm.patchValue({ villCode: '' });
+    this.villages = [];
+    const code = this.registerForm.controls.panchayatCode.value;
+    if (code) {
+      this.loadVillages(code);
+    }
+  }
+
+  register(): void {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
@@ -131,7 +349,7 @@ register(): void {
       mobileNo: v.mobileNo!,
       password: v.password!,
       email: v.email ?? '',
-      interests: v.interests ?? [],
+      interests: v.interests ? [Number(v.interests)] : [],
       distCode: Number(v.distCode ?? 0),
       blockCode: Number(v.blockCode ?? 0),
       panchayatCode: Number(v.panchayatCode ?? 0),
@@ -150,8 +368,14 @@ register(): void {
     this.registerService.register(payload).subscribe({
       next: (res) => {
         this.loading = false;
-        if (res.status) {
-          const token = res.token || res.authToken || 'otp-registered';
+       
+        const ok = res.status === true || res.success === true;
+        if (ok) {
+          const token =
+            res.token ||
+            res.authToken ||
+            (res.data && (res.data.token || res.data.authToken)) ||
+            'otp-registered';
           localStorage.setItem('token', token);
           localStorage.setItem('Mobile', payload.mobileNo);
           localStorage.setItem('UserName', payload.name);

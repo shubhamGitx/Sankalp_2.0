@@ -20,7 +20,8 @@ export interface UserRegisterRequest {
 }
 
 export interface RegisterResponse {
-  status: boolean;
+  status?: boolean;
+  success?: boolean;
   message: string;
   token?: string | null;
   authToken?: string | null;

@@ -143,6 +143,24 @@
   box-shadow: 0 0 0 3px rgba(0, 145, 186, 0.15);
 }
 
+.field select {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-size: 14px;
+  color: #1f2937;
+  background-color: #ffffff;
+  outline: none;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.field select:focus {
+  border-color: #0091ba;
+  box-shadow: 0 0 0 3px rgba(0, 145, 186, 0.15);
+}
+
 .error-msg {
   display: block;
   margin-top: 5px;
@@ -162,37 +180,6 @@
   margin-top: 6px;
   font-size: 11px;
   color: #98a2b3;
-}
-
-/* =============== INTERESTS =============== */
-.interest-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.interest-item {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 7px;
-  background: #f8fafc;
-  font-size: 13px;
-  color: #334155;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.interest-item:hover {
-  border-color: #0091ba;
-}
-
-.interest-item input {
-  width: 15px;
-  height: 15px;
-  accent-color: #0091ba;
 }
 
 /* =============== SUBMIT =============== */

@@ -14,7 +14,7 @@ export class RegisterService {
 
   private http = inject(HttpClient);
 
-  private apiUrl = '/api/Auth/Register';
+  private apiUrl = '/api/User/Register';
 
   register(request: UserRegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(this.apiUrl, request);
