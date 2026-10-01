@@ -143,21 +143,31 @@
           </svg>
         </a>
 
-        <!-- LOGIN TEXT LINK -->
-        <a routerLink="/login" class="nav-text-login" (click)="closeMobileMenu()">
-          Login
-        </a>
-
-        <!-- OFFICIAL LOGIN / REGISTER GRADIENT GREEN CTA BUTTON -->
-        <button
-          type="button"
+        <!-- LOGIN GREEN CTA BUTTON -->
+        <a
+          routerLink="/login"
           class="gradient-green-cta-btn"
-          (click)="openOtpLogin()">
-          <span>Official Login</span>
+          (click)="closeMobileMenu()">
+          <span>Login</span>
           <svg class="cta-arrow-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
+        </a>
+
+        <button
+          type="button"
+          class="nav-register"
+          (click)="openOtpLogin()">
+          Register
+        </button>
+
+
+        <button
+          type="button"
+          class="nav-official-login"
+          title="Official Login">
+          Official Login
         </button>
 
         <!-- MOBILE HAMBURGER TOGGLE -->

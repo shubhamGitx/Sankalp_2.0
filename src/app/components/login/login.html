@@ -100,7 +100,10 @@
             <input type="checkbox" formControlName="rememberMe">
             <span>Remember me</span>
           </label>
-          <a href="javascript:void(0)" class="forgot-link">Forgot Password?</a>
+          <div class="aux-links-right">
+            <a href="javascript:void(0)" class="forgot-link">Forgot Password?</a>
+            <button type="button" class="register-link" (click)="goToRegister()">Register</button>
+          </div>
         </div>
 
         <div class="form-action-row">

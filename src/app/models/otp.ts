@@ -13,6 +13,7 @@ export interface VerifyOtpRequest {
 
 export interface OtpResponse {
   success: boolean;
+  status?: boolean;
   userExists?: boolean;
   message: string;
   token?: string | null;

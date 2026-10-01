@@ -24,6 +24,10 @@ export class Login {
     this.showPassword = !this.showPassword;
   }
 
+  goToRegister(): void {
+    this.router.navigate(['/']);
+  }
+
   ngOnInit() {
   this.generateCaptcha();
 }

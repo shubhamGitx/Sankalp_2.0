@@ -129,32 +129,6 @@
           </svg>
         </div>
 
-        <div class="mini-kpi-row">
-          <div class="kpi-capsule">
-            <div class="kpi-icon-wrap icon-purple">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            </div>
-            <div class="kpi-info"><span class="kpi-label">District</span><span class="kpi-val">{{ summary.totalDistricts }}</span></div>
-          </div>
-          <div class="kpi-capsule">
-            <div class="kpi-icon-wrap icon-purple">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-            </div>
-            <div class="kpi-info"><span class="kpi-label">Block</span><span class="kpi-val">{{ summary.totalBlocks }}</span></div>
-          </div>
-          <div class="kpi-capsule">
-            <div class="kpi-icon-wrap icon-cyan">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            </div>
-            <div class="kpi-info"><span class="kpi-label">Panchayat</span><span class="kpi-val">{{ summary.totalPanchayats }}</span></div>
-          </div>
-          <div class="kpi-capsule">
-            <div class="kpi-icon-wrap icon-orange">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-            </div>
-            <div class="kpi-info"><span class="kpi-label">Beneficiaries</span><span class="kpi-val">{{ summary.totalBeneficiaries | number }}</span></div>
-          </div>
-        </div>
       </div>
 
       <!-- Distribution Ratio Card -->
@@ -270,36 +244,6 @@
             <div class="grad-value-wrap">
               <h2 class="grad-count">{{ summary.totalBeneficiaries | number }}</h2>
               <span class="grad-note">Beneficiaries</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="gradient-card card-teal">
-        <div class="grad-card-body">
-          <div class="grad-card-header">
-            <span class="grad-title">Geographic Coverage</span>
-            <span class="grad-subtext">Districts</span>
-          </div>
-          <div class="grad-card-content">
-            <div class="grad-value-wrap">
-              <h2 class="grad-count">{{ summary.totalDistricts }}</h2>
-              <span class="grad-note">Districts</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="gradient-card card-coral">
-        <div class="grad-card-body">
-          <div class="grad-card-header">
-            <span class="grad-title">Blocks Covered</span>
-            <span class="grad-subtext">Across Bihar</span>
-          </div>
-          <div class="grad-card-content">
-            <div class="grad-value-wrap">
-              <h2 class="grad-count">{{ summary.totalBlocks }}</h2>
-              <span class="grad-note">Blocks</span>
             </div>
           </div>
         </div>

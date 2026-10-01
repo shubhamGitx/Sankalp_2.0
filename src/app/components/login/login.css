@@ -291,6 +291,31 @@
   text-decoration: underline;
 }
 
+/* Right-side cluster: Forgot password + Register button */
+.aux-links-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.register-link {
+  border: 1.5px solid #2055cb;
+  background: #ffffff;
+  color: #2055cb;
+  font-weight: 600;
+  font-size: 11px;
+  font-family: inherit;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.register-link:hover {
+  background: #2055cb;
+  color: #ffffff;
+}
+
 
 
 .form-action-row {

@@ -79,34 +79,6 @@
 .chart-container { width: 100%; height: 180px; }
 .area-chart-svg { width: 100%; height: 100%; overflow: visible; }
 
-.mini-kpi-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid #f1f5f9;
-}
-@media (max-width: 640px) { .mini-kpi-row { grid-template-columns: repeat(2, 1fr); } }
-
-.kpi-capsule { display: flex; align-items: center; gap: 10px; }
-.kpi-icon-wrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.icon-pink { background: #ffe4ee; color: #ff3b7b; }
-.icon-purple { background: #ede9fe; color: #6c5ce7; }
-.icon-cyan { background: #e0f2fe; color: #0284c7; }
-.icon-orange { background: #ffedd5; color: #ff7a59; }
-.kpi-info { display: flex; flex-direction: column; }
-.kpi-label { font-size: 11px; color: #8a92a6; font-weight: 500; }
-.kpi-val { font-size: 14px; font-weight: 700; color: #1e293b; }
-
 .traffic-card { display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
 .traffic-card .card-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 
@@ -145,10 +117,10 @@
 
 .gradient-cards-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
-@media (max-width: 1200px) { .gradient-cards-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1200px) { .gradient-cards-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 768px) { .gradient-cards-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 480px) { .gradient-cards-grid { grid-template-columns: 1fr; } }
 

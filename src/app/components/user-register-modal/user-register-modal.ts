@@ -79,7 +79,11 @@ export class UserRegisterModal implements OnChanges {
       Validators.required,
       Validators.minLength(6),
     ]),
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.email,
+      Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),
+    ]),
     interests: new FormControl<string[]>([], Validators.required),
     distCode: new FormControl('', Validators.required),
     blockCode: new FormControl('', Validators.required),

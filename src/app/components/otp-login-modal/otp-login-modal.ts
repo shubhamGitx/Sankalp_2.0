@@ -128,10 +128,9 @@ export class OtpLoginModal implements OnChanges {
     const mobile = this.mobileForm.value.mobile!;
 
     this.mobileNo = mobile;
-    this.step = 'otp';
     this.loading = true;
     this.errorMessage = '';
-    this.successMessage = 'Sending OTP…';
+    this.successMessage = '';
     this.clearTimer();
 
     const request: SendOtpRequest = {
@@ -143,7 +142,16 @@ export class OtpLoginModal implements OnChanges {
     this.otpService.sendOtp(request).subscribe({
       next: (res) => {
         this.loading = false;
-        if (res.success) {
+
+        if (res.userExists) {
+          this.step = 'mobile';
+          this.successMessage = '';
+          this.errorMessage = res.message || 'User already exists.';
+          return;
+        }
+
+        if (res.success || res.status) {
+          this.step = 'otp';
           this.successMessage = res.message || 'OTP sent to your mobile number.';
           this.startTimer(60);
         } else {
@@ -209,6 +217,11 @@ export class OtpLoginModal implements OnChanges {
       next: (res) => {
         this.loading = false;
         if (res.success) {
+          if (res.userExists) {
+            this.clearTimer();
+            this.successMessage = res.message || 'User already exists.';
+            return;
+          }
           this.clearTimer();
           this.verified.emit({ mobileNo: this.mobileNo, deviceId: this.deviceId });
           this.closeModal();

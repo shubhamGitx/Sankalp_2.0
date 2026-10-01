@@ -119,6 +119,12 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: none;       
+  -ms-overflow-style: none;     
+}
+
+.nav-list::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-item {

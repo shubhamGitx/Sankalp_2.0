@@ -75,7 +75,9 @@ export class Dashboard implements OnInit {
       next: (res) => {
         this.blocksLoading = false;
         if (res && res.status && res.data) {
-          this.blocksList = res.data;
+          this.blocksList = [...res.data].sort((a, b) =>
+            a.blockName.localeCompare(b.blockName, undefined, { sensitivity: 'base' })
+          );
         }
         this.cdr.detectChanges();
       },
@@ -257,15 +259,26 @@ export class Dashboard implements OnInit {
       list = list.filter(d => d.urbanCount > 0);
     }
 
-    return list;
+    // Order by District Name
+    return [...list].sort((a, b) =>
+      a.districtName.localeCompare(b.districtName, undefined, { sensitivity: 'base' })
+    );
   }
 
   get filteredRecentApplicants(): RecentApplicant[] {
+    let list: RecentApplicant[];
     if (!this.summary?.recentApplicants) return [];
+
     if (this.selectedAreaFilter === 'ALL') {
-      return this.summary.recentApplicants;
+      list = this.summary.recentApplicants;
+    } else {
+      const targetArea = this.selectedAreaFilter === 'RURAL' ? 'Rural' : 'Urban';
+      list = this.summary.recentApplicants.filter(a => a.areaType === targetArea);
     }
-    const targetArea = this.selectedAreaFilter === 'RURAL' ? 'Rural' : 'Urban';
-    return this.summary.recentApplicants.filter(a => a.areaType === targetArea);
+
+    // Order by Applicant Name
+    return [...list].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+    );
   }
 }
