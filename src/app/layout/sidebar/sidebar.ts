@@ -35,6 +35,14 @@ export class Sidebar {
     this.router.navigate(['/block']);
   }
 
+  openBroadcast() {
+    this.router.navigate(['/broadcast']);
+  }
+
+  openInterestMessage() {
+    this.router.navigate(['/interest-message']);
+  }
+
   openGallery() {
     this.router.navigate(['/gallery-admin']);
   }
@@ -44,4 +52,3 @@ export class Sidebar {
     this.router.navigate(['/login']);
   }
 }
-

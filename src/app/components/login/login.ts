@@ -4,11 +4,17 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angula
 import { Login as LoginService } from '../../services/login';
 import { CryptoService } from '../../services/crypto.service';
 import { LoginRequest } from '../../models/login-request';
+import { OtpLoginModal } from '../otp-login-modal/otp-login-modal';
+import { UserRegisterModal } from '../user-register-modal/user-register-modal';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    OtpLoginModal,
+    UserRegisterModal
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css',
   
@@ -20,12 +26,34 @@ export class Login {
   captchaText = '';
   showPassword = false;
 
+  isOtpModalOpen = false;
+  isRegisterModalOpen = false;
+  registerContext = { mobileNo: '', deviceId: '' };
+
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
   goToRegister(): void {
-    this.router.navigate(['/']);
+    this.openOtpModal();
+  }
+
+  openOtpModal(): void {
+    this.isOtpModalOpen = true;
+  }
+
+  closeOtpModal(): void {
+    this.isOtpModalOpen = false;
+  }
+
+  onOtpVerified(data: { mobileNo: string; deviceId: string }): void {
+    this.isOtpModalOpen = false;
+    this.registerContext = data;
+    this.isRegisterModalOpen = true;
+  }
+
+  closeRegisterModal(): void {
+    this.isRegisterModalOpen = false;
   }
 
   ngOnInit() {

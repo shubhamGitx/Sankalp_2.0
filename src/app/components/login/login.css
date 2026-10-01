@@ -16,14 +16,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 24px;
+  padding: 48px 24px 64px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background:
-    radial-gradient(circle at 100% 0%, #a4beff 0%, rgba(164, 190, 255, 0.45) 30%, transparent 60%),
-    radial-gradient(circle at 0% 100%, #a4beff 0%, rgba(164, 190, 255, 0.45) 30%, transparent 60%),
-    #edf3fd;
+  background: linear-gradient(135deg, #064e6b 0%, #087f9e 48%, #138808 100%);
 }
 
+/* Ambient Frosted Organic Blobs */
 .ambient-blob {
   position: absolute;
   pointer-events: none;
@@ -36,9 +34,9 @@
   top: -160px;
   right: -130px;
   border-radius: 50% 40% 60% 50% / 60% 50% 50% 40%;
-  background: radial-gradient(circle, #8eaeff 0%, #b2cbff 65%, transparent 100%);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(8, 127, 158, 0.2) 65%, transparent 100%);
   opacity: 0.85;
-  filter: blur(4px);
+  filter: blur(8px);
 }
 
 .blob-bottom-left {
@@ -47,46 +45,43 @@
   bottom: -150px;
   left: -130px;
   border-radius: 40% 60% 50% 60% / 50% 40% 60% 50%;
-  background: radial-gradient(circle, #8eaeff 0%, #b2cbff 65%, transparent 100%);
+  background: radial-gradient(circle, rgba(19, 136, 8, 0.35) 0%, rgba(6, 78, 107, 0.25) 65%, transparent 100%);
   opacity: 0.85;
-  filter: blur(4px);
+  filter: blur(8px);
 }
 
 .blob-top-left {
-  width: 240px;
-  height: 240px;
+  width: 260px;
+  height: 260px;
   top: 20px;
   left: 40px;
-  background: radial-gradient(circle, rgba(164, 190, 255, 0.4), transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 70%);
 }
 
 .blob-bottom-right {
-  width: 280px;
-  height: 280px;
+  width: 300px;
+  height: 300px;
   bottom: 20px;
   right: 60px;
-  background: radial-gradient(circle, rgba(164, 190, 255, 0.4), transparent 70%);
+  background: radial-gradient(circle, rgba(0, 245, 196, 0.2), transparent 70%);
 }
-
 
 
 .reerui-card {
   width: min(1080px, 100%);
   min-height: 560px;
   background: #ffffff;
-  border: 2.5px solid #2055cb;
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
   border-radius: 28px;
   box-shadow:
-    0 24px 60px rgba(32, 85, 203, 0.14),
-    0 4px 20px rgba(0, 0, 0, 0.04);
+    0 24px 64px rgba(6, 78, 107, 0.32),
+    0 6px 20px rgba(0, 0, 0, 0.1);
   display: grid;
   grid-template-columns: 1.05fr 1.65fr;
   position: relative;
   z-index: 2;
   overflow: hidden;
 }
-
-
 
 .card-left-col {
   padding: 48px 46px 42px 48px;
@@ -96,15 +91,47 @@
   background: #ffffff;
 }
 
+/* Brand Tag with Icon */
 .brand-tag {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1.8px;
-  color: #1e293b;
-  margin-bottom: 22px;
-  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  user-select: none;
 }
 
+.brand-tag-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(19, 136, 8, 0.2);
+  box-shadow: 0 2px 6px rgba(6, 78, 107, 0.12);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.brand-tag-badge img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.brand-tag-title {
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: 1.2px;
+  color: #064e6b;
+}
+
+.brand-tag-accent {
+  color: #138808;
+}
+
+/* Headings */
 .login-intro {
   margin-bottom: 22px;
 }
@@ -112,20 +139,20 @@
 .login-heading {
   font-size: 32px;
   font-weight: 800;
-  color: #1e293b;
+  color: #064e6b;
   margin: 0 0 6px 0;
   letter-spacing: -0.5px;
 }
 
 .login-subtext {
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 500;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0;
   line-height: 1.5;
 }
 
-
+/* Form */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -156,7 +183,7 @@
 }
 
 .input-line-wrapper:focus-within {
-  border-bottom-color: #2055cb;
+  border-bottom-color: #138808;
 }
 
 .input-line-wrapper input {
@@ -189,11 +216,10 @@
 }
 
 .eye-toggle-btn:hover {
-  color: #2055cb;
+  color: #138808;
 }
 
-
-
+/* CAPTCHA Section */
 .captcha-form-field {
   margin-top: 2px;
 }
@@ -208,15 +234,15 @@
 .captcha-badge {
   flex: 1;
   height: 38px;
-  border-radius: 6px;
+  border-radius: 8px;
   background: repeating-linear-gradient(
     45deg,
-    #eef4fe,
-    #eef4fe 6px,
-    #e4effd 6px,
-    #e4effd 12px
+    #f0fdf4,
+    #f0fdf4 6px,
+    #e6f7ed 6px,
+    #e6f7ed 12px
   );
-  border: 1px dashed #6892f3;
+  border: 1px dashed #86efac;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -228,7 +254,7 @@
   font-size: 20px;
   font-weight: 800;
   letter-spacing: 5px;
-  color: #1d4ed8;
+  color: #166534;
   transform: rotate(-1.5deg);
   display: inline-block;
 }
@@ -236,10 +262,10 @@
 .captcha-refresh-btn {
   width: 38px;
   height: 38px;
-  border-radius: 6px;
-  border: 1px solid #dbeafe;
-  background: #eff6ff;
-  color: #2563eb;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #16a34a;
   font-size: 20px;
   font-weight: 700;
   cursor: pointer;
@@ -250,13 +276,13 @@
 }
 
 .captcha-refresh-btn:hover {
-  background: #2563eb;
+  background: #138808;
   color: #ffffff;
+  border-color: #138808;
   transform: rotate(45deg);
 }
 
-
-
+/* Auxiliary Row */
 .form-aux-row {
   display: flex;
   justify-content: space-between;
@@ -275,33 +301,34 @@
 }
 
 .remember-label input {
-  accent-color: #2055cb;
+  accent-color: #138808;
   width: 13px;
   height: 13px;
   cursor: pointer;
 }
 
-.forgot-link {
-  color: #2055cb;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.forgot-link:hover {
-  text-decoration: underline;
-}
-
-/* Right-side cluster: Forgot password + Register button */
 .aux-links-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+}
+
+.forgot-link {
+  color: #087f9e;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.forgot-link:hover {
+  color: #138808;
+  text-decoration: underline;
 }
 
 .register-link {
-  border: 1.5px solid #2055cb;
+  border: 1.5px solid #138808;
   background: #ffffff;
-  color: #2055cb;
+  color: #138808;
   font-weight: 600;
   font-size: 11px;
   font-family: inherit;
@@ -312,42 +339,51 @@
 }
 
 .register-link:hover {
-  background: #2055cb;
+  background: #138808;
   color: #ffffff;
 }
 
-
-
+/* Action Button */
 .form-action-row {
   margin-top: 6px;
 }
 
 .reerui-login-btn {
-  background: #2055cb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #138808 0%, #087f9e 100%);
   color: #ffffff;
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 1px;
-  padding: 10px 38px;
-  border-radius: 6px;
+  letter-spacing: 0.8px;
+  padding: 11px 36px;
+  border-radius: 9999px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(32, 85, 203, 0.4);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-  display: inline-block;
+  box-shadow: 0 4px 16px rgba(19, 136, 8, 0.35);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, background 0.2s ease;
+  font-family: inherit;
 }
 
 .reerui-login-btn:hover {
-  background: #1742a6;
+  background: linear-gradient(135deg, #0e6b06 0%, #06657e 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(32, 85, 203, 0.5);
+  box-shadow: 0 6px 20px rgba(19, 136, 8, 0.45);
+}
+
+.login-btn-arrow {
+  transition: transform 0.2s ease;
+}
+
+.reerui-login-btn:hover .login-btn-arrow {
+  transform: translateX(3px);
 }
 
 .reerui-login-btn:active {
   transform: translateY(0);
 }
-
-
 
 .field-error {
   color: #ef4444;
@@ -356,15 +392,15 @@
   margin-top: 3px;
 }
 
-
-
+/* Right Illustration Column */
 .card-right-col {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px 20px;
   position: relative;
-  background: #ffffff;
+  background: linear-gradient(145deg, #f0fdf4 0%, #f8fafc 55%, #e0f2fe 100%);
+  border-left: 1px solid rgba(19, 136, 8, 0.08);
   overflow: hidden;
 }
 
@@ -372,11 +408,10 @@
   width: 100%;
   height: 100%;
   max-height: 480px;
-  filter: drop-shadow(0 8px 18px rgba(32, 85, 203, 0.08));
+  filter: drop-shadow(0 8px 20px rgba(6, 78, 107, 0.1));
 }
 
-
-
+/* Responsive */
 @media (max-width: 960px) {
   .reerui-card {
     grid-template-columns: 1fr;
@@ -403,7 +438,7 @@
 
 @media (max-width: 480px) {
   .login-page {
-    padding: 16px;
+    padding: 24px 16px;
   }
 
   .card-left-col {
