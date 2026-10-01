@@ -29,21 +29,36 @@
             </div>
             <div class="field">
               <label for="mobileNo">Mobile No. *</label>
-              <input id="mobileNo" formControlName="mobileNo" type="tel" inputmode="numeric" maxlength="10" />
+              <input id="mobileNo" formControlName="mobileNo" type="tel" inputmode="numeric" maxlength="10" readonly />
+              <small class="hint">Verified via OTP</small>
               @if (registerForm.controls.mobileNo.touched && registerForm.controls.mobileNo.invalid) {
                 <small class="error-msg">Enter a valid 10-digit mobile number</small>
               }
             </div>
             <div class="field">
               <label for="password">Password *</label>
-              <input id="password" formControlName="password" type="password" placeholder="Min. 6 characters" />
+              <input
+                id="password"
+                formControlName="password"
+                type="password"
+                placeholder="Min. 6 characters"
+                autocomplete="new-password"
+                [readonly]="passwordAutoLocked"
+                (focus)="unlockPassword()" />
               @if (registerForm.controls.password.touched && registerForm.controls.password.invalid) {
                 <small class="error-msg">Password must be at least 6 characters</small>
               }
             </div>
             <div class="field">
-              <label for="email">Email</label>
-              <input id="email" formControlName="email" type="email" placeholder="you@example.com" />
+              <label for="email">Email *</label>
+              <input
+                id="email"
+                formControlName="email"
+                type="email"
+                placeholder="you@example.com"
+                autocomplete="off"
+                [readonly]="emailAutoLocked"
+                (focus)="unlockEmail()" />
               @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
                 <small class="error-msg">Enter a valid email</small>
               }
@@ -56,54 +71,85 @@
           <h3>Location Details</h3>
           <div class="rego-grid">
             <div class="field">
-              <label for="distCode">District</label>
-              <select id="distCode" formControlName="distCode" (change)="onDistrictChange()">
-                <option value="" disabled>Select District</option>
-                @for (d of districts; track d.code) {
-                  <option [value]="d.code">{{ d.name }}</option>
-                }
-              </select>
+              <label for="distCode">District *</label>
+              <app-select-dropdown
+                id="distCode"
+                formControlName="distCode"
+                [options]="districts"
+                placeholder="Select District"
+                (changed)="onDistrictChange()">
+              </app-select-dropdown>
+              @if (registerForm.controls.distCode.touched && registerForm.controls.distCode.invalid) {
+                <small class="error-msg">Please select a district</small>
+              }
             </div>
             <div class="field">
-              <label for="blockCode">Block</label>
-              <select id="blockCode" formControlName="blockCode" (change)="onBlockChange()">
-                <option value="" disabled>Select Block</option>
-                @for (b of blocks; track b.code) {
-                  <option [value]="b.code">{{ b.name }}</option>
-                }
-              </select>
+              <label for="blockCode">Block *</label>
+              <app-select-dropdown
+                id="blockCode"
+                formControlName="blockCode"
+                [options]="blocks"
+                placeholder="Select Block"
+                (changed)="onBlockChange()">
+              </app-select-dropdown>
+              @if (registerForm.controls.blockCode.touched && registerForm.controls.blockCode.invalid) {
+                <small class="error-msg">Please select a block</small>
+              }
             </div>
             <div class="field">
-              <label for="panchayatCode">Panchayat</label>
-              <select id="panchayatCode" formControlName="panchayatCode" (change)="onPanchayatChange()">
-                <option value="" disabled>Select Panchayat</option>
-                @for (p of panchayats; track p.code) {
-                  <option [value]="p.code">{{ p.name }}</option>
-                }
-              </select>
+              <label for="panchayatCode">Panchayat *</label>
+              <app-select-dropdown
+                id="panchayatCode"
+                formControlName="panchayatCode"
+                [options]="panchayats"
+                placeholder="Select Panchayat"
+                (changed)="onPanchayatChange()">
+              </app-select-dropdown>
+              @if (registerForm.controls.panchayatCode.touched && registerForm.controls.panchayatCode.invalid) {
+                <small class="error-msg">Please select a panchayat</small>
+              }
             </div>
             <div class="field">
-              <label for="areaType">Area Type</label>
-              <select id="areaType" formControlName="areaType">
-                <option value="" disabled>Select Area Type</option>
-                @for (a of areaTypeOptions; track a.code) {
-                  <option [value]="a.code">{{ a.label }}</option>
+              <label for="areaType">Area Type *</label>
+              <app-select-dropdown
+                id="areaType"
+                formControlName="areaType"
+                [options]="areaTypeOptions"
+                placeholder="Select Area Type"
+                (changed)="onAreaTypeChange()">
+              </app-select-dropdown>
+              @if (registerForm.controls.areaType.touched && registerForm.controls.areaType.invalid) {
+                <small class="error-msg">Please select an area type</small>
+              }
+            </div>
+            @if (registerForm.controls.areaType.value === 'R') {
+              <div class="field">
+                <label for="villCode">Village *</label>
+                <app-select-dropdown
+                  id="villCode"
+                  formControlName="villCode"
+                  [options]="villages"
+                  placeholder="Select Village">
+                </app-select-dropdown>
+                @if (registerForm.controls.villCode.touched && registerForm.controls.villCode.invalid) {
+                  <small class="error-msg">Please select a village</small>
                 }
-              </select>
-            </div>
-            <div class="field">
-              <label for="villCode">Village</label>
-              <select id="villCode" formControlName="villCode">
-                <option value="" disabled>Select Village</option>
-                @for (v of villages; track v.code) {
-                  <option [value]="v.code">{{ v.name }}</option>
+              </div>
+            }
+            @if (registerForm.controls.areaType.value === 'U') {
+              <div class="field">
+                <label for="wardCode">Ward Code *</label>
+                <app-select-dropdown
+                  id="wardCode"
+                  formControlName="wardCode"
+                  [options]="wards"
+                  placeholder="Select Ward">
+                </app-select-dropdown>
+                @if (registerForm.controls.wardCode.touched && registerForm.controls.wardCode.invalid) {
+                  <small class="error-msg">Please select a ward</small>
                 }
-              </select>
-            </div>
-            <div class="field">
-              <label for="wardCode">Ward Code</label>
-              <input id="wardCode" formControlName="wardCode" type="text" />
-            </div>
+              </div>
+            }
           </div>
         </div>
 <!-- ============ DEMOGRAPHICS ============ -->
@@ -111,49 +157,64 @@
           <h3>Demographics</h3>
           <div class="rego-grid">
             <div class="field">
-              <label for="genderCode">Gender</label>
-              <select id="genderCode" formControlName="genderCode">
-                <option value="" disabled>Select Gender</option>
-                @for (g of genders; track g.code) {
-                  <option [value]="g.code">{{ g.name }}</option>
-                }
-              </select>
+              <label for="genderCode">Gender *</label>
+              <app-select-dropdown
+                id="genderCode"
+                formControlName="genderCode"
+                [options]="genders"
+                placeholder="Select Gender">
+              </app-select-dropdown>
+              @if (registerForm.controls.genderCode.touched && registerForm.controls.genderCode.invalid) {
+                <small class="error-msg">Please select your gender</small>
+              }
             </div>
             <div class="field">
-              <label for="ageGroupId">Age Group</label>
-              <select id="ageGroupId" formControlName="ageGroupId">
-                <option value="" disabled>Select Age Group</option>
-                @for (a of ageGroups; track a.code) {
-                  <option [value]="a.code">{{ a.name }}</option>
-                }
-              </select>
+              <label for="ageGroupId">Age Group *</label>
+              <app-select-dropdown
+                id="ageGroupId"
+                formControlName="ageGroupId"
+                [options]="ageGroups"
+                placeholder="Select Age Group">
+              </app-select-dropdown>
+              @if (registerForm.controls.ageGroupId.touched && registerForm.controls.ageGroupId.invalid) {
+                <small class="error-msg">Please select your age group</small>
+              }
             </div>
             <div class="field">
-              <label for="categoryId">Category</label>
-              <select id="categoryId" formControlName="categoryId">
-                <option value="" disabled>Select Category</option>
-                @for (c of categories; track c.code) {
-                  <option [value]="c.code">{{ c.name }}</option>
-                }
-              </select>
+              <label for="categoryId">Category *</label>
+              <app-select-dropdown
+                id="categoryId"
+                formControlName="categoryId"
+                [options]="categories"
+                placeholder="Select Category">
+              </app-select-dropdown>
+              @if (registerForm.controls.categoryId.touched && registerForm.controls.categoryId.invalid) {
+                <small class="error-msg">Please select a category</small>
+              }
             </div>
             <div class="field">
-              <label for="qualificationId">Qualification</label>
-              <select id="qualificationId" formControlName="qualificationId">
-                <option value="" disabled>Select Qualification</option>
-                @for (q of qualifications; track q.code) {
-                  <option [value]="q.code">{{ q.name }}</option>
-                }
-              </select>
+              <label for="qualificationId">Qualification *</label>
+              <app-select-dropdown
+                id="qualificationId"
+                formControlName="qualificationId"
+                [options]="qualifications"
+                placeholder="Select Qualification">
+              </app-select-dropdown>
+              @if (registerForm.controls.qualificationId.touched && registerForm.controls.qualificationId.invalid) {
+                <small class="error-msg">Please select your qualification</small>
+              }
             </div>
             <div class="field">
-              <label for="occupationId">Occupation</label>
-              <select id="occupationId" formControlName="occupationId">
-                <option value="" disabled>Select Occupation</option>
-                @for (o of occupations; track o.code) {
-                  <option [value]="o.code">{{ o.name }}</option>
-                }
-              </select>
+              <label for="occupationId">Occupation *</label>
+              <app-select-dropdown
+                id="occupationId"
+                formControlName="occupationId"
+                [options]="occupations"
+                placeholder="Select Occupation">
+              </app-select-dropdown>
+              @if (registerForm.controls.occupationId.touched && registerForm.controls.occupationId.invalid) {
+                <small class="error-msg">Please select your occupation</small>
+              }
             </div>
           </div>
         </div>
@@ -162,15 +223,19 @@
         <div class="rego-section">
           <h3>Interests</h3>
           <div class="field">
-            <label for="interest">Interest</label>
-            <select id="interest" formControlName="interests">
-              <option value="" disabled>Select Interest</option>
-              @for (opt of interests; track opt.code) {
-                <option [value]="opt.code">{{ opt.name }}</option>
-              }
-            </select>
+            <label for="interest">Interest *</label>
+            <app-select-dropdown
+              id="interest"
+              formControlName="interests"
+              [options]="interests"
+              [multiple]="true"
+              placeholder="Select Interest(s)">
+            </app-select-dropdown>
+            @if (registerForm.controls.interests.touched && registerForm.controls.interests.invalid) {
+              <small class="error-msg">Please select at least one interest</small>
+            }
           </div>
-          <small class="hint">Select the interest that applies to you.</small>
+          <small class="hint">Select one or more interests that apply to you.</small>
         </div>
 
         @if (errorMessage) {

@@ -1,0 +1,41 @@
+<div class="sd-wrap" [class.sd-open]="isOpen" [class.sd-disabled]="disabled">
+  <button
+    type="button"
+    class="sd-trigger"
+    [attr.id]="id || null"
+    [disabled]="disabled"
+    [attr.aria-expanded]="isOpen"
+    aria-haspopup="listbox"
+    (click)="toggle()">
+    <span class="sd-value" [class.sd-placeholder]="!selectedLabel">
+      {{ selectedLabel || placeholder }}
+    </span>
+    <svg class="sd-chevron" viewBox="0 0 24 24" width="16" height="16"
+         fill="none" stroke="currentColor" stroke-width="2.5"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+
+  @if (isOpen) {
+    <div class="sd-panel" [class.sd-drop-up]="dropUp" role="listbox">
+      @for (opt of options; track opt.code) {
+        <button
+          type="button"
+          class="sd-option"
+          [class.sd-active]="isActive(opt.code)"
+          role="option"
+          [attr.aria-selected]="isActive(opt.code)"
+          (click)="select(opt)">
+          @if (multiple) {
+            <span class="sd-check" [class.sd-check-on]="isActive(opt.code)" aria-hidden="true">&#10003;</span>
+          }
+          {{ opt.name }}
+        </button>
+      }
+      @if (!options.length) {
+        <div class="sd-empty">No options available</div>
+      }
+    </div>
+  }
+</div>

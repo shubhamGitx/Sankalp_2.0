@@ -1,0 +1,142 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.sd-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.sd-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background-color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1f2937;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.sd-trigger:focus,
+.sd-open .sd-trigger {
+  border-color: #0091ba;
+  box-shadow: 0 0 0 3px rgba(0, 145, 186, 0.15);
+}
+
+.sd-value {
+  flex: 1 1 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sd-placeholder {
+  color: #94a3b8;
+}
+
+.sd-chevron {
+  flex: 0 0 auto;
+  color: #64748b;
+  transition: transform 0.2s;
+}
+
+.sd-open .sd-chevron {
+  transform: rotate(180deg);
+}
+
+/* ---- option panel (fixed height + scroll, stays inside the field) ---- */
+.sd-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+  box-sizing: border-box;
+}
+
+.sd-panel.sd-drop-up {
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+
+.sd-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1f2937;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sd-option:hover {
+  background: #f1f5f9;
+}
+
+.sd-option.sd-active {
+  background: #007fa5;
+  color: #ffffff;
+}
+
+/* ---- multi-select mode ---- */
+.sd-check {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1;
+  color: transparent;
+  background: #ffffff;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.sd-option.sd-active .sd-check,
+.sd-check.sd-check-on {
+  background: #007fa5;
+  border-color: #007fa5;
+  color: #ffffff;
+}
+
+.sd-empty {
+  padding: 9px 10px;
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.sd-disabled .sd-trigger {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}

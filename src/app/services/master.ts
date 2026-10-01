@@ -43,6 +43,13 @@ export class MasterService {
     });
   }
 
+  getWardList(panchayatCode: string): Observable<any> {
+    return this.http.post<any>('/api/Master/GetWardList', {
+      clientKey: this.getClientKey(),
+      panchayatCode: this.encryptField(panchayatCode),
+    });
+  }
+
   // ----------------------------------------------------------
   // Demographics
   // ----------------------------------------------------------

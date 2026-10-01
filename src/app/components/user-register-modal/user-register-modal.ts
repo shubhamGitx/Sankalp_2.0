@@ -21,11 +21,12 @@ import { BlockService } from '../../services/block';
 import { MasterService } from '../../services/master';
 import { CryptoService } from '../../services/crypto.service';
 import { UserRegisterRequest } from '../../models/register';
+import { SelectDropdownComponent } from '../select-dropdown/select-dropdown';
 
 @Component({
   selector: 'app-user-register-modal',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, SelectDropdownComponent],
   templateUrl: './user-register-modal.html',
   styleUrl: './user-register-modal.css',
 })
@@ -46,11 +47,14 @@ export class UserRegisterModal implements OnChanges {
   loading = false;
   errorMessage = '';
   successMessage = '';
+  passwordAutoLocked = true;
+  emailAutoLocked = true;
 
   districts: { code: string; name: string; nameHN?: string }[] = [];
   blocks: { code: string; name: string }[] = [];
   panchayats: { code: string; name: string }[] = [];
   villages: { code: string; name: string }[] = [];
+  wards: { code: string; name: string }[] = [];
 
   genders: { code: string; name: string }[] = [];
   ageGroups: { code: string; name: string }[] = [];
@@ -60,9 +64,9 @@ export class UserRegisterModal implements OnChanges {
   interests: { code: string; name: string }[] = [];
 
   
-  areaTypeOptions: { code: string; label: string }[] = [
-    { code: 'R', label: 'Rural' },
-    { code: 'U', label: 'Urban' },
+  areaTypeOptions: { code: string; name: string }[] = [
+    { code: 'R', name: 'Rural' },
+    { code: 'U', name: 'Urban' },
   ];
 
   registerForm = new FormGroup({
@@ -75,19 +79,19 @@ export class UserRegisterModal implements OnChanges {
       Validators.required,
       Validators.minLength(6),
     ]),
-    email: new FormControl('', [Validators.email]),
-    interests: new FormControl(''),
-    distCode: new FormControl(''),
-    blockCode: new FormControl(''),
-    panchayatCode: new FormControl(''),
-    areaType: new FormControl(''),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    interests: new FormControl<string[]>([], Validators.required),
+    distCode: new FormControl('', Validators.required),
+    blockCode: new FormControl('', Validators.required),
+    panchayatCode: new FormControl('', Validators.required),
+    areaType: new FormControl('', Validators.required),
     villCode: new FormControl(''),
     wardCode: new FormControl(''),
-    genderCode: new FormControl(''),
-    ageGroupId: new FormControl(''),
-    categoryId: new FormControl(''),
-    qualificationId: new FormControl(''),
-    occupationId: new FormControl(''),
+    genderCode: new FormControl('', Validators.required),
+    ageGroupId: new FormControl('', Validators.required),
+    categoryId: new FormControl('', Validators.required),
+    qualificationId: new FormControl('', Validators.required),
+    occupationId: new FormControl('', Validators.required),
     deviceId: new FormControl(''),
     entryBy: new FormControl(''),
   });
@@ -115,6 +119,7 @@ export class UserRegisterModal implements OnChanges {
     this.blocks = [];
     this.panchayats = [];
     this.villages = [];
+    this.wards = [];
     this.genders = [];
     this.ageGroups = [];
     this.categories = [];
@@ -122,7 +127,7 @@ export class UserRegisterModal implements OnChanges {
     this.occupations = [];
     this.interests = [];
     this.registerForm.reset({
-      interests: '',
+      interests: [],
       distCode: '',
       blockCode: '',
       panchayatCode: '',
@@ -133,6 +138,8 @@ export class UserRegisterModal implements OnChanges {
       qualificationId: '',
       occupationId: '',
     });
+   
+    this.updateLocationValidators();
   }
 
 
@@ -225,6 +232,24 @@ export class UserRegisterModal implements OnChanges {
     });
   }
 
+  loadWards(panchayatCode: string): void {
+    this.wards = [];
+    if (!panchayatCode) return;
+    this.masterService.getWardList(panchayatCode).subscribe({
+      next: (res: any) => {
+        if (res?.status && Array.isArray(res.data)) {
+          this.wards = res.data.map((item: any) => ({
+            code: this.decrypt(this.firstValue(item, ['wardcode', 'wardCode', 'WardCode', 'WARDCODE', 'ward_code', 'wardID'])),
+            name: this.decrypt(this.firstValue(item, ['wardname', 'wardName', 'WardName', 'WARDNAME', 'ward_name', 'ward'])),
+          }));
+        } else {
+          console.warn('Wards not populated. status:', res?.status, 'data:', res?.data);
+        }
+      },
+      error: (err) => console.error('Failed to load wards', err),
+    });
+  }
+
   loadDemographics(): void {
     this.masterService.getGenderList().subscribe({
       next: (res: any) => {
@@ -305,10 +330,11 @@ export class UserRegisterModal implements OnChanges {
 
  
   onDistrictChange(): void {
-    this.registerForm.patchValue({ blockCode: '', panchayatCode: '', villCode: '' });
+    this.registerForm.patchValue({ blockCode: '', panchayatCode: '', villCode: '', wardCode: '' });
     this.blocks = [];
     this.panchayats = [];
     this.villages = [];
+    this.wards = [];
     const code = this.registerForm.controls.distCode.value;
     if (code) {
       this.loadBlocks(code);
@@ -316,9 +342,10 @@ export class UserRegisterModal implements OnChanges {
   }
 
   onBlockChange(): void {
-    this.registerForm.patchValue({ panchayatCode: '', villCode: '' });
+    this.registerForm.patchValue({ panchayatCode: '', villCode: '', wardCode: '' });
     this.panchayats = [];
     this.villages = [];
+    this.wards = [];
     const code = this.registerForm.controls.blockCode.value;
     if (code) {
       this.loadPanchayats(code);
@@ -326,12 +353,47 @@ export class UserRegisterModal implements OnChanges {
   }
 
   onPanchayatChange(): void {
-    this.registerForm.patchValue({ villCode: '' });
+    this.registerForm.patchValue({ villCode: '', wardCode: '' });
     this.villages = [];
+    this.wards = [];
     const code = this.registerForm.controls.panchayatCode.value;
     if (code) {
       this.loadVillages(code);
+      this.loadWards(code);
     }
+  }
+
+  onAreaTypeChange(): void {
+    this.updateLocationValidators();
+    const areaType = this.registerForm.controls.areaType.value;
+    const panchayatCode = this.registerForm.controls.panchayatCode.value;
+    if (areaType === 'U') {
+      this.registerForm.controls.villCode.patchValue('');
+    } else if (areaType === 'R') {
+      this.registerForm.controls.wardCode.patchValue('');
+    }
+    if (panchayatCode) {
+      this.loadVillages(panchayatCode);
+      this.loadWards(panchayatCode);
+    }
+  }
+
+  private updateLocationValidators(): void {
+    const areaType = this.registerForm.controls.areaType.value;
+    const villCode = this.registerForm.controls.villCode;
+    const wardCode = this.registerForm.controls.wardCode;
+    if (areaType === 'U') {
+      wardCode.setValidators(Validators.required);
+      villCode.clearValidators();
+    } else if (areaType === 'R') {
+      villCode.setValidators(Validators.required);
+      wardCode.clearValidators();
+    } else {
+      villCode.clearValidators();
+      wardCode.clearValidators();
+    }
+    villCode.updateValueAndValidity();
+    wardCode.updateValueAndValidity();
   }
 
   register(): void {
@@ -349,7 +411,7 @@ export class UserRegisterModal implements OnChanges {
       mobileNo: v.mobileNo!,
       password: v.password!,
       email: v.email ?? '',
-      interests: v.interests ? [Number(v.interests)] : [],
+      interests: (v.interests ?? []).map((i) => Number(i)),
       distCode: Number(v.distCode ?? 0),
       blockCode: Number(v.blockCode ?? 0),
       panchayatCode: Number(v.panchayatCode ?? 0),
@@ -395,6 +457,22 @@ export class UserRegisterModal implements OnChanges {
 
   closeModal(): void {
     this.close.emit();
+  }
+
+  unlockPassword(): void {
+    if (this.passwordAutoLocked) {
+      this.passwordAutoLocked = false;
+      this.registerForm.controls.password.reset();
+      this.registerForm.controls.password.markAsPristine();
+    }
+  }
+
+  unlockEmail(): void {
+    if (this.emailAutoLocked) {
+      this.emailAutoLocked = false;
+      this.registerForm.controls.email.reset();
+      this.registerForm.controls.email.markAsPristine();
+    }
   }
 
   onOverlayClick(event: MouseEvent): void {
