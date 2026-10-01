@@ -224,9 +224,9 @@ export class Dashboard implements OnInit {
     const unspecPct = Math.max(0, 100 - ruralPct - urbanPct);
 
     const raw = [
-      { label: 'Sale', pct: ruralPct, color: '#6c5ce7' },
-      { label: 'Distribute', pct: unspecPct > 0 ? unspecPct : 15, color: '#ffca28' },
-      { label: 'Return', pct: urbanPct > 0 ? urbanPct : 20, color: '#ff5252' }
+      { label: 'Rural', pct: ruralPct, color: '#6c5ce7' },
+      { label: 'Unspecified', pct: unspecPct > 0 ? unspecPct : 15, color: '#ffca28' },
+      { label: 'Urban', pct: urbanPct > 0 ? urbanPct : 20, color: '#ff5252' }
     ].filter(s => s.pct > 0);
 
     let currentOffset = 0;
