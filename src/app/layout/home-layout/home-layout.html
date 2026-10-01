@@ -1,245 +1,329 @@
 <div class="home-layout">
-<div class="top-bar">
-    <div class="container top-content">
-      <span><i class="fa fa-envelope"></i>&nbsp;md-jjh-bih[at]gov[dot]in</span>
 
-      <div class="top-links">
-        <span>हिन्दी</span>
-        <span>|</span>
-        <span>English</span>
-      </div>
-    </div>
-  </div>
-    <!-- ================= HEADER ================= -->
+  <!-- ================= UNIFIED FLOATING HEADER ================= -->
+  <header class="floating-header-wrapper">
+    <div class="header-pill-container">
 
-    <header class="main-header">
+      <!-- BRAND LOGO & TITLE -->
+      <a routerLink="/" class="brand-link" (click)="closeMobileMenu()">
+        <div class="brand-logo-badge">
+          <img src="images/logo.png" alt="Sankalp Setu Logo" class="brand-logo-img">
+        </div>
+        <div class="brand-text-block">
+          <span class="brand-heading">SANKALP <span class="brand-heading-accent">SETU</span></span>
+          <span class="brand-subheading">Government of Bihar</span>
+        </div>
+      </a>
 
-    <div class="container header-content">
+      <!-- DESKTOP NAVIGATION -->
+      <nav class="pill-nav-menu">
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="nav-pill-item">
+          Home
+        </a>
 
-      <div class="brand">
-
-        <div class="logo">
-           <img src="images/logo.png" alt="Logo" width="50" height="50">
+        <!-- ABOUT DROPDOWN -->
+        <div class="nav-dropdown-wrapper">
+          <button type="button" class="nav-pill-item dropdown-toggle">
+            <span>About</span>
+            <svg class="chevron-icon" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="dropdown-panel">
+            <a routerLink="/orgstructure" class="dropdown-link">
+              <span class="dot"></span>
+              Structure
+            </a>
+            <a routerLink="/about" class="dropdown-link">
+              <span class="dot"></span>
+              Objectives
+            </a>
+            <a href="javascript:void(0)" class="dropdown-link">
+              <span class="dot"></span>
+              Rules
+            </a>
+          </div>
         </div>
 
-        <div class="brand-text">
-          <h1> <span style="color: #0090E3">SANKALP SETU</span></h1>
-          <p>Government of Bihar</p>
+        <a routerLink="/gallery" routerLinkActive="active" class="nav-pill-item">
+          Gallery
+        </a>
+
+        <!-- REPORTS DROPDOWN -->
+        <div class="nav-dropdown-wrapper">
+          <button type="button" class="nav-pill-item dropdown-toggle">
+            <span>Reports</span>
+            <svg class="chevron-icon" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="dropdown-panel">
+            <a href="javascript:void(0)" class="dropdown-link">
+              <span class="dot"></span>
+              Dashboard
+            </a>
+            <a href="javascript:void(0)" class="dropdown-link">
+              <span class="dot"></span>
+              Inspected Water Bodies
+            </a>
+            <a href="javascript:void(0)" class="dropdown-link">
+              <span class="dot"></span>
+              Inspected Well
+            </a>
+            <a href="javascript:void(0)" class="dropdown-link">
+              <span class="dot"></span>
+              Inspected Chapakal
+            </a>
+          </div>
         </div>
+
+        <!-- DOWNLOADS DROPDOWN -->
+        <div class="nav-dropdown-wrapper">
+          <button type="button" class="nav-pill-item dropdown-toggle">
+            <span>Downloads</span>
+            <svg class="chevron-icon" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="dropdown-panel">
+            <a href="pdf/JJH_ComponentsDept.pdf" target="_blank" rel="noopener" class="dropdown-link">
+              <span class="dot"></span>
+              JJH Components
+            </a>
+            <a href="pdf/JJH_MIS_GIS.pdf" target="_blank" rel="noopener" class="dropdown-link">
+              <span class="dot"></span>
+              JJH MIS & GIS
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=bih.in.jaljeevanharyali" target="_blank" rel="noopener" class="dropdown-link">
+              <span class="dot"></span>
+              Mobile App (Play Store)
+            </a>
+          </div>
+        </div>
+
+        <a href="#contact" class="nav-pill-item">
+          Contact Us
+        </a>
+      </nav>
+
+      <!-- RIGHT UTILITIES & ACTIONS -->
+      <div class="header-right-actions">
+
+        <!-- LANGUAGE SWITCHER PILL -->
+        <div class="lang-pill-switch" title="Select Language">
+          <button
+            type="button"
+            class="lang-btn"
+            [class.active]="currentLang === 'hi'"
+            (click)="setLang('hi')">
+            हिन्दी
+          </button>
+          <span class="lang-divider">|</span>
+          <button
+            type="button"
+            class="lang-btn"
+            [class.active]="currentLang === 'en'"
+            (click)="setLang('en')">
+            EN
+          </button>
+        </div>
+
+        <!-- EMAIL INFO BADGE / ICON -->
+        <a
+          href="mailto:md-jjh-bih@gov.in"
+          class="email-badge-btn"
+          title="md-jjh-bih[at]gov[dot]in">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </a>
+
+        <!-- LOGIN TEXT LINK -->
+        <a routerLink="/login" class="nav-text-login" (click)="closeMobileMenu()">
+          Login
+        </a>
+
+        <!-- OFFICIAL LOGIN / REGISTER GRADIENT GREEN CTA BUTTON -->
+        <button
+          type="button"
+          class="gradient-green-cta-btn"
+          (click)="openOtpLogin()">
+          <span>Official Login</span>
+          <svg class="cta-arrow-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+
+        <!-- MOBILE HAMBURGER TOGGLE -->
+        <button
+          type="button"
+          class="mobile-menu-btn"
+          [class.open]="isMobileMenuOpen"
+          (click)="toggleMobileMenu()"
+          title="Toggle Navigation Menu">
+          <span class="bar bar-1"></span>
+          <span class="bar bar-2"></span>
+          <span class="bar bar-3"></span>
+        </button>
 
       </div>
 
-      <button class="login-btn" type="button">
-        <span class="login-icon">↪</span>
-        Official Login
-      </button>
-
     </div>
+
+    <!-- MOBILE DROPDOWN DRAWER -->
+    @if (isMobileMenuOpen) {
+      <div class="mobile-nav-drawer">
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="mobile-nav-item"
+          (click)="closeMobileMenu()">
+          Home
+        </a>
+
+        <div class="mobile-nav-accordion">
+          <button
+            type="button"
+            class="mobile-accordion-toggle"
+            (click)="toggleMobileDropdown('about')">
+            <span>About</span>
+            <svg
+              class="chevron-icon"
+              [class.rotated]="activeMobileDropdown === 'about'"
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          @if (activeMobileDropdown === 'about') {
+            <div class="mobile-accordion-content">
+              <a routerLink="/orgstructure" class="mobile-sub-link" (click)="closeMobileMenu()">Structure</a>
+              <a routerLink="/about" class="mobile-sub-link" (click)="closeMobileMenu()">Objectives</a>
+              <a href="javascript:void(0)" class="mobile-sub-link" (click)="closeMobileMenu()">Rules</a>
+            </div>
+          }
+        </div>
+
+        <a
+          routerLink="/gallery"
+          routerLinkActive="active"
+          class="mobile-nav-item"
+          (click)="closeMobileMenu()">
+          Gallery
+        </a>
+
+        <div class="mobile-nav-accordion">
+          <button
+            type="button"
+            class="mobile-accordion-toggle"
+            (click)="toggleMobileDropdown('reports')">
+            <span>Reports</span>
+            <svg
+              class="chevron-icon"
+              [class.rotated]="activeMobileDropdown === 'reports'"
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          @if (activeMobileDropdown === 'reports') {
+            <div class="mobile-accordion-content">
+              <a href="javascript:void(0)" class="mobile-sub-link" (click)="closeMobileMenu()">Dashboard</a>
+              <a href="javascript:void(0)" class="mobile-sub-link" (click)="closeMobileMenu()">Inspected Water Bodies</a>
+              <a href="javascript:void(0)" class="mobile-sub-link" (click)="closeMobileMenu()">Inspected Well</a>
+              <a href="javascript:void(0)" class="mobile-sub-link" (click)="closeMobileMenu()">Inspected Chapakal</a>
+            </div>
+          }
+        </div>
+
+        <div class="mobile-nav-accordion">
+          <button
+            type="button"
+            class="mobile-accordion-toggle"
+            (click)="toggleMobileDropdown('downloads')">
+            <span>Downloads</span>
+            <svg
+              class="chevron-icon"
+              [class.rotated]="activeMobileDropdown === 'downloads'"
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          @if (activeMobileDropdown === 'downloads') {
+            <div class="mobile-accordion-content">
+              <a href="pdf/JJH_ComponentsDept.pdf" target="_blank" rel="noopener" class="mobile-sub-link" (click)="closeMobileMenu()">JJH Components</a>
+              <a href="pdf/JJH_MIS_GIS.pdf" target="_blank" rel="noopener" class="mobile-sub-link" (click)="closeMobileMenu()">JJH MIS & GIS</a>
+              <a href="https://play.google.com/store/apps/details?id=bih.in.jaljeevanharyali" target="_blank" rel="noopener" class="mobile-sub-link" (click)="closeMobileMenu()">Mobile App (Play Store)</a>
+            </div>
+          }
+        </div>
+
+        <a href="#contact" class="mobile-nav-item" (click)="closeMobileMenu()">
+          Contact Us
+        </a>
+
+        <div class="mobile-drawer-footer">
+          <div class="mobile-lang-row">
+            <span class="mobile-email-text">md-jjh-bih[at]gov[dot]in</span>
+            <div class="lang-pill-switch">
+              <button type="button" class="lang-btn" [class.active]="currentLang === 'hi'" (click)="setLang('hi')">हिन्दी</button>
+              <span class="lang-divider">|</span>
+              <button type="button" class="lang-btn" [class.active]="currentLang === 'en'" (click)="setLang('en')">EN</button>
+            </div>
+          </div>
+          <div class="mobile-btn-group">
+            <a routerLink="/login" class="mobile-login-btn" (click)="closeMobileMenu()">Login</a>
+            <button type="button" class="mobile-register-btn" (click)="openOtpLogin()">Official Login</button>
+          </div>
+        </div>
+      </div>
+    }
 
   </header>
 
+  <!-- ================= PAGE CONTENT ================= -->
+  <main class="home-content">
+    <router-outlet></router-outlet>
+  </main>
 
-    <!-- ================= NAVIGATION ================= -->
-
-    <nav class="navigation">
-
-    <div class="container nav-content">
-
-      <a routerLink="/home" class="active">
-            Home
-        </a>
-
-         <!-- =========================
-             ABOUT DROPDOWN
-        ========================== -->
-
-        <div class="nav-item">
-
-            <a href="javascript:void(0)">
-                About
-
-                <span class="dropdown-arrow">
-                    ▼
-                </span>
-            </a>
-
-            <ul class="dropdown-menu">
-
-                <li>
-                    <a routerLink="/orgstructure">
-                        Structure
-                    </a>
-                </li>
-
-                <li>
-                    <a routerLink="/about">
-                         Objectives
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Rules
-                    </a>
-                </li>
-
-            </ul>
-
-        </div>
-        
-        <a routerLink="/gallery">
-            Gallery
-        </a>
-
-
-        <!-- =========================
-             REPORTS DROPDOWN
-        ========================== -->
-
-        <div class="nav-item">
-
-            <a href="javascript:void(0)">
-                Reports
-
-                <span class="dropdown-arrow">
-                    ▼
-                </span>
-            </a>
-
-            <ul class="dropdown-menu">
-
-                <li>
-                    <a href="#">
-                        Dashboard
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Inspected Water Bodies
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Inspected Well
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        Inspected Chapakal
-                    </a>
-                </li>
-
-            </ul>
-
-        </div>
-
-
-        <!-- =========================
-             DOWNLOAD DROPDOWN
-        ========================== -->
-
-        <div class="nav-item">
-
-            <a href="javascript:void(0)">
-                Downloads
-
-                <span class="dropdown-arrow">
-                    ▼
-                </span>
-            </a>
-
-            <ul class="dropdown-menu">
-
-                <li>
-                    <a href="pdf/JJH_ComponentsDept.pdf" target="_blank"  rel="noopener">
-                        JJH Components
-                    </a>
-                </li>
-
-                <li>
-                    <a href="pdf/JJH_MIS_GIS.pdf" target="_blank"  rel="noopener">
-                        JJH MIS & GIS
-                    </a>
-                </li>
-
-                <li>
-                    <a href="https://play.google.com/store/apps/details?id=bih.in.jaljeevanharyali" target="_blank"  rel="noopener">
-                        Mobile App (From Play Store)
-                    </a>
-                </li>
-
-            </ul>
-
-        </div>
-
-
-        <a href="#">
-            Contact Us
-        </a>
-
-      <button
-        class="nav-login" type="button" routerLink="/login">
-
-        Login
-
-      </button>
-
-      <button
-        class="nav-register" type="button" (click)="openOtpLogin()">
-
-        Register
-
-      </button>
-
-    </div>
-
-  </nav>
-
-
-
-    <!-- ================= PAGE CONTENT ================= -->
-
-    <main class="home-content">
-
-        <router-outlet></router-outlet>
-
-    </main>
-
-
-    <!-- ================= FOOTER ================= -->
-
-    <!-- FOOTER -->
+  <!-- ================= FOOTER ================= -->
   <footer id="contact" class="footer">
-
     <div class="container footer-content">
-
       <div>
-
         <h3>Sankalp Setu</h3>
-
-        <p>
-          Government of Bihar
-        </p>
-
+        <p>Government of Bihar</p>
       </div>
-
       <div class="footer-right">
-
-        <p>
-          © 2026 Government of Bihar
-        </p>
-
-        <p>
-          All Rights Reserved
-        </p>
-
+        <p>© 2026 Government of Bihar</p>
+        <p>All Rights Reserved</p>
       </div>
-
     </div>
-
   </footer>
 
   <app-otp-login-modal

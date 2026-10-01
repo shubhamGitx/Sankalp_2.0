@@ -1,9 +1,9 @@
 .sidebar-wrapper {
   position: fixed;
-  top: 60px;
+  top: 74px;
   left: 0;
   width: 300px;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 74px);
   padding: 12px 0 12px 14px;
   box-sizing: border-box;
   transition: width 0.3s ease;
