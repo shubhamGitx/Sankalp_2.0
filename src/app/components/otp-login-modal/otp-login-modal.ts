@@ -19,6 +19,7 @@ import { CryptoService } from '../../services/crypto.service';
 import {
   SendOtpRequest,
   VerifyOtpRequest,
+  OtpVerificationResult,
 } from '../../models/otp';
 
 @Component({
@@ -35,7 +36,7 @@ export class OtpLoginModal implements OnChanges {
 
   @Input() isOpen = false;
   @Output() close = new EventEmitter<void>();
-  @Output() verified = new EventEmitter<{ mobileNo: string; deviceId: string }>();
+  @Output() verified = new EventEmitter<OtpVerificationResult>();
 
   step: 'mobile' | 'otp' = 'mobile';
   mobileNo = '';
@@ -143,13 +144,6 @@ export class OtpLoginModal implements OnChanges {
       next: (res) => {
         this.loading = false;
 
-        if (res.userExists) {
-          this.step = 'mobile';
-          this.successMessage = '';
-          this.errorMessage = res.message || 'User already exists.';
-          return;
-        }
-
         if (res.success || res.status) {
           this.step = 'otp';
           this.successMessage = res.message || 'OTP sent to your mobile number.';
@@ -216,14 +210,16 @@ export class OtpLoginModal implements OnChanges {
     this.otpService.verifyOtp(request).subscribe({
       next: (res) => {
         this.loading = false;
-        if (res.success) {
-          if (res.userExists) {
+        if (res.success || res.status) {
+          
+          if (res.userExists || res.data) {
             this.clearTimer();
-            this.successMessage = res.message || 'User already exists.';
+            this.verified.emit({ response: res, mobileNo: this.mobileNo, deviceId: this.deviceId });
+            this.closeModal();
             return;
           }
           this.clearTimer();
-          this.verified.emit({ mobileNo: this.mobileNo, deviceId: this.deviceId });
+          this.verified.emit({ response: res, mobileNo: this.mobileNo, deviceId: this.deviceId });
           this.closeModal();
         } else {
           this.errorMessage = res.message || 'OTP verification failed. Please try again.';

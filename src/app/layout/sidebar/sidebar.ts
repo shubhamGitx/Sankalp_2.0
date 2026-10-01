@@ -27,14 +27,6 @@ export class Sidebar {
     this.router.navigate(['/dashboard']);
   }
 
-  openDistrict() {
-    this.router.navigate(['/district']);
-  }
-
-  openBlock() {
-    this.router.navigate(['/block']);
-  }
-
   openBroadcast() {
     this.router.navigate(['/broadcast']);
   }

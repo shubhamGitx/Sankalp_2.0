@@ -398,26 +398,6 @@
   transform: translateY(-1px);
 }
 
-.nav-official-login {
-  display: inline-flex;
-  align-items: center;
-  border: 1.5px solid #d7dce4;
-  background: #ffffff;
-  color: #475569;
-  padding: 8px 18px;
-  border-radius: 9999px;
-  font-size: 13.5px;
-  font-weight: 600;
-  font-family: inherit;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-
-.nav-official-login:hover {
-  background: #f1f5f9;
-  border-color: #bbc3cd;
-}
-
 .mobile-menu-btn {
   display: none;
   flex-direction: column;
@@ -653,7 +633,6 @@
 
   .nav-text-login,
   .nav-register,
-  .nav-official-login,
   .email-badge-btn,
   .lang-pill-switch {
     display: none;

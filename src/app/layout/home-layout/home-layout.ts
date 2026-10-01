@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { inject } from '@angular/core';
 
 import { OtpLoginModal } from '../../components/otp-login-modal/otp-login-modal';
 import { UserRegisterModal } from '../../components/user-register-modal/user-register-modal';
+import { OtpVerificationResult } from '../../models/otp';
 
 @Component({
   selector: 'app-home-layout',
@@ -18,6 +20,8 @@ import { UserRegisterModal } from '../../components/user-register-modal/user-reg
   styleUrl: './home-layout.css'
 })
 export class HomeLayout {
+
+  private router = inject(Router);
 
   isLoginModalOpen = false;
   isRegisterModalOpen = false;
@@ -35,9 +39,24 @@ export class HomeLayout {
     this.isLoginModalOpen = false;
   }
 
-  onOtpVerified(data: { mobileNo: string; deviceId: string }) {
+  onOtpVerified(result: OtpVerificationResult) {
     this.isLoginModalOpen = false;
-    this.registerContext = data;
+    const { response } = result;
+
+    if (response.data) {
+      localStorage.setItem('beneficiaryProfile', JSON.stringify(response.data));
+      const token = response.data.token || response.token || response.authToken;
+      if (token) {
+        localStorage.setItem('beneficiaryToken', token);
+      }
+      this.router.navigate(['/beneficiary-dashboard']);
+      return;
+    }
+
+    this.registerContext = {
+      mobileNo: result.mobileNo,
+      deviceId: result.deviceId,
+    };
     this.isRegisterModalOpen = true;
   }
 

@@ -52,7 +52,7 @@ export class UserRegisterModal implements OnChanges {
 
   districts: { code: string; name: string; nameHN?: string }[] = [];
   blocks: { code: string; name: string }[] = [];
-  panchayats: { code: string; name: string }[] = [];
+  panchayats: { code: string; name: string; areaType?: string }[] = [];
   villages: { code: string; name: string }[] = [];
   wards: { code: string; name: string }[] = [];
 
@@ -144,6 +144,8 @@ export class UserRegisterModal implements OnChanges {
     });
    
     this.updateLocationValidators();
+   
+    this.registerForm.controls.areaType.disable();
   }
 
 
@@ -209,6 +211,7 @@ export class UserRegisterModal implements OnChanges {
           this.panchayats = res.data.map((item: any) => ({
             code: this.decrypt(this.firstValue(item, ['panchayatcode', 'PanchayatCode', 'panchayatCode', 'panchayat_Code'])),
             name: this.decrypt(this.firstValue(item, ['panchayatname', 'PanchayatName', 'panchayatName', 'panchayat_Name'])),
+            areaType: this.decrypt(this.firstValue(item, ['areatype', 'AreaType', 'areaType', 'area_Type'])),
           }));
         }
       },
@@ -346,7 +349,7 @@ export class UserRegisterModal implements OnChanges {
   }
 
   onBlockChange(): void {
-    this.registerForm.patchValue({ panchayatCode: '', villCode: '', wardCode: '' });
+    this.registerForm.patchValue({ panchayatCode: '', areaType: '', villCode: '', wardCode: '' });
     this.panchayats = [];
     this.villages = [];
     this.wards = [];
@@ -362,9 +365,22 @@ export class UserRegisterModal implements OnChanges {
     this.wards = [];
     const code = this.registerForm.controls.panchayatCode.value;
     if (code) {
+      const selected = this.panchayats.find((p) => p.code === code);
+      const areaType = this.normalizeAreaType(selected?.areaType ?? '');
+      this.registerForm.patchValue({ areaType });
+      this.updateLocationValidators();
       this.loadVillages(code);
       this.loadWards(code);
     }
+  }
+
+  private normalizeAreaType(value: string): string {
+    if (!value) return '';
+    const v = value.trim();
+    const up = v.toUpperCase();
+    if (up === 'R' || up === 'RURAL') return 'R';
+    if (up === 'U' || up === 'URBAN') return 'U';
+    return '';
   }
 
   onAreaTypeChange(): void {
@@ -409,7 +425,7 @@ export class UserRegisterModal implements OnChanges {
     this.errorMessage = '';
     this.successMessage = '';
 
-    const v = this.registerForm.value;
+    const v = this.registerForm.getRawValue();
     const payload: UserRegisterRequest = {
       name: v.name!,
       mobileNo: v.mobileNo!,

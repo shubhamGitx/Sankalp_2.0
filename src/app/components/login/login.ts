@@ -6,6 +6,7 @@ import { CryptoService } from '../../services/crypto.service';
 import { LoginRequest } from '../../models/login-request';
 import { OtpLoginModal } from '../otp-login-modal/otp-login-modal';
 import { UserRegisterModal } from '../user-register-modal/user-register-modal';
+import { OtpVerificationResult } from '../../models/otp';
 
 @Component({
   selector: 'app-login',
@@ -46,9 +47,9 @@ export class Login {
     this.isOtpModalOpen = false;
   }
 
-  onOtpVerified(data: { mobileNo: string; deviceId: string }): void {
+  onOtpVerified(data: OtpVerificationResult): void {
     this.isOtpModalOpen = false;
-    this.registerContext = data;
+    this.registerContext = { mobileNo: data.mobileNo, deviceId: data.deviceId };
     this.isRegisterModalOpen = true;
   }
 

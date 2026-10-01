@@ -5,6 +5,7 @@ import { Home } from './components/home/home';
 import { Orgstructure } from './components/orgstructure/orgstructure';
 import { About } from './components/about/about';
 import { Gallery } from './components/gallery/gallery';
+import { BeneficiaryComponent } from './components/beneficiary/beneficiary-dashboard';
 
 import { Login } from './components/login/login';
 
@@ -55,6 +56,11 @@ export const routes: Routes = [
       },
 
     ]
+  },
+
+  {
+    path: 'beneficiary-dashboard',
+    component: BeneficiaryComponent
   },
 
 

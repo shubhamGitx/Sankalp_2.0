@@ -118,6 +118,7 @@
                 placeholder="Select Area Type"
                 (changed)="onAreaTypeChange()">
               </app-select-dropdown>
+              <small class="hint">Auto-filled from selected Panchayat</small>
               @if (registerForm.controls.areaType.touched && registerForm.controls.areaType.invalid) {
                 <small class="error-msg">Please select an area type</small>
               }
