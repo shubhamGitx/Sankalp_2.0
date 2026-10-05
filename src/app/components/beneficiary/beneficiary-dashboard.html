@@ -143,6 +143,17 @@
             <span class="nav-label" *ngIf="!collapsed">BroadcastMessage</span>
           </div>
 
+          <div class="nav-item" [class.active]="selectedMenu === 'interest'" (click)="selectMenu('interest')" title="User Interest">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 4a8 8 0 0 1-8 8 8 8 0 0 1 8-8z"></path>
+                <path d="M8 9h8M12 13a2 2 0 0 1-2 2 2 2 0 0 1 2-2z"></path>
+              </svg>
+            </div>
+            <span class="nav-label" *ngIf="!collapsed">User Interest</span>
+          </div>
+
           <!-- Settings (dummy) -->
           <div class="nav-item" (click)="onMenuClick()" title="Settings">
             <div class="nav-icon">
@@ -317,6 +328,88 @@
 
               </div>
             </div>
+          }
+        } @else if (selectedMenu === 'interest') {
+          <h2 class="page-title">User Interest</h2>
+
+          <section class="interest-section">
+            <div class="interest-section-head">
+              <div>
+                <h3>Your Selected Interests</h3>
+                <span class="interest-section-subtitle">Interests you selected during registration. Click an interest to view its messages.</span>
+              </div>
+              <span class="interest-count-badge">{{ userInterestOptions.length }} selected</span>
+            </div>
+
+            @if (userInterestOptions.length) {
+              <div class="interest-chip-grid">
+                @for (item of userInterestOptions; track item.interestId) {
+                  <button
+                    type="button"
+                    class="interest-chip"
+                    [class.active]="activeInterest && activeInterest.interestId === item.interestId"
+                    (click)="openInterest(item)">
+                    <span class="interest-chip-icon">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 4a8 8 0 0 1-8 8 8 8 0 0 1 8-8z"></path>
+                      </svg>
+                    </span>
+                    <span class="interest-chip-label">{{ item.interestName }}</span>
+                    <span class="interest-chip-id">#{{ item.interestId }}</span>
+                  </button>
+                }
+              </div>
+            } @else {
+              <div class="interest-empty">
+                <p>No interests were selected during registration.</p>
+              </div>
+            }
+          </section>
+
+          @if (activeInterest) {
+            <section class="interest-messages-section">
+              <div class="interest-messages-head">
+                <h3>Messages for <strong>{{ activeInterest.interestName }}</strong></h3>
+                <button type="button" class="interest-refresh" (click)="openInterest(activeInterest)" [disabled]="interestLoading">
+                  <span *ngIf="!interestLoading">Refresh</span>
+                  <span *ngIf="interestLoading">Loading...</span>
+                </button>
+              </div>
+
+              @if (interestLoading) {
+                <div class="interest-loading-box">
+                  <div class="interest-spinner"></div>
+                  <p>Loading interest messages...</p>
+                </div>
+              } @else if (interestError) {
+                <div class="interest-error-box">
+                  <p>{{ interestError }}</p>
+                </div>
+              } @else if (interestMessages.length) {
+                <div class="interest-msg-grid">
+                  @for (msg of interestMessages; track $index) {
+                    <article class="interest-msg-card">
+                      <div class="interest-msg-head">
+                        <h4>{{ resolveMessageHead(msg) }}</h4>
+                        <span class="interest-msg-badge" [class.active]="resolveIsActive(msg)">
+                          {{ resolveIsActive(msg) ? 'Active' : 'Inactive' }}
+                        </span>
+                      </div>
+                      <p class="interest-msg-body">{{ resolveMessageBody(msg) }}</p>
+                      <div class="interest-msg-meta">
+                        <span class="interest-mini-meta">Validity: {{ resolveValidity(msg) }}</span>
+                        <span class="interest-mini-meta">Published: {{ resolveEntryDate(msg) }}</span>
+                      </div>
+                    </article>
+                  }
+                </div>
+              } @else {
+                <div class="interest-empty">
+                  <p>No messages are available for this interest yet.</p>
+                </div>
+              }
+            </section>
           }
         } @else {
           <h2 class="page-title">Beneficiary Dashboard</h2>

@@ -82,14 +82,57 @@ export class OtpLoginModal implements OnChanges {
   }
   // --------------------------------------------------
   // deviceId : auto-fetched / persisted once
+  //           = user's current IPv4 address
   // --------------------------------------------------
-  private ensureDeviceId(): void {
+  private async ensureDeviceId(): Promise<void> {
     let id = localStorage.getItem('deviceId');
     if (!id) {
-      id = this.generateDeviceId();
+      const ip = await this.detectLocalIPv4();
+      id = ip || this.generateDeviceId();
       localStorage.setItem('deviceId', id);
     }
     this.deviceId = id;
+  }
+
+  private detectLocalIPv4(): Promise<string> {
+    return new Promise((resolve) => {
+      try {
+        const pc = new RTCPeerConnection({ iceServers: [] });
+        let settled = false;
+        const finish = (ip: string) => {
+          if (!settled) {
+            settled = true;
+            try {
+              pc.close();
+            } catch {
+            }
+            resolve(ip);
+          }
+        };
+
+        pc.createDataChannel('');
+        pc.onicecandidate = (event) => {
+          if (!event.candidate) {
+            finish('');
+            return;
+          }
+          const match = event.candidate.candidate.match(
+            /([0-9]{1,3}(\.[0-9]{1,3}){3})/
+          );
+          if (match) {
+            finish(match[1]);
+          }
+        };
+        pc.createOffer()
+          .then((offer) => pc.setLocalDescription(offer))
+          .catch(() => finish(''));
+
+        setTimeout(() => finish(''), 2000);
+      } catch (err) {
+        console.error('IPv4 detection failed', err);
+        resolve('');
+      }
+    });
   }
 
   private generateDeviceId(): string {
@@ -120,7 +163,7 @@ export class OtpLoginModal implements OnChanges {
     this.clientKey = clientKey;
   }
 
-  sendOtp(): void {
+  async sendOtp(): Promise<void> {
     if (this.mobileForm.invalid) {
       this.mobileForm.markAllAsTouched();
       return;
@@ -133,6 +176,8 @@ export class OtpLoginModal implements OnChanges {
     this.errorMessage = '';
     this.successMessage = '';
     this.clearTimer();
+
+    await this.ensureDeviceId();
 
     const request: SendOtpRequest = {
       clientKey: this.clientKey,
@@ -160,10 +205,12 @@ export class OtpLoginModal implements OnChanges {
     });
   }
 
-  resendOtp(): void {
+  async resendOtp(): Promise<void> {
     this.errorMessage = '';
     this.successMessage = '';
     this.loading = true;
+
+    await this.ensureDeviceId();
 
     const request: SendOtpRequest = {
       clientKey: this.clientKey,
@@ -191,13 +238,15 @@ export class OtpLoginModal implements OnChanges {
   // --------------------------------------------------
   // Step 2 : verify OTP -> open user registration
   // --------------------------------------------------
-  verifyOtp(): void {
+  async verifyOtp(): Promise<void> {
     if (this.otpForm.invalid) {
       this.otpForm.markAllAsTouched();
       return;
     }
     this.loading = true;
     this.errorMessage = '';
+
+    await this.ensureDeviceId();
 
     const otp = this.otpForm.value.otp!;
     const request: VerifyOtpRequest = {

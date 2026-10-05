@@ -7,7 +7,9 @@ import {
 } from '../models/broadcast-message';
 import {
   InsertInterestWiseMessageRequest,
-  InsertInterestWiseMessageResponse
+  InsertInterestWiseMessageResponse,
+  GetInterestWiseMessageRequest,
+  GetInterestWiseMessageResponse
 } from '../models/interest-message';
 
 @Injectable({
@@ -55,6 +57,17 @@ export class MessageService {
   getInterestWiseMessages(interestId?: number): Observable<any> {
     const url = interestId ? `${this.apiUrl}/GetInterestWiseMessages?interestId=${interestId}` : `${this.apiUrl}/GetInterestWiseMessages`;
     return this.http.get<any>(url);
+  }
+
+  /**
+   * Retrieves the interest-wise message for a given user's selected interest.
+   * @param request Payload with deviceID, clientKey and interest_id
+   */
+  getInterestWiseMessage(request: GetInterestWiseMessageRequest): Observable<GetInterestWiseMessageResponse> {
+    return this.http.post<GetInterestWiseMessageResponse>(
+      `${this.apiUrl}/GetInterestWiseMessage`,
+      request
+    );
   }
 
   /**

@@ -30,6 +30,19 @@ export interface InsertInterestWiseMessageResponse {
   data?: any;
 }
 
+export interface GetInterestWiseMessageRequest {
+  deviceID: string;
+  clientKey: string;
+  interest_id: string;
+}
+
+export interface GetInterestWiseMessageResponse {
+  status?: boolean;
+  success?: boolean;
+  message?: string;
+  data?: any;
+}
+
 export interface InterestWiseMessageData {
   msg_id: number;
   interest_id: number | null;

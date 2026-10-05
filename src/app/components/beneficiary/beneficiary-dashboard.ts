@@ -8,6 +8,10 @@ import { BlockService } from '../../services/block';
 import { CryptoService } from '../../services/crypto.service';
 import { MessageService } from '../../services/message.service';
 import { BroadcastMessageData } from '../../models/broadcast-message';
+import {
+  GetInterestWiseMessageRequest,
+  InterestWiseMessageData
+} from '../../models/interest-message';
 
 @Component({
   selector: 'app-beneficiary',
@@ -30,6 +34,11 @@ export class BeneficiaryComponent implements OnInit {
 
   selectedBroadcastMsg: BroadcastMessageData | null = null;
   selectedBroadcastThemeIndex: number = 0;
+
+  activeInterest: { interestId: number; interestName: string } | null = null;
+  interestMessages: InterestWiseMessageData[] = [];
+  interestLoading: boolean = false;
+  interestError: string = '';
 
   genders: { code: string; name: string }[] = [];
   ageGroups: { code: string; name: string }[] = [];
@@ -236,6 +245,103 @@ export class BeneficiaryComponent implements OnInit {
     if (menu === 'broadcast') {
       this.loadBroadcastMessages();
     }
+  }
+
+
+  get userInterestOptions(): { interestId: number; interestName: string }[] {
+    if (!this.profile) {
+      return [];
+    }
+    const userInterests = this.profile.userInterests;
+    if (userInterests && userInterests.length) {
+      return userInterests.map((i) => ({
+        interestId: Number(i.interestId),
+        interestName: i.interestName || `Interest #${i.interestId}`
+      }));
+    }
+    if (this.profile.interests && this.profile.interests.length) {
+      return this.profile.interests.map((id) => ({
+        interestId: Number(id),
+        interestName: `Interest #${id}`
+      }));
+    }
+    return [];
+  }
+
+  openInterest(interest: { interestId: number; interestName: string }): void {
+    if (!interest) {
+      return;
+    }
+    this.activeInterest = interest;
+    this.interestMessages = [];
+    this.interestError = '';
+    this.interestLoading = true;
+
+    const deviceID =
+      this.profile?.deviceId ||
+      localStorage.getItem('deviceId') ||
+      '';
+    const clientKey = localStorage.getItem('clientKey') || '';
+
+    const payload: GetInterestWiseMessageRequest = {
+      deviceID,
+      clientKey,
+      interest_id: String(interest.interestId)
+    };
+
+    this.messageService.getInterestWiseMessage(payload).subscribe({
+      next: (res: any) => {
+        this.interestLoading = false;
+        this.interestMessages = this.extractInterestMessages(res);
+        this.refreshView();
+      },
+      error: (err) => {
+        this.interestLoading = false;
+        this.interestError =
+          err?.error?.message || 'Failed to load interest-wise messages.';
+        this.refreshView();
+      },
+    });
+  }
+
+  private extractInterestMessages(res: any): InterestWiseMessageData[] {
+    if (!res) {
+      return [];
+    }
+    const direct: any = Array.isArray(res) ? res : null;
+    const data = direct ?? (res.data !== undefined ? res.data : null);
+    if (Array.isArray(data)) {
+      return data as InterestWiseMessageData[];
+    }
+    if (data && Array.isArray(data.data)) {
+      return data.data as InterestWiseMessageData[];
+    }
+    if (data && Array.isArray(data.list)) {
+      return data.list as InterestWiseMessageData[];
+    }
+    return [];
+  }
+
+  resolveMessageHead(msg: any): string {
+    return msg?.message_head || msg?.messageHead || msg?.title || 'Interest Message';
+  }
+
+  resolveMessageBody(msg: any): string {
+    return msg?.message_body || msg?.messageBody || msg?.body || msg?.message || '';
+  }
+
+  resolveIsActive(msg: any): boolean {
+    const val = msg?.is_active;
+    return val === undefined || val === null ? true : String(val).toUpperCase() === 'Y';
+  }
+
+  resolveValidity(msg: any): string {
+    const minutes = msg?.validity_in_minutes || msg?.validityMinutes;
+    return minutes ? `${minutes} mins` : 'Standard';
+  }
+
+  resolveEntryDate(msg: any): string {
+    return msg?.entrydate || msg?.entryDate || msg?.publishedOn || '—';
   }
 
  

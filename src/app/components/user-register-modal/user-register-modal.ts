@@ -462,7 +462,7 @@ export class UserRegisterModal implements OnChanges {
           localStorage.setItem('Mobile', payload.mobileNo);
           localStorage.setItem('UserName', payload.name);
           this.close.emit();
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/login']);
         } else {
           this.errorMessage = res.message || 'Registration failed. Please try again.';
         }
