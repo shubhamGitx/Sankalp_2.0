@@ -1,6 +1,6 @@
 <div class="beneficiary-page">
 
-  <!-- ================= HEADER (same design as admin dashboard) ================= -->
+  <!-- ================= HEADER ================= -->
   <header class="header">
     <div class="brand-box" [class.collapsed]="collapsed">
       <div class="brand-logo-badge" title="Sankalp Setu">
@@ -99,7 +99,8 @@
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
-<div class="nav-list">
+
+        <div class="nav-list">
 
           <!-- ============ MAIN CATEGORY ============ -->
           <div class="nav-category-header" *ngIf="!collapsed">MAIN</div>
@@ -117,7 +118,8 @@
             </div>
             <span class="nav-label" *ngIf="!collapsed">Dashboard</span>
           </div>
-           <!-- My Profile (dummy) -->
+
+          <!-- My Profile (dummy) -->
           <div class="nav-item" (click)="onMenuClick()" title="My Profile">
             <div class="nav-icon">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -163,6 +165,7 @@
           </div>
 
         </div>
+
         <div class="sidebar-bottom-section">
           <div class="nav-item logout-nav-item" (click)="logout()" title="Logout">
             <div class="nav-icon logout-icon">
@@ -190,100 +193,260 @@
                 <h3>Broadcast Messages</h3>
                 <span class="broadcast-card-subtitle">State-wide notices shared with all users via Sankalp Setu</span>
               </div>
-              <button type="button" class="broadcast-refresh" (click)="loadBroadcastMessages()" [disabled]="broadcastLoading">Refresh</button>
+              <button type="button" class="broadcast-refresh" (click)="loadBroadcastMessages()" [disabled]="broadcastLoading">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" [class.spin]="broadcastLoading">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <polyline points="1 20 1 14 7 14"></polyline>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+                <span>Refresh</span>
+              </button>
             </div>
 
             @if (broadcastLoading) {
-              <p class="broadcast-loading">Loading broadcast messages...</p>
+              <div class="broadcast-loading-box">
+                <div class="broadcast-spinner"></div>
+                <p>Loading broadcast messages...</p>
+              </div>
             } @else {
               <div class="broadcast-grid">
-                @for (msg of broadcastList; track msg.bmsg_id) {
-                  <article class="broadcast-card-item">
-                    <div class="broadcast-card-badge">#{{ msg.bmsg_id }}</div>
-                    <h4 class="broadcast-card-title">{{ msg.message_head || 'Broadcast Notice' }}</h4>
-                    <p class="broadcast-card-body">{{ msg.message_body }}</p>
-                    <div class="broadcast-card-meta">
-                      <span class="broadcast-meta-item">
-                        <span class="broadcast-meta-label">Validity</span>
-                        <span class="broadcast-meta-value">{{ msg.validity_in_minutes || '—' }} mins</span>
-                      </span>
-                      <span class="broadcast-meta-item">
-                        <span class="broadcast-meta-label">Status</span>
-                        <span class="broadcast-status" [class.broadcast-status-active]="msg.is_active === 'Y'"
-                              [class.broadcast-status-inactive]="msg.is_active !== 'Y'">
+                @for (msg of broadcastList; track msg.bmsg_id; let i = $index) {
+                  <article class="broadcast-card-item" [ngClass]="getBroadcastThemeClass(i)">
+               
+                    <div class="broadcast-top-tab"></div>
+
+                    <div class="broadcast-item-header">
+                      <h4 class="broadcast-item-headline" [title]="msg.message_head || 'Broadcast Notice'">
+                        {{ msg.message_head || 'Broadcast Notice' }}
+                      </h4>
+                      <div class="broadcast-item-icon">
+                        <ng-container *ngTemplateOutlet="themeIconTemplate; context: { themeIdx: i }"></ng-container>
+                      </div>
+                    </div>
+
+                    <div class="broadcast-item-divider"></div>
+
+                    <p class="broadcast-item-body">{{ msg.message_body }}</p>
+
+                    <div class="broadcast-item-footer">
+                      <div class="broadcast-meta-tags">
+                        <span class="broadcast-mini-badge" [class.active]="msg.is_active === 'Y'">
                           {{ msg.is_active === 'Y' ? 'Active' : 'Inactive' }}
                         </span>
-                      </span>
-                      <span class="broadcast-meta-item">
-                        <span class="broadcast-meta-label">Published</span>
-                        <span class="broadcast-meta-value">{{ msg.entrydate }}</span>
-                      </span>
+                        @if (msg.validity_in_minutes) {
+                          <span class="broadcast-mini-meta">{{ msg.validity_in_minutes }}m</span>
+                        }
+                      </div>
+
+                      <button type="button" class="broadcast-readmore-btn" (click)="openBroadcastModal(msg, i)" title="Read full message">
+                        <span>Read more</span>
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                      </button>
                     </div>
                   </article>
                 } @empty {
-                  <p class="empty-state">No broadcast messages are available.</p>
+                  <div class="empty-state broadcast-empty">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                      <path d="M10 4v4"></path>
+                      <path d="M2 8h20"></path>
+                      <line x1="6" y1="12" x2="18" y2="12"></line>
+                      <line x1="6" y1="16" x2="14" y2="16"></line>
+                    </svg>
+                    <p>No broadcast messages are available at this moment.</p>
+                  </div>
                 }
               </div>
             }
           </section>
+
+       
+          @if (selectedBroadcastMsg; as modalMsg) {
+            <div class="broadcast-modal-backdrop" (click)="closeBroadcastModal()">
+              <div class="broadcast-modal-dialog" [ngClass]="getBroadcastThemeClass(selectedBroadcastThemeIndex)" (click)="$event.stopPropagation()">
+                
+                <div class="broadcast-top-tab"></div>
+
+                <div class="broadcast-modal-head">
+                  <div class="broadcast-modal-head-title-wrap">
+                    <div class="broadcast-item-icon modal-icon">
+                      <ng-container *ngTemplateOutlet="themeIconTemplate; context: { themeIdx: selectedBroadcastThemeIndex }"></ng-container>
+                    </div>
+                    <h3 class="broadcast-modal-headline">{{ modalMsg.message_head || 'Broadcast Notice' }}</h3>
+                  </div>
+                  <button type="button" class="broadcast-modal-close" (click)="closeBroadcastModal()" title="Close dialog">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="broadcast-item-divider modal-divider"></div>
+
+                <div class="broadcast-modal-scrollable">
+                  <p class="broadcast-modal-body-text">{{ modalMsg.message_body }}</p>
+
+                  <div class="broadcast-modal-meta-grid">
+                    <div class="broadcast-modal-meta-card">
+                      <span class="modal-meta-label">Notice ID</span>
+                      <span class="modal-meta-val">#{{ modalMsg.bmsg_id }}</span>
+                    </div>
+                    <div class="broadcast-modal-meta-card">
+                      <span class="modal-meta-label">Status</span>
+                      <span class="broadcast-mini-badge" [class.active]="modalMsg.is_active === 'Y'">
+                        {{ modalMsg.is_active === 'Y' ? 'Active Notice' : 'Inactive' }}
+                      </span>
+                    </div>
+                    <div class="broadcast-modal-meta-card">
+                      <span class="modal-meta-label">Validity</span>
+                      <span class="modal-meta-val">{{ modalMsg.validity_in_minutes ? (modalMsg.validity_in_minutes + ' mins') : 'Standard' }}</span>
+                    </div>
+                    <div class="broadcast-modal-meta-card">
+                      <span class="modal-meta-label">Published On</span>
+                      <span class="modal-meta-val">{{ modalMsg.entrydate || '—' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="broadcast-modal-footer">
+                  <button type="button" class="broadcast-modal-close-btn" (click)="closeBroadcastModal()">Dismiss</button>
+                </div>
+
+              </div>
+            </div>
+          }
         } @else {
           <h2 class="page-title">Beneficiary Dashboard</h2>
 
-        @if (profile; as beneficiary) {
-          <section class="profile-card">
-            <div class="profile-card-head">
-              <div class="profile-avatar">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
+          @if (profile; as beneficiary) {
+            <section class="profile-card">
+              <div class="profile-card-head">
+                <div class="profile-avatar">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>
+                </div>
+                <div class="profile-card-titles">
+                  <h3>{{ beneficiary.name || 'Beneficiary profile' }}</h3>
+                  <span class="profile-card-subtitle">Registered Beneficiary &bull; Sankalp Setu</span>
+                </div>
               </div>
-              <div class="profile-card-titles">
-                <h3>{{ beneficiary.name || 'Beneficiary profile' }}</h3>
-                <span class="profile-card-subtitle">Registered Beneficiary &bull; Sankalp Setu</span>
+
+              <div class="profile-grid">
+                <p><span>User ID</span>{{ beneficiary.userId }}</p>
+                <p><span>Mobile</span>{{ beneficiary.mobileNo }}</p>
+                <p><span>Email</span>{{ beneficiary.email || '—' }}</p>
+                <p><span>Area type</span>{{ areaTypeLabel }}</p>
+                <p><span>District</span>{{ districtLabel }}</p>
+                <p><span>Block</span>{{ blockLabel }}</p>
+                <p><span>Panchayat code</span>{{ beneficiary.panchayatCode }}</p>
+                <p><span>Village code</span>{{ beneficiary.villCode || '—' }}</p>
+                <p><span>Ward code</span>{{ beneficiary.wardCode || '—' }}</p>
+                <p><span>Gender</span>{{ genderLabel }}</p>
+                <p><span>Age group</span>{{ ageGroupLabel }}</p>
+                <p><span>Category</span>{{ categoryLabel }}</p>
+                <p><span>Qualification</span>{{ qualificationLabel }}</p>
+                <p><span>Occupation</span>{{ occupationLabel }}</p>
+                <p><span>Device ID</span>{{ beneficiary.deviceId || '—' }}</p>
+                <p><span>Registered on</span>{{ beneficiary.entryDate || '—' }}</p>
               </div>
-            </div>
 
-            <div class="profile-grid">
-<p><span>User ID</span>{{ beneficiary.userId }}</p>
-              <p><span>Mobile</span>{{ beneficiary.mobileNo }}</p>
-              <p><span>Email</span>{{ beneficiary.email || '—' }}</p>
-              <p><span>Area type</span>{{ areaTypeLabel }}</p>
-              <p><span>District</span>{{ districtLabel }}</p>
-              <p><span>Block</span>{{ blockLabel }}</p>
-              <p><span>Panchayat code</span>{{ beneficiary.panchayatCode }}</p>
-              <p><span>Village code</span>{{ beneficiary.villCode || '—' }}</p>
-              <p><span>Ward code</span>{{ beneficiary.wardCode || '—' }}</p>
-              <p><span>Gender</span>{{ genderLabel }}</p>
-              <p><span>Age group</span>{{ ageGroupLabel }}</p>
-              <p><span>Category</span>{{ categoryLabel }}</p>
-              <p><span>Qualification</span>{{ qualificationLabel }}</p>
-              <p><span>Occupation</span>{{ occupationLabel }}</p>
-              <p><span>Device ID</span>{{ beneficiary.deviceId || '—' }}</p>
-              <p><span>Registered on</span>{{ beneficiary.entryDate || '—' }}</p>
-            </div>
-
-            <div class="interests-section">
-              <h4>Interests</h4>
-              @if (beneficiary.userInterests.length) {
-                <ul>
-                  @for (interest of beneficiary.userInterests; track interest.mapId) {
-                    <li>{{ interest.interestName }} (ID: {{ interest.interestId }})</li>
-                  }
-                </ul>
-              } @else {
-                @if (beneficiary.interests.length) {
-                  <p>Interest IDs: {{ beneficiary.interests.join(', ') }}</p>
+              <div class="interests-section">
+                <h4>Interests</h4>
+                @if (beneficiary.userInterests.length) {
+                  <ul>
+                    @for (interest of beneficiary.userInterests; track interest.mapId) {
+                      <li>{{ interest.interestName }} (ID: {{ interest.interestId }})</li>
+                    }
+                  </ul>
                 } @else {
-                  <p>No interests are available.</p>
+                  @if (beneficiary.interests.length) {
+                    <p>Interest IDs: {{ beneficiary.interests.join(', ') }}</p>
+                  } @else {
+                    <p>No interests are available.</p>
+                  }
                 }
-              }
-            </div>
-          </section>
-        } @else {
-          <p class="empty-state">No beneficiary profile is available. Please log in again.</p>
-        }
+              </div>
+            </section>
+          } @else {
+            <p class="empty-state">No beneficiary profile is available. Please log in again.</p>
+          }
         }
       </main>
     </div>
   </div>
 </div>
+
+<!-- ================= ICONS TEMPLATE ================= -->
+<ng-template #themeIconTemplate let-themeIdx="themeIdx">
+  @switch (themeIdx % 9) {
+    @case (0) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        <line x1="8" y1="9" x2="16" y2="9"></line>
+        <line x1="8" y1="13" x2="13" y2="13"></line>
+      </svg>
+    }
+    @case (1) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 11l19-9-9 19-2-8-8-2z"></path>
+        <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>
+        <path d="M16 8l5-3v14l-5-3"></path>
+        <path d="M4 14h6l6 4V6l-6 4H4a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2z"></path>
+      </svg>
+    }
+    @case (2) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M18 20a6 6 0 0 0-12 0"></path>
+        <circle cx="12" cy="10" r="4"></circle>
+      </svg>
+    }
+    @case (3) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+        <polyline points="17 6 23 6 23 12"></polyline>
+      </svg>
+    }
+    @case (4) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+      </svg>
+    }
+    @case (5) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+        <line x1="6" y1="1" x2="6" y2="4"></line>
+        <line x1="10" y1="1" x2="10" y2="4"></line>
+        <line x1="14" y1="1" x2="14" y2="4"></line>
+      </svg>
+    }
+    @case (6) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+      </svg>
+    }
+    @case (7) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+    }
+    @case (8) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18h6"></path>
+        <path d="M10 22h4"></path>
+        <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5h6.18z"></path>
+      </svg>
+    }
+  }
+</ng-template>

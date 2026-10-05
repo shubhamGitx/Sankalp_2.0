@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BeneficiaryProfile } from '../../models/otp';
@@ -28,6 +28,9 @@ export class BeneficiaryComponent implements OnInit {
 
   broadcastLoading = false;
 
+  selectedBroadcastMsg: BroadcastMessageData | null = null;
+  selectedBroadcastThemeIndex: number = 0;
+
   genders: { code: string; name: string }[] = [];
   ageGroups: { code: string; name: string }[] = [];
   categories: { code: string; name: string }[] = [];
@@ -37,13 +40,13 @@ export class BeneficiaryComponent implements OnInit {
   blocks: { code: string; name: string }[] = [];
 
   constructor(
+    private cdr: ChangeDetectorRef,
     private router: Router,
     private masterService: MasterService,
     private districtService: DistrictService,
     private blockService: BlockService,
     private cryptoService: CryptoService,
-    private messageService: MessageService,
-    private cdr: ChangeDetectorRef
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -211,9 +214,6 @@ export class BeneficiaryComponent implements OnInit {
       return '—';
     }
    
-    if (!list || list.length === 0) {
-      return '…';
-    }
     const found = list.find((i) => String(i.code) === String(code));
     return found ? found.name : String(code);
   }
@@ -257,6 +257,39 @@ export class BeneficiaryComponent implements OnInit {
         this.refreshView();
       },
     });
+  }
+
+  openBroadcastModal(msg: BroadcastMessageData, index: number): void {
+    this.selectedBroadcastMsg = msg;
+    this.selectedBroadcastThemeIndex = index % 9;
+    this.refreshView();
+  }
+
+  closeBroadcastModal(): void {
+    this.selectedBroadcastMsg = null;
+    this.refreshView();
+  }
+
+  getBroadcastThemeClass(index: number): string {
+    const themes = [
+      'theme-yellow',
+      'theme-orange',
+      'theme-brown',
+      'theme-green',
+      'theme-cyan',
+      'theme-blue',
+      'theme-slate',
+      'theme-purple',
+      'theme-pink'
+    ];
+    return themes[index % themes.length];
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePress(): void {
+    if (this.selectedBroadcastMsg) {
+      this.closeBroadcastModal();
+    }
   }
 
 
