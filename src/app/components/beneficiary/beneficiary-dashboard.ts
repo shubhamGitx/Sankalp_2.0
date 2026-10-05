@@ -8,10 +8,7 @@ import { BlockService } from '../../services/block';
 import { CryptoService } from '../../services/crypto.service';
 import { MessageService } from '../../services/message.service';
 import { BroadcastMessageData } from '../../models/broadcast-message';
-import {
-  GetInterestWiseMessageRequest,
-  InterestWiseMessageData
-} from '../../models/interest-message';
+import { InterestWiseMessageData } from '../../models/interest-message';
 
 @Component({
   selector: 'app-beneficiary',
@@ -268,7 +265,7 @@ export class BeneficiaryComponent implements OnInit {
     return [];
   }
 
-  openInterest(interest: { interestId: number; interestName: string }): void {
+  openInterest(interest: { interestId: number; interestName: string }): void {debugger
     if (!interest) {
       return;
     }
@@ -277,19 +274,9 @@ export class BeneficiaryComponent implements OnInit {
     this.interestError = '';
     this.interestLoading = true;
 
-    const deviceID =
-      this.profile?.deviceId ||
-      localStorage.getItem('deviceId') ||
-      '';
-    const clientKey = localStorage.getItem('clientKey') || '';
-
-    const payload: GetInterestWiseMessageRequest = {
-      deviceID,
-      clientKey,
-      interest_id: String(interest.interestId)
-    };
-
-    this.messageService.getInterestWiseMessage(payload).subscribe({
+    // This list endpoint is repeatable. The device-specific endpoint returns
+    // only a message delivery and can therefore be empty after the first read.
+    this.messageService.getInterestWiseMessages(interest.interestId).subscribe({
       next: (res: any) => {
         this.interestLoading = false;
         this.interestMessages = this.extractInterestMessages(res);
