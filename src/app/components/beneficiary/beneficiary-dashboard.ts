@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BeneficiaryProfile } from '../../models/otp';
@@ -42,7 +42,8 @@ export class BeneficiaryComponent implements OnInit {
     private districtService: DistrictService,
     private blockService: BlockService,
     private cryptoService: CryptoService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -71,8 +72,12 @@ export class BeneficiaryComponent implements OnInit {
             ['gender_code', 'gender_Code', 'genderCode', 'GenderCode'],
             ['gender_name', 'gender_Name', 'genderName', 'GenderName']);
         }
+        this.refreshView();
       },
-      error: (err) => console.error('Failed to load genders', err),
+      error: (err) => {
+        console.error('Failed to load genders', err);
+        this.refreshView();
+      },
     });
 
     this.masterService.getAgeGroupList().subscribe({
@@ -82,19 +87,27 @@ export class BeneficiaryComponent implements OnInit {
             ['id', 'age_group_id', 'ageGroupId', 'age_Group_Id'],
             ['age_group_name', 'ageGroupName', 'ageGroup_Name']);
         }
+        this.refreshView();
       },
-      error: (err) => console.error('Failed to load age groups', err),
+      error: (err) => {
+        console.error('Failed to load age groups', err);
+        this.refreshView();
+      },
     });
 
     this.masterService.getCategoryList().subscribe({
       next: (res: any) => {
         if (res?.status && Array.isArray(res.data)) {
           this.categories = this.mapList(res.data,
-            ['category_id', 'category_Id', 'categoryId', 'CategoryID'],
-            ['category_name', 'category_Name', 'categoryName', 'category']);
+            ['category_id', 'category_Id', 'categoryId', 'categoryid', 'CategoryID', 'CategoryId'],
+            ['category_name', 'category_Name', 'categoryName', 'categoryname', 'CategoryName', 'category']);
         }
+        this.refreshView();
       },
-      error: (err) => console.error('Failed to load categories', err),
+      error: (err) => {
+        console.error('Failed to load categories', err);
+        this.refreshView();
+      },
     });
 
     this.masterService.getQualificationList().subscribe({
@@ -104,8 +117,12 @@ export class BeneficiaryComponent implements OnInit {
             ['qualification_id', 'qualification_Id', 'qualificationId', 'QualificationID'],
             ['qualification_name', 'qualification_Name', 'qualificationName']);
         }
+        this.refreshView();
       },
-      error: (err) => console.error('Failed to load qualifications', err),
+      error: (err) => {
+        console.error('Failed to load qualifications', err);
+        this.refreshView();
+      },
     });
 
     this.masterService.getOccupationList().subscribe({
@@ -115,8 +132,12 @@ export class BeneficiaryComponent implements OnInit {
             ['occupation_id', 'occupation_Id', 'occupationId', 'OccupationID'],
             ['occupation_name', 'occupation_Name', 'occupationName']);
         }
+        this.refreshView();
       },
-      error: (err) => console.error('Failed to load occupations', err),
+      error: (err) => {
+        console.error('Failed to load occupations', err);
+        this.refreshView();
+      },
     });
 
     this.districtService.getDistrictList().subscribe({
@@ -126,8 +147,12 @@ export class BeneficiaryComponent implements OnInit {
             ['district_code', 'District_Code', 'district_Code', 'districtcode', 'distCode', 'districtCode'],
             ['district_name', 'District_Name', 'district_Name', 'districtname', 'distName', 'districtName']);
         }
+        this.refreshView();
       },
-      error: (err) => console.error('Failed to load districts', err),
+      error: (err) => {
+        console.error('Failed to load districts', err);
+        this.refreshView();
+      },
     });
 
     if (this.profile?.distCode) {
@@ -138,8 +163,12 @@ export class BeneficiaryComponent implements OnInit {
               ['blockcode', 'BlockCode', 'blockCode', 'block_Code'],
               ['blockname', 'BlockName', 'blockName', 'block_Name']);
           }
+          this.refreshView();
         },
-        error: (err) => console.error('Failed to load blocks', err),
+        error: (err) => {
+          console.error('Failed to load blocks', err);
+          this.refreshView();
+        },
       });
     }
   }
@@ -172,10 +201,18 @@ export class BeneficiaryComponent implements OnInit {
     }
   }
 
-  /** Falls back to the raw code when no friendly name is available. */
+  private refreshView(): void {
+    this.cdr.detectChanges();
+  }
+
+
   private resolve(list: { code: string; name: string }[], code: number | string | null | undefined): string {
     if (code === undefined || code === null || code === '') {
       return '—';
+    }
+   
+    if (!list || list.length === 0) {
+      return '…';
     }
     const found = list.find((i) => String(i.code) === String(code));
     return found ? found.name : String(code);
@@ -212,10 +249,12 @@ export class BeneficiaryComponent implements OnInit {
         } else {
           this.broadcastList = [];
         }
+        this.refreshView();
       },
       error: (err) => {
         this.broadcastLoading = false;
         console.error('Failed to load broadcast messages', err);
+        this.refreshView();
       },
     });
   }

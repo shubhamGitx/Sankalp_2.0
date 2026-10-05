@@ -36,7 +36,7 @@ export class MasterService {
     });
   }
 
-  getVillageList(panchayatCode: string): Observable<any> {debugger
+  getVillageList(panchayatCode: string): Observable<any> {
     return this.http.post<any>('/api/Master/GetVillageList', {
       clientKey: this.getClientKey(),
       panchayatCode: this.encryptField(panchayatCode),
