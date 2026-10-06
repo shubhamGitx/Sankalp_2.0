@@ -7,8 +7,10 @@ import { DistrictService } from '../../services/district';
 import { BlockService } from '../../services/block';
 import { CryptoService } from '../../services/crypto.service';
 import { MessageService } from '../../services/message.service';
+import { PortalService } from '../../services/portal';
 import { BroadcastMessageData } from '../../models/broadcast-message';
 import { InterestWiseMessageData } from '../../models/interest-message';
+import { Portal } from '../../models/portal';
 
 @Component({
   selector: 'app-beneficiary',
@@ -45,6 +47,9 @@ export class BeneficiaryComponent implements OnInit {
   districts: { code: string; name: string }[] = [];
   blocks: { code: string; name: string }[] = [];
 
+  portals: Portal[] = [];
+  portalLoading = false;
+
   constructor(
     private cdr: ChangeDetectorRef,
     private router: Router,
@@ -52,7 +57,8 @@ export class BeneficiaryComponent implements OnInit {
     private districtService: DistrictService,
     private blockService: BlockService,
     private cryptoService: CryptoService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private portalService: PortalService
   ) {}
 
   ngOnInit(): void {
@@ -241,7 +247,70 @@ export class BeneficiaryComponent implements OnInit {
     this.selectedMenu = menu;
     if (menu === 'broadcast') {
       this.loadBroadcastMessages();
+    } else if (menu === 'portal') {
+      this.loadPortals();
     }
+  }
+
+  loadPortals(): void {
+    if (this.portals.length) {
+      this.refreshView();
+      return;
+    }
+    this.portalLoading = true;
+    this.portalService.getPortalList().subscribe({
+      next: (res: any) => {
+        this.portalLoading = false;
+        if (res && res.status && Array.isArray(res.data)) {
+          this.portals = res.data.map((item: any) => ({
+            portalId: item.portal_id,
+            portalName: this.decrypt(item.portal_name),
+            portalUrl: this.decrypt(item.portal_url),
+            portalImagePath: this.decrypt(item.portal_image_path),
+            isActive: this.isActiveFlag(item.is_active)
+          }));
+        } else {
+          this.portals = [];
+        }
+        this.refreshView();
+      },
+      error: (err) => {
+        this.portalLoading = false;
+        console.error('Failed to load portals', err);
+        this.portals = [];
+        this.refreshView();
+      },
+    });
+  }
+
+  private isActiveFlag(value: string): boolean {
+    const raw = this.decrypt(value).toUpperCase();
+    return raw === 'Y' || raw === 'ACTIVE' || raw === 'TRUE' || raw === '1';
+  }
+
+  getInitials(name: string): string {
+    if (!name) return 'PT';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  getPortalAvatarColor(name: string): string {
+    const colors = [
+      '#0b7a6b', '#0e7490', '#b45309', '#7e22ce', '#be185d', '#15803d', '#1d4ed8'
+    ];
+    let hash = 0;
+    for (let i = 0; i < (name || '').length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  portalDisplayUrl(url: string): string {
+    if (!url) return '';
+    return url.startsWith('http') ? url : 'https://' + url;
   }
 
 

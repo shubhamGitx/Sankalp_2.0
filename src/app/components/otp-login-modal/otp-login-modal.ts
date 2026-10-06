@@ -172,10 +172,11 @@ export class OtpLoginModal implements OnChanges {
     const mobile = this.mobileForm.value.mobile!;
 
     this.mobileNo = mobile;
-    this.loading = true;
     this.errorMessage = '';
     this.successMessage = '';
-    this.clearTimer();
+
+    this.step = 'otp';
+    this.startTimer(60);
 
     await this.ensureDeviceId();
 
@@ -187,10 +188,7 @@ export class OtpLoginModal implements OnChanges {
 
     this.otpService.sendOtp(request).subscribe({
       next: (res) => {
-        this.loading = false;
-
         if (res.success || res.status) {
-          this.step = 'otp';
           this.successMessage = res.message || 'OTP sent to your mobile number.';
           this.startTimer(60);
         } else {
@@ -198,7 +196,6 @@ export class OtpLoginModal implements OnChanges {
         }
       },
       error: (err) => {
-        this.loading = false;
         console.error('SendOtp error', err);
         this.errorMessage = 'An error occurred. Please try again.';
       },
