@@ -1694,6 +1694,37 @@
   background: #94a3b8;
 }
 
+.portal-card-id-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.portal-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #24c89c 0%, #0b8f6c 100%);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 153, 122, 0.24);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.portal-detail-btn:hover {
+  background: linear-gradient(90deg, #0b8f6c 0%, #0a6a50 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(11, 122, 91, 0.32);
+}
+
 .portal-card-name {
   margin: 2px 0 0;
   font-size: 16px;

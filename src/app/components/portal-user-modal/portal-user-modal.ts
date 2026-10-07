@@ -6,6 +6,7 @@ import {
   Input,
   OnChanges,
   Output,
+  ChangeDetectorRef,
   SimpleChanges,
   inject,
 } from '@angular/core';
@@ -39,6 +40,7 @@ export class PortalUserModal implements OnChanges {
   private portalService = inject(PortalService);
   private cryptoService = inject(CryptoService);
   private host = inject(ElementRef<HTMLElement>);
+  private cdr = inject(ChangeDetectorRef);
 
   @Input() isOpen = false;
   @Input() portal: Portal | null = null;
@@ -59,7 +61,7 @@ export class PortalUserModal implements OnChanges {
   errorMessage = '';
   successMessage = '';
 
-  step: 'form' | 'otp' | 'success' = 'form';
+  step: 'form' | 'otp' | 'success' | 'messages' = 'form';
   fetchedBeneficiary: any = null;
   verifiedData: any = null;
   copied = false;
@@ -69,7 +71,7 @@ export class PortalUserModal implements OnChanges {
   messagesLoading = false;
   messageError = '';
   messageInfo = '';
-  private expandedIds = new Set<number>();
+  selectedMessage: any = null;
 
   userForm = new FormGroup({
     mobileNo: new FormControl('', [
@@ -118,7 +120,7 @@ export class PortalUserModal implements OnChanges {
     this.messagesLoading = false;
     this.messageError = '';
     this.messageInfo = '';
-    this.expandedIds.clear();
+    this.selectedMessage = null;
     this.userForm.reset();
     this.otpForm.reset();
   }
@@ -170,11 +172,13 @@ export class PortalUserModal implements OnChanges {
           this.userTypes = [];
           this.userTypesError = 'No user types are available for this portal.';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.userTypesLoading = false;
         console.error('Failed to load portal user types', err);
         this.userTypesError = 'Failed to load user types. Please try again.';
+        this.cdr.detectChanges();
       },
     });
   }
@@ -243,7 +247,7 @@ export class PortalUserModal implements OnChanges {
     this.loading = true;
 
     this.portalService.sendPortalOtp(payload).subscribe({
-      next: (res: any) => {debugger
+      next: (res: any) => {
         this.loading = false;
         if (res && (res.status === true || res.status === 1 || res.success === true)) {
           const data = res.data;
@@ -259,11 +263,14 @@ export class PortalUserModal implements OnChanges {
         } else {
           this.errorMessage = res?.message || 'Failed to send OTP. Please try again.';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.loading = false;
         console.error('Send OTP error', err);
-        this.errorMessage = 'An error occurred while sending OTP. Please try again.';
+        this.errorMessage =
+          err?.error?.message || err?.message || 'An error occurred while sending OTP. Please try again.';
+        this.cdr.detectChanges();
       },
     });
   }
@@ -344,11 +351,14 @@ export class PortalUserModal implements OnChanges {
         } else {
           this.errorMessage = res?.message || 'OTP verification failed. Please try again.';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.loading = false;
         console.error('Verify OTP error', err);
-        this.errorMessage = 'An error occurred while verifying OTP. Please try again.';
+        this.errorMessage =
+          err?.error?.message || err?.message || 'An error occurred while verifying OTP. Please try again.';
+        this.cdr.detectChanges();
       },
     });
   }
@@ -370,7 +380,11 @@ export class PortalUserModal implements OnChanges {
         document.body.removeChild(ta);
       }
       this.copied = true;
-      setTimeout(() => (this.copied = false), 2000);
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.copied = false;
+        this.cdr.detectChanges();
+      }, 2000);
     } catch (e) {
       console.error('Copy to clipboard failed', e);
     }
@@ -378,12 +392,14 @@ export class PortalUserModal implements OnChanges {
 
   onTokenInput(event: Event): void {
     this.tokenInput = (event.target as HTMLInputElement).value;
+    this.cdr.detectChanges();
   }
 
   showBeneficiaryMessage(): void {
     const token = (this.tokenInput || '').trim();
     if (!token) {
       this.messageError = 'Please paste the beneficiary token before fetching messages.';
+      this.cdr.detectChanges();
       return;
     }
 
@@ -391,11 +407,12 @@ export class PortalUserModal implements OnChanges {
       localStorage.setItem('beneficiaryVerified', JSON.stringify(this.verifiedData));
     }
 
+    this.step = 'messages';
     this.messagesLoading = true;
     this.messageError = '';
     this.messageInfo = '';
     this.messages = [];
-    this.expandedIds.clear();
+    this.selectedMessage = null;
 
     this.portalService.getBeneficiaryMessages({ portal_id: this.portalId, token }).subscribe({
       next: (res: any) => {
@@ -406,34 +423,36 @@ export class PortalUserModal implements OnChanges {
         } else {
           this.messageError = res?.message || 'No beneficiary messages were found.';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.messagesLoading = false;
         console.error('Get beneficiary messages error', err);
         this.messageError = 'An error occurred while fetching beneficiary messages. Please try again.';
+        this.cdr.detectChanges();
       },
     });
   }
 
-  toggleReadMore(msgId: number): void {
-    if (this.expandedIds.has(msgId)) {
-      this.expandedIds.delete(msgId);
-    } else {
-      this.expandedIds.add(msgId);
-    }
+  openMessageDetail(msg: any): void {
+    this.selectedMessage = msg;
+    this.cdr.detectChanges();
   }
 
-  isExpanded(msgId: number): boolean {
-    return this.expandedIds.has(msgId);
+  closeMessageDetail(): void {
+    this.selectedMessage = null;
+    this.cdr.detectChanges();
+  }
+
+  backToSuccess(): void {
+    this.selectedMessage = null;
+    this.step = 'success';
+    this.cdr.detectChanges();
   }
 
   getMessageBody(msg: any): string {
     const body = msg?.message_Body || '';
-    return this.isExpanded(msg?.msg_id) ? body : this.truncate(body, 150);
-  }
-
-  hasLongBody(msg: any): boolean {
-    return (msg?.message_Body || '').length > 150;
+    return this.truncate(body, 150);
   }
 
   private truncate(text: string, max: number): string {

@@ -10,7 +10,7 @@
       <div class="portal-user-title">
         <div class="portal-user-brand">&#128279;</div>
         <div>
-          <h2>{{ step === 'success' ? 'OTP verified successfully.' : step === 'otp' ? 'Verify OTP' : 'Portal User' }}</h2>
+          <h2>{{ step === 'messages' ? 'Beneficiary Messages' : step === 'success' ? 'OTP verified successfully.' : step === 'otp' ? 'Verify OTP' : 'Portal User' }}</h2>
           @if (portal) {
             <p class="portal-user-subtitle">{{ portal.portalName || 'Portal' }}</p>
           } @else {
@@ -206,7 +206,7 @@
             </form>
           </div>
         </div>
-      } @else {
+      } @else if (step === 'success') {
         <div class="verify-success-card">
           <div class="verify-success-icon">&#10004;</div>
 
@@ -269,8 +269,17 @@
             </button>
           </div>
         </div>
-
-        @if (messages.length) {
+      } @else {
+        @if (messagesLoading) {
+          <div class="messages-loading">
+            <span class="spinner"></span> Loading messages&hellip;
+          </div>
+        } @else if (messageError) {
+          <div class="messages-error">{{ messageError }}</div>
+        } @else if (messages.length) {
+          @if (messageInfo) {
+            <div class="messages-summary">{{ messageInfo }}</div>
+          }
           <div class="beneficiary-message-list">
             @for (msg of messages; track msg.msg_id) {
               <div class="beneficiary-message-card">
@@ -280,11 +289,9 @@
                 </div>
                 <h3 class="bmc-title">{{ msg.message_Head || 'Message' }}</h3>
                 <p class="bmc-body">{{ getMessageBody(msg) }}</p>
-                @if (hasLongBody(msg)) {
-                  <button type="button" class="read-more-btn" (click)="toggleReadMore(msg.msg_id)">
-                    {{ isExpanded(msg.msg_id) ? 'Read Less' : 'Read More' }}
-                  </button>
-                }
+                <button type="button" class="read-more-btn" (click)="openMessageDetail(msg)">
+                  Read More
+                </button>
                 <div class="bmc-meta">
                   <span class="bmc-meta-item"><strong>Beneficiary:</strong> {{ msg.benificiary_No || '—' }}</span>
                   <span class="bmc-meta-item"><strong>Mobile:</strong> {{ msg.mobNo || '—' }}</span>
@@ -299,6 +306,11 @@
               </div>
             }
           </div>
+          <div class="button-row vs-button-row">
+            <button type="button" class="btn-cancel" (click)="backToSuccess()">Back</button>
+          </div>
+        } @else {
+          <div class="messages-empty">{{ messageInfo || 'No beneficiary messages were found.' }}</div>
         }
       }
     </div>
@@ -308,5 +320,60 @@
     </div>
 
   </div>
+
+  @if (selectedMessage) {
+    <div class="msg-detail-overlay" (click)="closeMessageDetail()">
+      <div class="msg-detail-modal" role="dialog" aria-modal="true" aria-label="Message detail" (click)="$event.stopPropagation()">
+        <div class="msg-detail-header">
+          <div class="msg-detail-title">
+            <span class="msg-detail-type">{{ selectedMessage.type || 'Message' }}</span>
+            <h3>{{ selectedMessage.message_Head || 'Message Detail' }}</h3>
+          </div>
+          <button type="button" class="msg-detail-close" aria-label="Close" (click)="closeMessageDetail()">&times;</button>
+        </div>
+        <div class="msg-detail-body">
+          <div class="detail-field">
+            <span class="detail-label">Message ID</span>
+            <span class="detail-value">{{ selectedMessage.msg_id || '—' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Type</span>
+            <span class="detail-value">{{ selectedMessage.type || '—' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Beneficiary No</span>
+            <span class="detail-value">{{ selectedMessage.benificiary_No || '—' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Mobile</span>
+            <span class="detail-value">{{ selectedMessage.mobNo || '—' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Created Date</span>
+            <span class="detail-value">{{ selectedMessage.createdDate || '—' }}</span>
+          </div>
+          @if (selectedMessage.sync_date) {
+            <div class="detail-field">
+              <span class="detail-label">Synced Date</span>
+              <span class="detail-value">{{ selectedMessage.sync_date }}</span>
+            </div>
+          }
+          @if (selectedMessage.portal_id) {
+            <div class="detail-field">
+              <span class="detail-label">Portal ID</span>
+              <span class="detail-value">{{ selectedMessage.portal_id }}</span>
+            </div>
+          }
+          <div class="detail-field detail-field-full">
+            <span class="detail-label">Message</span>
+            <div class="detail-message">{{ selectedMessage.message_Body || '—' }}</div>
+          </div>
+        </div>
+        <div class="msg-detail-footer">
+          <button type="button" class="btn-primary" (click)="closeMessageDetail()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>
 }

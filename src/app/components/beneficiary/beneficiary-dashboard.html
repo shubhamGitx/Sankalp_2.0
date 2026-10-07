@@ -517,7 +517,16 @@
                     </div>
 
                     <h4 class="portal-card-name">{{ portal.portalName || 'Untitled Portal' }}</h4>
-                    <p class="portal-card-id">ID: #{{ portal.portalId }}</p>
+
+                    <div class="portal-card-id-row">
+                      <p class="portal-card-id">ID: #{{ portal.portalId }}</p>
+                      <button
+                        type="button"
+                        class="portal-detail-btn"
+                        (click)="selectPortal(portal); $event.stopPropagation()">
+                        Applicant Detail
+                      </button>
+                    </div>
 
                     @if (portal.portalUrl) {
                       <a
