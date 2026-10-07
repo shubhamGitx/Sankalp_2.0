@@ -10,7 +10,7 @@
       <div class="portal-user-title">
         <div class="portal-user-brand">&#128279;</div>
         <div>
-          <h2>{{ step === 'otp' ? 'Verify OTP' : 'Portal User' }}</h2>
+          <h2>{{ step === 'success' ? 'OTP verified successfully.' : step === 'otp' ? 'Verify OTP' : 'Portal User' }}</h2>
           @if (portal) {
             <p class="portal-user-subtitle">{{ portal.portalName || 'Portal' }}</p>
           } @else {
@@ -164,7 +164,7 @@
           </button>
         </div>
       </form>
-      } @else {
+      } @else if (step === 'otp') {
         <div class="otp-step">
           <div class="beneficiary-card">
             <div class="beneficiary-detail-grid">
@@ -206,6 +206,100 @@
             </form>
           </div>
         </div>
+      } @else {
+        <div class="verify-success-card">
+          <div class="verify-success-icon">&#10004;</div>
+
+          <div class="vs-item">
+            <span class="vs-label">Beneficiary ID</span>
+            <span class="vs-value">{{ verifiedData?.beneficiaryID || '—' }}</span>
+          </div>
+
+          <div class="vs-item">
+            <span class="vs-label">Mobile No</span>
+            <span class="vs-value">{{ verifiedData?.mobileNo || '—' }}</span>
+          </div>
+
+          <div class="vs-item">
+            <span class="vs-label">Token</span>
+            <span class="vs-value vs-token">
+              <span class="vs-token-text">{{ verifiedData?.token || '—' }}</span>
+              <button
+                type="button"
+                class="copy-btn"
+                [attr.title]="copied ? 'Copied!' : 'Copy token'"
+                (click)="copyToken()">
+                @if (copied) {
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                }
+              </button>
+            </span>
+          </div>
+
+          <div class="vs-item vs-token-input-item">
+            <label class="vs-label" for="beneficiary-token">Beneficiary Token</label>
+            <input
+              id="beneficiary-token"
+              class="vs-token-input"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              [value]="tokenInput"
+              (input)="onTokenInput($event)"
+              placeholder="Paste the token copied above" />
+          </div>
+
+          @if (messageError) {
+            <small class="error-msg">{{ messageError }}</small>
+          }
+          @if (messageInfo) {
+            <small class="success-msg">{{ messageInfo }}</small>
+          }
+
+          <div class="button-row vs-button-row">
+            <button type="button" class="btn-primary" [disabled]="messagesLoading" (click)="showBeneficiaryMessage()">
+              {{ messagesLoading ? 'Loading…' : 'Show Beneficiary Message' }}
+            </button>
+          </div>
+        </div>
+
+        @if (messages.length) {
+          <div class="beneficiary-message-list">
+            @for (msg of messages; track msg.msg_id) {
+              <div class="beneficiary-message-card">
+                <div class="bmc-head">
+                  <span class="bmc-type">{{ msg.type || 'Message' }}</span>
+                  <span class="bmc-date">{{ msg.createdDate || '' }}</span>
+                </div>
+                <h3 class="bmc-title">{{ msg.message_Head || 'Message' }}</h3>
+                <p class="bmc-body">{{ getMessageBody(msg) }}</p>
+                @if (hasLongBody(msg)) {
+                  <button type="button" class="read-more-btn" (click)="toggleReadMore(msg.msg_id)">
+                    {{ isExpanded(msg.msg_id) ? 'Read Less' : 'Read More' }}
+                  </button>
+                }
+                <div class="bmc-meta">
+                  <span class="bmc-meta-item"><strong>Beneficiary:</strong> {{ msg.benificiary_No || '—' }}</span>
+                  <span class="bmc-meta-item"><strong>Mobile:</strong> {{ msg.mobNo || '—' }}</span>
+                  <span class="bmc-meta-item"><strong>Message ID:</strong> {{ msg.msg_id || '—' }}</span>
+                  @if (msg.is_synced) {
+                    <span class="bmc-meta-item"><strong>Synced:</strong> {{ msg.is_synced }}</span>
+                  }
+                  @if (msg.portal_id) {
+                    <span class="bmc-meta-item"><strong>Portal:</strong> {{ msg.portal_id }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
       }
     </div>
 

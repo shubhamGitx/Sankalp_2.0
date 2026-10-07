@@ -59,8 +59,17 @@ export class PortalUserModal implements OnChanges {
   errorMessage = '';
   successMessage = '';
 
-  step: 'form' | 'otp' = 'form';
+  step: 'form' | 'otp' | 'success' = 'form';
   fetchedBeneficiary: any = null;
+  verifiedData: any = null;
+  copied = false;
+
+  tokenInput = '';
+  messages: any[] = [];
+  messagesLoading = false;
+  messageError = '';
+  messageInfo = '';
+  private expandedIds = new Set<number>();
 
   userForm = new FormGroup({
     mobileNo: new FormControl('', [
@@ -102,6 +111,14 @@ export class PortalUserModal implements OnChanges {
     this.userTypeDropdownOpen = false;
     this.step = 'form';
     this.fetchedBeneficiary = null;
+    this.verifiedData = null;
+    this.copied = false;
+    this.tokenInput = '';
+    this.messages = [];
+    this.messagesLoading = false;
+    this.messageError = '';
+    this.messageInfo = '';
+    this.expandedIds.clear();
     this.userForm.reset();
     this.otpForm.reset();
   }
@@ -299,10 +316,128 @@ export class PortalUserModal implements OnChanges {
       return;
     }
 
-    const enteredOtp = this.otpForm.value.otp;
+    const aId = this.fetchedBeneficiary ? this.fetchedBeneficiary['a_Id'] : null;
+    if (aId === undefined || aId === null || aId === '') {
+      this.errorMessage = 'Beneficiary record reference (a_Id) is missing. Please send the OTP again.';
+      return;
+    }
 
-    console.log('OTP entered:', enteredOtp, 'for beneficiary:', this.fetchedBeneficiary);
-    this.successMessage = 'OTP submitted successfully. Verification flow to be added.';
+    const payload = {
+      a_Id: [Number(aId)],
+      mobileNo: this.userForm.controls.mobileNo.value,
+      otp: this.otpForm.value.otp,
+      deviceId: this.deviceId,
+      session: this.userForm.controls.session.value,
+      portal_id: this.portalId,
+      client_key: localStorage.getItem('clientKey') || '',
+      user_id: localStorage.getItem('UserId') || 'string',
+    };
+
+    this.loading = true;
+
+    this.portalService.verifyOtp(payload).subscribe({
+      next: (res: any) => {
+        this.loading = false;
+        if (res && (res.status === true || res.status === 1 || res.success === true)) {
+          this.verifiedData = res.data || {};
+          this.step = 'success';
+        } else {
+          this.errorMessage = res?.message || 'OTP verification failed. Please try again.';
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Verify OTP error', err);
+        this.errorMessage = 'An error occurred while verifying OTP. Please try again.';
+      },
+    });
+  }
+
+  async copyToken(): Promise<void> {
+    const token = this.verifiedData?.token;
+    if (!token) return;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(token);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = token;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      this.copied = true;
+      setTimeout(() => (this.copied = false), 2000);
+    } catch (e) {
+      console.error('Copy to clipboard failed', e);
+    }
+  }
+
+  onTokenInput(event: Event): void {
+    this.tokenInput = (event.target as HTMLInputElement).value;
+  }
+
+  showBeneficiaryMessage(): void {
+    const token = (this.tokenInput || '').trim();
+    if (!token) {
+      this.messageError = 'Please paste the beneficiary token before fetching messages.';
+      return;
+    }
+
+    if (this.verifiedData) {
+      localStorage.setItem('beneficiaryVerified', JSON.stringify(this.verifiedData));
+    }
+
+    this.messagesLoading = true;
+    this.messageError = '';
+    this.messageInfo = '';
+    this.messages = [];
+    this.expandedIds.clear();
+
+    this.portalService.getBeneficiaryMessages({ portal_id: this.portalId, token }).subscribe({
+      next: (res: any) => {
+        this.messagesLoading = false;
+        if (res && Array.isArray(res.data)) {
+          this.messages = res.data;
+          this.messageInfo = res?.message || 'Beneficiary messages loaded successfully.';
+        } else {
+          this.messageError = res?.message || 'No beneficiary messages were found.';
+        }
+      },
+      error: (err) => {
+        this.messagesLoading = false;
+        console.error('Get beneficiary messages error', err);
+        this.messageError = 'An error occurred while fetching beneficiary messages. Please try again.';
+      },
+    });
+  }
+
+  toggleReadMore(msgId: number): void {
+    if (this.expandedIds.has(msgId)) {
+      this.expandedIds.delete(msgId);
+    } else {
+      this.expandedIds.add(msgId);
+    }
+  }
+
+  isExpanded(msgId: number): boolean {
+    return this.expandedIds.has(msgId);
+  }
+
+  getMessageBody(msg: any): string {
+    const body = msg?.message_Body || '';
+    return this.isExpanded(msg?.msg_id) ? body : this.truncate(body, 150);
+  }
+
+  hasLongBody(msg: any): boolean {
+    return (msg?.message_Body || '').length > 150;
+  }
+
+  private truncate(text: string, max: number): string {
+    return text.length > max ? text.slice(0, max) + '…' : text;
   }
 
 
