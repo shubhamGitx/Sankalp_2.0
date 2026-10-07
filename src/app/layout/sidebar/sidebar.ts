@@ -39,10 +39,6 @@ export class Sidebar {
     this.router.navigate(['/block']);
   }
 
-  openPortalList() {
-    this.router.navigate(['/portal-list']);
-  }
-
   openGallery() {
     this.router.navigate(['/gallery-admin']);
   }

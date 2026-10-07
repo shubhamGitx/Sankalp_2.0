@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BeneficiaryProfile } from '../../models/otp';
@@ -11,11 +11,12 @@ import { PortalService } from '../../services/portal';
 import { BroadcastMessageData } from '../../models/broadcast-message';
 import { InterestWiseMessageData } from '../../models/interest-message';
 import { Portal } from '../../models/portal';
+import { PortalUserModal } from '../portal-user-modal/portal-user-modal';
 
 @Component({
   selector: 'app-beneficiary',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PortalUserModal],
   templateUrl: './beneficiary-dashboard.html',
   styleUrl: './beneficiary-dashboard.css'
 })
@@ -50,6 +51,14 @@ export class BeneficiaryComponent implements OnInit {
   portals: Portal[] = [];
   portalLoading = false;
 
+  portalDropdownOpen = false;
+  isPortalUserModalOpen = false;
+  selectedPortal: Portal | null = null;
+
+  get selectedPortalLabel(): string {
+    return this.selectedPortal ? this.selectedPortal.portalName : 'Select Portal';
+  }
+
   constructor(
     private cdr: ChangeDetectorRef,
     private router: Router,
@@ -58,7 +67,8 @@ export class BeneficiaryComponent implements OnInit {
     private blockService: BlockService,
     private cryptoService: CryptoService,
     private messageService: MessageService,
-    private portalService: PortalService
+    private portalService: PortalService,
+    private elementRef: ElementRef
   ) {}
 
   ngOnInit(): void {
@@ -497,6 +507,39 @@ export class BeneficiaryComponent implements OnInit {
     if (t === 'R' || t === 'Rural' || t === 'rural') return 'Rural';
     if (t === 'U' || t === 'Urban' || t === 'urban') return 'Urban';
     return t || '—';
+  }
+
+  // --------------------------------------------------
+  // Portal dropdown (toolbar) + portal-user modal
+  // --------------------------------------------------
+  togglePortalDropdown(): void {
+    this.portalDropdownOpen = !this.portalDropdownOpen;
+  }
+
+  selectPortal(portal: Portal): void {
+    this.portalDropdownOpen = false;
+    this.selectedPortal = portal;
+    this.isPortalUserModalOpen = true;
+  }
+
+  closePortalUserModal(): void {
+    this.isPortalUserModalOpen = false;
+    this.refreshView();
+  }
+
+  onPortalUserSaved(payload: any): void {
+    console.log('Portal user payload:', payload);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (
+      this.portalDropdownOpen &&
+      this.elementRef.nativeElement &&
+      !this.elementRef.nativeElement.contains(event.target as Node)
+    ) {
+      this.portalDropdownOpen = false;
+    }
   }
 
 }

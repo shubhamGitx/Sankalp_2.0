@@ -13,7 +13,6 @@ import { MasterLayout } from './layout/master-layout/master-layout';
 import { Dashboard } from './components/dashboard/dashboard';
 import { DistrictComponent } from './components/district/district';
 import { BlockComponent } from './components/block/block';
-import { PortalListComponent } from './components/portal-list/portal-list';
 import { GalleryAdmin } from './components/gallery-admin/gallery-admin';
 import { BroadcastComponent } from './components/broadcast/broadcast';
 import { InterestMessageComponent } from './components/interest-message/interest-message';
@@ -96,11 +95,6 @@ export const routes: Routes = [
       {
         path: 'block',
         component: BlockComponent
-      },
-
-      {
-        path: 'portal-list',
-        component: PortalListComponent
       },
 
       {

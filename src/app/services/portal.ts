@@ -12,6 +12,7 @@ export class PortalService {
   private cryptoService = inject(CryptoService);
 
   apiUrl = '/api/Master/GetPortalList';
+  portalApiUrl = '/api/Portal';
 
   getPortalList(): Observable<any> {
 
@@ -29,6 +30,16 @@ export class PortalService {
     };
 
     return this.http.post<any>(this.apiUrl, request);
+  }
+
+  
+  getUserType(portalId: number | string): Observable<any> {
+
+    const request = {
+      portal_id: Number(portalId)
+    };
+
+    return this.http.post<any>(`${this.portalApiUrl}/GetUserType`, request);
   }
 
 }

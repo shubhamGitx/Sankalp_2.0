@@ -1,0 +1,119 @@
+@if (isOpen) {
+<div class="portal-user-overlay" (click)="onOverlayClick($event)">
+  <div
+    class="portal-user-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Portal User Login">
+
+    <div class="portal-user-header">
+      <div class="portal-user-title">
+        <div class="portal-user-brand">&#128279;</div>
+        <div>
+          <h2>Portal User</h2>
+          @if (portal) {
+            <p class="portal-user-subtitle">{{ portal.portalName || 'Portal' }}</p>
+          } @else {
+            <p class="portal-user-subtitle">Connect to your portal</p>
+          }
+        </div>
+      </div>
+      <button
+        class="portal-user-close"
+        type="button"
+        aria-label="Close"
+        (click)="closeModal()">&times;</button>
+    </div>
+
+    <div class="portal-user-body">
+
+      @if (portal) {
+        <div class="portal-user-info">
+          <span class="portal-user-info-avatar">{{ getPortalInitials(portal.portalName) }}</span>
+          <div class="portal-user-info-text">
+            <strong>{{ portal.portalName || 'Untitled Portal' }}</strong>
+            <small>ID: #{{ portal.portalId }}</small>
+          </div>
+          <span class="portal-user-info-status" [class.on]="portal.isActive">
+            {{ portal.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+      }
+
+      <form [formGroup]="userForm" (ngSubmit)="submit()" autocomplete="off">
+
+        <label class="field-label" for="userType">User Type</label>
+        <div class="input-wrap">
+          <span class="input-icon">&#128100;</span>
+          <select id="userType" formControlName="userType">
+            @for (type of userTypes; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
+          </select>
+        </div>
+        @if (userTypeInvalid) {
+          <small class="error-msg">Please select a user type</small>
+        }
+
+        <label class="field-label" for="userId">User ID</label>
+        <div class="input-wrap">
+          <span class="input-icon">&#128273;</span>
+          <input
+            id="userId"
+            formControlName="userId"
+            type="text"
+            placeholder="Enter portal user ID" />
+        </div>
+        @if (userIdInvalid) {
+          <small class="error-msg">User ID is required</small>
+        }
+
+        <label class="field-label" for="mobile">Mobile Number</label>
+        <div class="input-wrap">
+          <span class="input-icon">&#128241;</span>
+          <input
+            id="mobile"
+            formControlName="mobile"
+            type="tel"
+            inputmode="numeric"
+            maxlength="10"
+            placeholder="Enter 10-digit mobile number" />
+        </div>
+        @if (mobileInvalid) {
+          <small class="error-msg">Enter a valid 10-digit mobile number</small>
+        }
+
+        <label class="field-label" for="password">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">&#128274;</span>
+          <input
+            id="password"
+            formControlName="password"
+            type="password"
+            placeholder="Enter portal password (min 6 chars)" />
+        </div>
+        @if (passwordInvalid) {
+          <small class="error-msg">Password is required (min 6 characters)</small>
+        }
+
+        @if (errorMessage) {
+          <small class="error-msg">{{ errorMessage }}</small>
+        }
+        @if (successMessage) {
+          <small class="success-msg">{{ successMessage }}</small>
+        }
+
+        <button type="submit" class="btn-primary" [disabled]="loading">
+          {{ loading ? 'Saving…' : 'Save Portal User' }}
+        </button>
+
+      </form>
+    </div>
+
+    <div class="portal-user-footer">
+      <span>&#128274; Secured portal credential entry</span>
+    </div>
+
+  </div>
+</div>
+}
