@@ -1,5 +1,5 @@
 @if (isOpen) {
-<div class="portal-user-overlay" (click)="onOverlayClick($event)">
+<div class="portal-user-overlay">
   <div
     class="portal-user-modal"
     role="dialog"
@@ -10,7 +10,7 @@
       <div class="portal-user-title">
         <div class="portal-user-brand">&#128279;</div>
         <div>
-          <h2>Portal User</h2>
+          <h2>{{ step === 'otp' ? 'Verify OTP' : 'Portal User' }}</h2>
           @if (portal) {
             <p class="portal-user-subtitle">{{ portal.portalName || 'Portal' }}</p>
           } @else {
@@ -32,7 +32,7 @@
           <span class="portal-user-info-avatar">{{ getPortalInitials(portal.portalName) }}</span>
           <div class="portal-user-info-text">
             <strong>{{ portal.portalName || 'Untitled Portal' }}</strong>
-            <small>ID: #{{ portal.portalId }}</small>
+            <small>Portal ID: #{{ portal.portalId }}</small>
           </div>
           <span class="portal-user-info-status" [class.on]="portal.isActive">
             {{ portal.isActive ? 'Active' : 'Inactive' }}
@@ -40,61 +40,115 @@
         </div>
       }
 
+      @if (step === 'form') {
       <form [formGroup]="userForm" (ngSubmit)="submit()" autocomplete="off">
 
-        <label class="field-label" for="userType">User Type</label>
-        <div class="input-wrap">
-          <span class="input-icon">&#128100;</span>
-          <select id="userType" formControlName="userType">
-            @for (type of userTypes; track type) {
-              <option [value]="type">{{ type }}</option>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label class="field-label" for="deviceId">Device ID</label>
+            <div class="input-wrap">
+              <span class="input-icon">&#128241;</span>
+              <input
+                id="deviceId"
+                class="field-readonly"
+                type="text"
+                [value]="deviceId"
+                readonly
+                tabindex="-1" />
+            </div>
+            <small class="info-msg">Auto-fetched from current user.</small>
+          </div>
+
+          <div class="form-field">
+            <label class="field-label" for="mobileNo">Mobile Number</label>
+            <div class="input-wrap">
+              <span class="input-icon">&#128241;</span>
+              <input
+                id="mobileNo"
+                formControlName="mobileNo"
+                type="tel"
+                inputmode="numeric"
+                maxlength="10"
+                placeholder="Enter 10-digit no." />
+            </div>
+            @if (mobileInvalid) {
+              <small class="error-msg">Enter a valid 10-digit number</small>
             }
-          </select>
-        </div>
-        @if (userTypeInvalid) {
-          <small class="error-msg">Please select a user type</small>
-        }
+          </div>
 
-        <label class="field-label" for="userId">User ID</label>
-        <div class="input-wrap">
-          <span class="input-icon">&#128273;</span>
-          <input
-            id="userId"
-            formControlName="userId"
-            type="text"
-            placeholder="Enter portal user ID" />
-        </div>
-        @if (userIdInvalid) {
-          <small class="error-msg">User ID is required</small>
-        }
+          <div class="form-field">
+            <label class="field-label" for="session">Session / Year</label>
+            <div class="input-wrap">
+              <span class="input-icon">&#128197;</span>
+              <input
+                id="session"
+                formControlName="session"
+                type="text"
+                inputmode="numeric"
+                maxlength="4"
+                placeholder="e.g. 2026" />
+            </div>
+            @if (sessionInvalid) {
+              <small class="error-msg">Enter a 4-digit year</small>
+            }
+          </div>
 
-        <label class="field-label" for="mobile">Mobile Number</label>
-        <div class="input-wrap">
-          <span class="input-icon">&#128241;</span>
-          <input
-            id="mobile"
-            formControlName="mobile"
-            type="tel"
-            inputmode="numeric"
-            maxlength="10"
-            placeholder="Enter 10-digit mobile number" />
-        </div>
-        @if (mobileInvalid) {
-          <small class="error-msg">Enter a valid 10-digit mobile number</small>
-        }
+          <div class="form-field">
+            <label class="field-label" for="userType">User Type</label>
+            <div class="ut-dropdown">
+              <button
+                type="button"
+                id="userType"
+                class="ut-trigger"
+                [class.ut-open]="userTypeDropdownOpen"
+                [disabled]="userTypesLoading"
+                [attr.aria-expanded]="userTypeDropdownOpen"
+                aria-haspopup="listbox"
+                (click)="toggleUserTypeDropdown()">
+                <span class="ut-value" [class.ut-placeholder]="!selectedUserTypeLabel">
+                  {{ selectedUserTypeLabel || 'Select user type' }}
+                </span>
+                <svg class="ut-chevron" viewBox="0 0 24 24" width="16" height="16"
+                     fill="none" stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
 
-        <label class="field-label" for="password">Password</label>
-        <div class="input-wrap">
-          <span class="input-icon">&#128274;</span>
-          <input
-            id="password"
-            formControlName="password"
-            type="password"
-            placeholder="Enter portal password (min 6 chars)" />
+              @if (userTypeDropdownOpen) {
+                <div class="ut-panel" role="listbox">
+                  @for (type of userTypes; track type.userTypeId) {
+                    <button
+                      type="button"
+                      class="ut-option"
+                      [class.ut-option-active]="isActiveUserType(type)"
+                      role="option"
+                      [attr.aria-selected]="isActiveUserType(type)"
+                      (click)="selectUserTypeOption(type)">
+                      <span class="ut-option-name">{{ type.userTypeName }}</span>
+                      @if (type.userTypeNameHn) {
+                        <span class="ut-option-hn">{{ type.userTypeNameHn }}</span>
+                      }
+                    </button>
+                  }
+                  @if (!userTypes.length) {
+                    <div class="ut-empty">No user types available</div>
+                  }
+                </div>
+              }
+            </div>
+            @if (userTypesLoading) {
+              <small class="info-msg">Loading user types&hellip;</small>
+            } @else if (userTypesError) {
+              <small class="error-msg">{{ userTypesError }}</small>
+            }
+            @if (userTypeInvalid) {
+              <small class="error-msg">Please select a user type</small>
+            }
+          </div>
+
         </div>
-        @if (passwordInvalid) {
-          <small class="error-msg">Password is required (min 6 characters)</small>
-        }
 
         @if (errorMessage) {
           <small class="error-msg">{{ errorMessage }}</small>
@@ -103,11 +157,56 @@
           <small class="success-msg">{{ successMessage }}</small>
         }
 
-        <button type="submit" class="btn-primary" [disabled]="loading">
-          {{ loading ? 'Saving…' : 'Save Portal User' }}
-        </button>
-
+        <div class="button-row">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            {{ loading ? 'Sending OTP…' : 'Send OTP' }}
+          </button>
+        </div>
       </form>
+      } @else {
+        <div class="otp-step">
+          <div class="beneficiary-card">
+            <div class="beneficiary-detail-grid">
+              @for (f of getBeneficiaryFields(); track f.label) {
+                <div class="beneficiary-detail-item">
+                  <span class="detail-label">{{ f.label }}</span>
+                  <span class="detail-value">{{ f.value }}</span>
+                </div>
+              }
+            </div>
+
+            <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()" autocomplete="off">
+              <label class="field-label" for="otp">Enter OTP</label>
+              <div class="input-wrap">
+                <span class="input-icon">&#128274;</span>
+                <input
+                  id="otp"
+                  formControlName="otp"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="6"
+                  placeholder="Enter 6-digit OTP" />
+              </div>
+              @if (otpInvalid) {
+                <small class="error-msg">Enter the 6-digit OTP received</small>
+              }
+              @if (errorMessage) {
+                <small class="error-msg">{{ errorMessage }}</small>
+              }
+              @if (successMessage) {
+                <small class="success-msg">{{ successMessage }}</small>
+              }
+              <div class="button-row">
+                <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+                <button type="submit" class="btn-primary" [disabled]="loading">
+                  {{ loading ? 'Verifying…' : 'Verify OTP' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      }
     </div>
 
     <div class="portal-user-footer">

@@ -13,6 +13,7 @@ export class PortalService {
 
   apiUrl = '/api/Master/GetPortalList';
   portalApiUrl = '/api/Portal';
+  applicantApiUrl = '/api/Applicant';
 
   getPortalList(): Observable<any> {
 
@@ -40,6 +41,11 @@ export class PortalService {
     };
 
     return this.http.post<any>(`${this.portalApiUrl}/GetUserType`, request);
+  }
+
+ 
+  sendPortalOtp(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.applicantApiUrl}/GetApplicantDetails`, payload);
   }
 
 }
