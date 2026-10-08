@@ -166,16 +166,30 @@
       </form>
       } @else if (step === 'otp') {
         <div class="otp-step">
-          <div class="beneficiary-card">
-            <div class="beneficiary-detail-grid">
-              @for (f of getBeneficiaryFields(); track f.label) {
-                <div class="beneficiary-detail-item">
-                  <span class="detail-label">{{ f.label }}</span>
-                  <span class="detail-value">{{ f.value }}</span>
-                </div>
+          <div class="beneficiary-summary-scroll" [class.has-overflow]="fetchedBeneficiaries.length > 2">
+            @for (record of fetchedBeneficiaries; track $index) {
+            <div class="beneficiary-summary-card">
+              @if (fetchedBeneficiaries.length > 1) {
+              <div class="beneficiary-card-index">Beneficiary {{ $index + 1 }}</div>
               }
+              <div class="beneficiary-summary-item">
+                <span class="summary-label">Beneficiary ID</span>
+                <span class="summary-value">{{ record?.beneficiaryID || '—' }}</span>
+              </div>
+              <div class="beneficiary-summary-item">
+                <span class="summary-label">Name</span>
+                <span class="summary-value">{{ record?.name || '—' }}</span>
+              </div>
+              <button type="button" class="read-more-btn" (click)="openBeneficiaryDetail(record)">Read More</button>
             </div>
+            }
+          </div>
 
+          @if (fetchedBeneficiaries.length > 2) {
+            <small class="scroll-hint">Swipe / scroll horizontally to view all beneficiaries.</small>
+          }
+
+          <div class="beneficiary-card otp-verify-card">
             <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()" autocomplete="off">
               <label class="field-label" for="otp">Enter OTP</label>
               <div class="input-wrap">
@@ -210,50 +224,102 @@
         <div class="verify-success-card">
           <div class="verify-success-icon">&#10004;</div>
 
-          <div class="vs-item">
-            <span class="vs-label">Beneficiary ID</span>
-            <span class="vs-value">{{ verifiedData?.beneficiaryID || '—' }}</span>
+          @if (verifiedBeneficiaries.length > 2) {
+            <small class="scroll-hint">Scroll horizontally to view all verified beneficiaries.</small>
+          }
+          <div class="beneficiary-summary-scroll" [class.has-overflow]="verifiedBeneficiaries.length > 2">
+            @for (record of verifiedBeneficiaries; track $index) {
+            <div class="beneficiary-summary-card">
+              @if (verifiedBeneficiaries.length > 1) {
+              <div class="beneficiary-card-index">Beneficiary {{ $index + 1 }}</div>
+              }
+              <div class="beneficiary-summary-item">
+                <span class="summary-label">Beneficiary ID</span>
+                <span class="summary-value">{{ record?.beneficiaryID || '—' }}</span>
+              </div>
+              <div class="beneficiary-summary-item">
+                <span class="summary-label">Mobile No</span>
+                <span class="summary-value">{{ record?.mobileNo || '—' }}</span>
+              </div>
+              <button type="button" class="read-more-btn" (click)="openVerifiedDetail(record)">Read More</button>
+            </div>
+            }
           </div>
 
           <div class="vs-item">
-            <span class="vs-label">Mobile No</span>
-            <span class="vs-value">{{ verifiedData?.mobileNo || '—' }}</span>
-          </div>
-
-          <div class="vs-item">
-            <span class="vs-label">Token</span>
-            <span class="vs-value vs-token">
-              <span class="vs-token-text">{{ verifiedData?.token || '—' }}</span>
-              <button
-                type="button"
-                class="copy-btn"
-                [attr.title]="copied ? 'Copied!' : 'Copy token'"
-                (click)="copyToken()">
-                @if (copied) {
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                } @else {
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                  </svg>
-                }
-              </button>
-            </span>
+            @if (!beneficiaryStatusMode) {
+              <span class="vs-label">Token</span>
+              <span class="vs-value vs-token">
+                <span class="vs-token-text">{{ verifiedData?.token || '—' }}</span>
+                <button
+                  type="button"
+                  class="copy-btn"
+                  [attr.title]="copied ? 'Copied!' : 'Copy token'"
+                  (click)="copyToken()">
+                  @if (copied) {
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  }
+                </button>
+              </span>
+            } @else {
+              <span class="vs-label">Beneficiary ID</span>
+              <span class="vs-value vs-token">
+                <span class="vs-token-text">{{ verifiedData?.beneficiaryID || '—' }}</span>
+                <button
+                  type="button"
+                  class="copy-btn"
+                  [attr.title]="copied ? 'Copied!' : 'Copy ID'"
+                  (click)="copyBeneficiaryId()">
+                  @if (copied) {
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  }
+                </button>
+              </span>
+            }
           </div>
 
           <div class="vs-item vs-token-input-item">
-            <label class="vs-label" for="beneficiary-token">Beneficiary Token</label>
-            <input
-              id="beneficiary-token"
-              class="vs-token-input"
-              type="text"
-              autocomplete="off"
-              spellcheck="false"
-              [value]="tokenInput"
-              (input)="onTokenInput($event)"
-              placeholder="Paste the token copied above" />
+            @if (!beneficiaryStatusMode) {
+              <label class="vs-label" for="beneficiary-token">Beneficiary Token</label>
+              <input
+                id="beneficiary-token"
+                class="vs-token-input"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                [value]="tokenInput"
+                (input)="onTokenInput($event)"
+                placeholder="Paste a beneficiary token to view its messages" />
+            } @else {
+              <label class="vs-label" for="beneficiary-id">Beneficiary ID</label>
+              <input
+                id="beneficiary-id"
+                class="vs-token-input"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                spellcheck="false"
+                [value]="beneficiaryIdInput"
+                (input)="onBeneficiaryIdInput($event)"
+                placeholder="Enter Beneficiary ID" />
+              @if (beneficiaryIdInput && beneficiaryIdInvalid) {
+                <small class="error-msg">Enter a valid Beneficiary ID (digits only).</small>
+              }
+            }
           </div>
 
           @if (messageError) {
@@ -262,10 +328,19 @@
           @if (messageInfo) {
             <small class="success-msg">{{ messageInfo }}</small>
           }
+          @if (beneficiaryStatusError) {
+            <small class="error-msg">{{ beneficiaryStatusError }}</small>
+          }
+          @if (beneficiaryStatusInfo) {
+            <small class="success-msg">{{ beneficiaryStatusInfo }}</small>
+          }
 
-          <div class="button-row vs-button-row">
-            <button type="button" class="btn-primary" [disabled]="messagesLoading" (click)="showBeneficiaryMessage()">
+          <div class="button-row vs-button-row vs-dual-button-row">
+            <button type="button" class="btn-primary" [disabled]="messagesLoading || beneficiaryStatusLoading" (click)="showBeneficiaryMessage()">
               {{ messagesLoading ? 'Loading…' : 'Show Beneficiary Message' }}
+            </button>
+            <button type="button" class="btn-primary" [disabled]="messagesLoading || beneficiaryStatusLoading" (click)="showBeneficiaryStatus()">
+              {{ beneficiaryStatusLoading ? 'Checking…' : 'Show Beneficiary Status' }}
             </button>
           </div>
         </div>
@@ -306,12 +381,13 @@
               </div>
             }
           </div>
-          <div class="button-row vs-button-row">
-            <button type="button" class="btn-cancel" (click)="backToSuccess()">Back</button>
-          </div>
         } @else {
           <div class="messages-empty">{{ messageInfo || 'No beneficiary messages were found.' }}</div>
         }
+
+        <div class="button-row vs-button-row">
+          <button type="button" class="btn-cancel" (click)="backToSuccess()">Back</button>
+        </div>
       }
     </div>
 
@@ -371,6 +447,109 @@
         </div>
         <div class="msg-detail-footer">
           <button type="button" class="btn-primary" (click)="closeMessageDetail()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (selectedBeneficiary) {
+    <div class="msg-detail-overlay" (click)="closeBeneficiaryDetail()">
+      <div class="msg-detail-modal" role="dialog" aria-modal="true" aria-label="Beneficiary detail" (click)="$event.stopPropagation()">
+        <div class="msg-detail-header">
+          <div class="msg-detail-title">
+            <span class="msg-detail-type">Beneficiary</span>
+            <h3>{{ selectedBeneficiary?.name || 'Beneficiary Detail' }}</h3>
+          </div>
+          <button type="button" class="msg-detail-close" aria-label="Close" (click)="closeBeneficiaryDetail()">&times;</button>
+        </div>
+        <div class="msg-detail-body">
+          <div class="beneficiary-detail-grid">
+            @for (f of getBeneficiaryFields(selectedBeneficiary); track f.label) {
+              <div class="beneficiary-detail-item">
+                <span class="detail-label">{{ f.label }}</span>
+                <span class="detail-value">{{ f.value }}</span>
+              </div>
+            }
+          </div>
+        </div>
+        <div class="msg-detail-footer">
+          <button type="button" class="btn-primary" (click)="closeBeneficiaryDetail()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (selectedVerifiedBeneficiary) {
+    <div class="msg-detail-overlay" (click)="closeVerifiedDetail()">
+      <div class="msg-detail-modal" role="dialog" aria-modal="true" aria-label="Verified beneficiary detail" (click)="$event.stopPropagation()">
+        <div class="msg-detail-header">
+          <div class="msg-detail-title">
+            <span class="msg-detail-type">Verified Beneficiary</span>
+            <h3>{{ selectedVerifiedBeneficiary?.beneficiaryID || 'Beneficiary Detail' }}</h3>
+          </div>
+          <button type="button" class="msg-detail-close" aria-label="Close" (click)="closeVerifiedDetail()">&times;</button>
+        </div>
+        <div class="msg-detail-body">
+          <div class="beneficiary-detail-grid">
+            @for (f of getVerifiedFields(selectedVerifiedBeneficiary); track f.label) {
+              <div class="beneficiary-detail-item">
+                <span class="detail-label">{{ f.label }}</span>
+                <span class="detail-value">{{ f.value }}</span>
+              </div>
+            }
+          </div>
+          <div class="vs-item">
+            <span class="vs-label">Token</span>
+            <span class="vs-value vs-token">
+              <span class="vs-token-text">{{ selectedVerifiedBeneficiary?.token || '—' }}</span>
+              <button
+                type="button"
+                class="copy-btn"
+                [attr.title]="copied ? 'Copied!' : 'Copy token'"
+                (click)="copyToken(selectedVerifiedBeneficiary)">
+                @if (copied) {
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                }
+              </button>
+            </span>
+          </div>
+        </div>
+        <div class="msg-detail-footer">
+          <button type="button" class="btn-primary" (click)="closeVerifiedDetail()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (selectedBeneficiaryStatus) {
+    <div class="msg-detail-overlay" (click)="closeBeneficiaryStatus()">
+      <div class="msg-detail-modal" role="dialog" aria-modal="true" aria-label="Beneficiary status" (click)="$event.stopPropagation()">
+        <div class="msg-detail-header">
+          <div class="msg-detail-title">
+            <span class="msg-detail-type">Beneficiary Status</span>
+            <h3>{{ selectedBeneficiaryStatus?.firstName || 'Beneficiary Status' }}</h3>
+          </div>
+          <button type="button" class="msg-detail-close" aria-label="Close" (click)="closeBeneficiaryStatus()">&times;</button>
+        </div>
+        <div class="msg-detail-body">
+          <div class="beneficiary-detail-grid">
+            @for (f of getStatusFields(selectedBeneficiaryStatus); track f.label) {
+              <div class="beneficiary-detail-item">
+                <span class="detail-label">{{ f.label }}</span>
+                <span class="detail-value">{{ f.value }}</span>
+              </div>
+            }
+          </div>
+        </div>
+        <div class="msg-detail-footer">
+          <button type="button" class="btn-primary" (click)="closeBeneficiaryStatus()">Close</button>
         </div>
       </div>
     </div>

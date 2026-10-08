@@ -52,6 +52,10 @@ export class PortalService {
     return this.http.post<any>(`${this.applicantApiUrl}/VerifyOtp`, payload);
   }
 
+  getBeneficiaryStatus(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.applicantApiUrl}/GetBeneficiaryStatus`, payload);
+  }
+
   getBeneficiaryMessages(payload: any): Observable<any> {
     return this.http.post<any>(`${this.applicantApiUrl}/GetBeneficiaryMessages`, payload);
   }

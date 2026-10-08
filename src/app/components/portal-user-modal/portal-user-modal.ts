@@ -63,7 +63,16 @@ export class PortalUserModal implements OnChanges {
 
   step: 'form' | 'otp' | 'success' | 'messages' = 'form';
   fetchedBeneficiary: any = null;
+  fetchedBeneficiaries: any[] = [];
+  verifiedBeneficiaries: any[] = [];
   verifiedData: any = null;
+  beneficiaryStatusMode = false;
+  beneficiaryIdInput = '';
+  beneficiaryStatus: any = null;
+  selectedBeneficiaryStatus: any = null;
+  beneficiaryStatusLoading = false;
+  beneficiaryStatusError = '';
+  beneficiaryStatusInfo = '';
   copied = false;
 
   tokenInput = '';
@@ -72,6 +81,8 @@ export class PortalUserModal implements OnChanges {
   messageError = '';
   messageInfo = '';
   selectedMessage: any = null;
+  selectedBeneficiary: any = null;
+  selectedVerifiedBeneficiary: any = null;
 
   userForm = new FormGroup({
     mobileNo: new FormControl('', [
@@ -113,7 +124,16 @@ export class PortalUserModal implements OnChanges {
     this.userTypeDropdownOpen = false;
     this.step = 'form';
     this.fetchedBeneficiary = null;
+    this.fetchedBeneficiaries = [];
+    this.verifiedBeneficiaries = [];
     this.verifiedData = null;
+    this.beneficiaryStatusMode = false;
+    this.beneficiaryIdInput = '';
+    this.beneficiaryStatus = null;
+    this.selectedBeneficiaryStatus = null;
+    this.beneficiaryStatusLoading = false;
+    this.beneficiaryStatusError = '';
+    this.beneficiaryStatusInfo = '';
     this.copied = false;
     this.tokenInput = '';
     this.messages = [];
@@ -121,6 +141,8 @@ export class PortalUserModal implements OnChanges {
     this.messageError = '';
     this.messageInfo = '';
     this.selectedMessage = null;
+    this.selectedBeneficiary = null;
+    this.selectedVerifiedBeneficiary = null;
     this.userForm.reset();
     this.otpForm.reset();
   }
@@ -213,6 +235,11 @@ export class PortalUserModal implements OnChanges {
     return (c.touched || this.submitted) && c.invalid;
   }
 
+  get beneficiaryIdInvalid(): boolean {
+    const val = this.beneficiaryIdInput.trim();
+    return val !== '' && !/^[0-9]+$/.test(val);
+  }
+
   get userTypeInvalid(): boolean {
     const c = this.userForm.controls.userType;
     return (c.touched || this.submitted) && c.invalid;
@@ -251,9 +278,10 @@ export class PortalUserModal implements OnChanges {
         this.loading = false;
         if (res && (res.status === true || res.status === 1 || res.success === true)) {
           const data = res.data;
-          const record = Array.isArray(data) ? data[0] : data;
-          if (record) {
-            this.fetchedBeneficiary = record;
+          const records = (Array.isArray(data) ? data : [data]).filter(Boolean);
+          if (records.length) {
+            this.fetchedBeneficiaries = records;
+            this.fetchedBeneficiary = records[0];
             this.otpForm.reset();
             this.step = 'otp';
             this.successMessage = 'OTP has been sent. Enter the OTP received to verify.';
@@ -280,8 +308,8 @@ export class PortalUserModal implements OnChanges {
     return (c.touched || this.submitted) && c.invalid;
   }
 
-  getBeneficiaryFields(): { label: string; value: string }[] {
-    const b = this.fetchedBeneficiary;
+  getBeneficiaryFields(record: any): { label: string; value: string }[] {
+    const b = record;
     if (!b) return [];
     const v = (key: string): string => {
       const val = b[key];
@@ -311,6 +339,26 @@ export class PortalUserModal implements OnChanges {
     ];
   }
 
+  getVerifiedFields(record: any): { label: string; value: string }[] {
+    const b = record;
+    if (!b) return [];
+    const v = (key: string): string => {
+      const val = b[key];
+      return val === undefined || val === null || val === '' ? '—' : String(val);
+    };
+    return [
+      { label: 'Aadhaar ID', value: v('a_Id') },
+      { label: 'Beneficiary ID', value: v('beneficiaryID') },
+      { label: 'Mobile No', value: v('mobileNo') },
+      { label: 'Secret Key', value: v('secretKey') },
+      { label: 'Verify Date', value: v('verifyDate') },
+      { label: 'Portal ID', value: v('portal_id') },
+      { label: 'User ID', value: v('user_id') },
+      { label: 'Verified', value: v('is_verified') },
+      { label: 'Authenticator URL', value: v('otpauth_url') },
+    ];
+  }
+
 
   verifyOtp(): void {
     this.submitted = true;
@@ -323,14 +371,22 @@ export class PortalUserModal implements OnChanges {
       return;
     }
 
-    const aId = this.fetchedBeneficiary ? this.fetchedBeneficiary['a_Id'] : null;
-    if (aId === undefined || aId === null || aId === '') {
+    const records = this.fetchedBeneficiaries && this.fetchedBeneficiaries.length
+      ? this.fetchedBeneficiaries
+      : (this.fetchedBeneficiary ? [this.fetchedBeneficiary] : []);
+
+    const aIds = records
+      .map((r) => r && r['a_Id'])
+      .filter((id) => id !== undefined && id !== null && id !== '')
+      .map(Number);
+
+    if (!aIds.length) {
       this.errorMessage = 'Beneficiary record reference (a_Id) is missing. Please send the OTP again.';
       return;
     }
 
     const payload = {
-      a_Id: [Number(aId)],
+      a_Id: aIds,
       mobileNo: this.userForm.controls.mobileNo.value,
       otp: this.otpForm.value.otp,
       deviceId: this.deviceId,
@@ -346,7 +402,10 @@ export class PortalUserModal implements OnChanges {
       next: (res: any) => {
         this.loading = false;
         if (res && (res.status === true || res.status === 1 || res.success === true)) {
-          this.verifiedData = res.data || {};
+          const data = res.data;
+          const records = (Array.isArray(data) ? data : [data]).filter(Boolean);
+          this.verifiedBeneficiaries = records;
+          this.verifiedData = records[0] || {};
           this.step = 'success';
         } else {
           this.errorMessage = res?.message || 'OTP verification failed. Please try again.';
@@ -363,15 +422,25 @@ export class PortalUserModal implements OnChanges {
     });
   }
 
-  async copyToken(): Promise<void> {
-    const token = this.verifiedData?.token;
+  async copyToken(record?: any): Promise<void> {
+    const token = record?.token || this.verifiedData?.token;
     if (!token) return;
+    await this.copyToClipboard(token);
+  }
+
+  async copyBeneficiaryId(): Promise<void> {
+    const id = this.verifiedBeneficiaries?.[0]?.beneficiaryID || this.verifiedData?.beneficiaryID;
+    if (!id) return;
+    await this.copyToClipboard(id);
+  }
+
+  private async copyToClipboard(value: string): Promise<void> {
     try {
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(token);
+        await navigator.clipboard.writeText(value);
       } else {
         const ta = document.createElement('textarea');
-        ta.value = token;
+        ta.value = value;
         ta.style.position = 'fixed';
         ta.style.left = '-9999px';
         document.body.appendChild(ta);
@@ -395,7 +464,17 @@ export class PortalUserModal implements OnChanges {
     this.cdr.detectChanges();
   }
 
+  onBeneficiaryIdInput(event: Event): void {
+    this.beneficiaryIdInput = (event.target as HTMLInputElement).value;
+    this.cdr.detectChanges();
+  }
+
   showBeneficiaryMessage(): void {
+    this.beneficiaryStatusMode = false;
+    this.beneficiaryStatus = null;
+    this.beneficiaryStatusError = '';
+    this.beneficiaryStatusInfo = '';
+
     const token = (this.tokenInput || '').trim();
     if (!token) {
       this.messageError = 'Please paste the beneficiary token before fetching messages.';
@@ -434,6 +513,88 @@ export class PortalUserModal implements OnChanges {
     });
   }
 
+  showBeneficiaryStatus(): void {
+    this.beneficiaryStatusMode = true;
+    this.messageError = '';
+    this.messageInfo = '';
+    this.beneficiaryStatusError = '';
+    this.beneficiaryStatusInfo = '';
+
+    const beneficiaryNo = (this.beneficiaryIdInput || '').trim();
+    if (!beneficiaryNo) {
+      this.beneficiaryStatusError = 'Please enter a Beneficiary ID before checking status.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.beneficiaryStatusLoading = true;
+    this.portalService
+      .getBeneficiaryStatus({
+        portalId: this.portalId,
+        mobileNo: this.userForm.controls.mobileNo.value,
+        beneficiaryNo,
+      })
+      .subscribe({
+        next: (res: any) => {
+          this.beneficiaryStatusLoading = false;
+          if (res && (res.status === true || res.status === 1 || res.success === true)) {
+            this.beneficiaryStatus = res.data;
+            this.selectedBeneficiaryStatus = res.data;
+            this.cdr.detectChanges();
+          } else {
+            this.beneficiaryStatus = null;
+            this.beneficiaryStatusError =
+              res?.message || 'Could not fetch beneficiary status. Please try again.';
+            this.cdr.detectChanges();
+          }
+        },
+        error: (err) => {
+          this.beneficiaryStatusLoading = false;
+          console.error('Get beneficiary status error', err);
+          this.beneficiaryStatus = null;
+          this.beneficiaryStatusError =
+            err?.error?.message ||
+            err?.message ||
+            'An error occurred while fetching beneficiary status. Please try again.';
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  openBeneficiaryStatus(): void {
+    this.selectedBeneficiaryStatus = this.beneficiaryStatus;
+    this.cdr.detectChanges();
+  }
+
+  closeBeneficiaryStatus(): void {
+    this.selectedBeneficiaryStatus = null;
+    this.cdr.detectChanges();
+  }
+
+  getStatusFields(record: any): { label: string; value: string }[] {
+    const b = record || {};
+    const v = (key: string): string => {
+      const val = b[key];
+      return val === undefined || val === null || val === '' ? '—' : String(val);
+    };
+    const list: { label: string; value: string }[] = [
+      { label: 'Name', value: v('firstName') },
+      { label: 'Father / Husband Name', value: v('fatherHusbandName') },
+      { label: 'Date of Birth', value: v('dateofBirth') },
+      { label: 'Gender', value: v('gender') },
+      { label: 'Mobile No', value: v('mobileNo') },
+    ];
+    if (Array.isArray(b.beneficiaryDetails)) {
+      for (const d of b.beneficiaryDetails) {
+        list.push({
+          label: String((d && d.label) || ''),
+          value: d && (d.value ?? '') !== '' ? String(d.value) : '—',
+        });
+      }
+    }
+    return list;
+  }
+
   openMessageDetail(msg: any): void {
     this.selectedMessage = msg;
     this.cdr.detectChanges();
@@ -441,6 +602,26 @@ export class PortalUserModal implements OnChanges {
 
   closeMessageDetail(): void {
     this.selectedMessage = null;
+    this.cdr.detectChanges();
+  }
+
+  openBeneficiaryDetail(record: any): void {
+    this.selectedBeneficiary = record;
+    this.cdr.detectChanges();
+  }
+
+  closeBeneficiaryDetail(): void {
+    this.selectedBeneficiary = null;
+    this.cdr.detectChanges();
+  }
+
+  openVerifiedDetail(record: any): void {
+    this.selectedVerifiedBeneficiary = record;
+    this.cdr.detectChanges();
+  }
+
+  closeVerifiedDetail(): void {
+    this.selectedVerifiedBeneficiary = null;
     this.cdr.detectChanges();
   }
 

@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -33,6 +34,7 @@ export class OtpLoginModal implements OnChanges {
 
   private otpService = inject(OtpService);
   private cryptoService = inject(CryptoService);
+  private cdr = inject(ChangeDetectorRef);
 
   @Input() isOpen = false;
   @Output() close = new EventEmitter<void>();
@@ -188,16 +190,19 @@ export class OtpLoginModal implements OnChanges {
 
     this.otpService.sendOtp(request).subscribe({
       next: (res) => {
+        this.loading = false;
         if (res.success || res.status) {
           this.successMessage = res.message || 'OTP sent to your mobile number.';
           this.startTimer(60);
         } else {
           this.errorMessage = res.message || 'Unable to send OTP. Please try again.';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('SendOtp error', err);
         this.errorMessage = 'An error occurred. Please try again.';
+        this.cdr.detectChanges();
       },
     });
   }
@@ -224,11 +229,13 @@ export class OtpLoginModal implements OnChanges {
         } else {
           this.errorMessage = res.message || 'Unable to resend OTP.';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.loading = false;
         console.error('ResendOtp error', err);
         this.errorMessage = 'An error occurred. Please try again.';
+        this.cdr.detectChanges();
       },
     });
   }
@@ -270,11 +277,13 @@ export class OtpLoginModal implements OnChanges {
         } else {
           this.errorMessage = res.message || 'OTP verification failed. Please try again.';
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.loading = false;
         console.error('VerifyOtp error', err);
         this.errorMessage = 'An error occurred. Please try again.';
+        this.cdr.detectChanges();
       },
     });
   }
@@ -295,6 +304,7 @@ export class OtpLoginModal implements OnChanges {
       if (this.secondsLeft <= 0) {
         this.clearTimer();
       }
+      this.cdr.detectChanges();
     }, 1000);
   }
 

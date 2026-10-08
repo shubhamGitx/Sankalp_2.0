@@ -291,6 +291,92 @@
   box-shadow: 0 4px 12px rgba(11, 122, 91, 0.08);
 }
 
+.beneficiary-card + .beneficiary-card {
+  margin-top: 16px;
+}
+
+.beneficiary-card-index {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #0b7a5b;
+  padding: 4px 8px;
+  border-bottom: 1px solid #dce6ee;
+  margin-bottom: 8px;
+}
+
+.otp-step .beneficiary-card.otp-verify-card {
+  padding: 16px 18px;
+}
+
+/* ---------------- Beneficiary summary cards (OTP step) ---------------- */
+.beneficiary-summary-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 2px 2px 6px;
+  scroll-behavior: smooth;
+}
+
+.beneficiary-summary-scroll.has-overflow {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.beneficiary-summary-card {
+  flex: 0 0 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #dce6ee;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 12px rgba(11, 122, 91, 0.08);
+}
+
+.beneficiary-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.summary-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #64748b;
+}
+
+.summary-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f2733;
+  word-break: break-word;
+}
+
+.beneficiary-summary-card .read-more-btn {
+  margin: auto 0 0;
+  align-self: flex-start;
+}
+
+.scroll-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* Full detail in the modal: let the modal body handle scrolling */
+.msg-detail-modal .beneficiary-detail-grid {
+  max-height: none;
+  overflow: visible;
+}
+
 .beneficiary-detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
@@ -420,6 +506,25 @@
   justify-content: center;
   margin-top: 8px;
   width: 100%;
+}
+
+.button-row.vs-dual-button-row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 8px auto 0;
+  gap: 12px;
+}
+
+.button-row.vs-dual-button-row .btn-primary {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.25;
+  white-space: nowrap;
 }
 
 .vs-token-input-item {
