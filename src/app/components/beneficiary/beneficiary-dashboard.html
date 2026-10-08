@@ -106,25 +106,14 @@
           <div class="nav-category-header" *ngIf="!collapsed">MAIN</div>
           <div class="nav-category-divider" *ngIf="collapsed"></div>
 
-          <!-- Dashboard -->
-          <div class="nav-item" [class.active]="selectedMenu === 'dashboard'" (click)="selectMenu('dashboard')" title="Dashboard">
+          <!-- My Profile -->
+          <div class="nav-item" [class.active]="selectedMenu === 'dashboard'" (click)="selectMenu('dashboard')" title="My Profile">
             <div class="nav-icon">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="7"></rect>
                 <rect x="14" y="3" width="7" height="7"></rect>
                 <rect x="14" y="14" width="7" height="7"></rect>
                 <rect x="3" y="14" width="7" height="7"></rect>
-              </svg>
-            </div>
-            <span class="nav-label" *ngIf="!collapsed">Dashboard</span>
-          </div>
-
-          <!-- My Profile (dummy) -->
-          <div class="nav-item" (click)="onMenuClick()" title="My Profile">
-            <div class="nav-icon">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 8v4h8v-4"/>
               </svg>
             </div>
             <span class="nav-label" *ngIf="!collapsed">My Profile</span>
@@ -581,23 +570,6 @@
                 <p><span>Occupation</span>{{ occupationLabel }}</p>
                 <p><span>Device ID</span>{{ beneficiary.deviceId || '—' }}</p>
                 <p><span>Registered on</span>{{ beneficiary.entryDate || '—' }}</p>
-              </div>
-
-              <div class="interests-section">
-                <h4>Interests</h4>
-                @if (beneficiary.userInterests.length) {
-                  <ul>
-                    @for (interest of beneficiary.userInterests; track interest.mapId) {
-                      <li>{{ interest.interestName }} (ID: {{ interest.interestId }})</li>
-                    }
-                  </ul>
-                } @else {
-                  @if (beneficiary.interests.length) {
-                    <p>Interest IDs: {{ beneficiary.interests.join(', ') }}</p>
-                  } @else {
-                    <p>No interests are available.</p>
-                  }
-                }
               </div>
             </section>
           } @else {
