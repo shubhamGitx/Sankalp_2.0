@@ -644,36 +644,138 @@
           <h2 class="page-title">Beneficiary Dashboard</h2>
 
           @if (profile; as beneficiary) {
-            <section class="profile-card">
-              <div class="profile-card-head">
-                <div class="profile-avatar">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            
+            <section class="profile-hero-card">
+              <div class="profile-banner">
+                <div class="profile-banner-mesh"></div>
+                <div class="profile-banner-badge" title="Verified Beneficiary Profile">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="m9 12 2 2 4-4"/>
                   </svg>
-                </div>
-                <div class="profile-card-titles">
-                  <h3>{{ beneficiary.name || 'Beneficiary profile' }}</h3>
-                  <span class="profile-card-subtitle">Registered Beneficiary &bull; Sankalp Setu</span>
                 </div>
               </div>
 
-              <div class="profile-grid">
-                <p><span>User ID</span>{{ beneficiary.userId }}</p>
-                <p><span>Mobile</span>{{ beneficiary.mobileNo }}</p>
-                <p><span>Email</span>{{ beneficiary.email || '—' }}</p>
-                <p><span>Area type</span>{{ areaTypeLabel }}</p>
-                <p><span>District</span>{{ districtLabel }}</p>
-                <p><span>Block</span>{{ blockLabel }}</p>
-                <p><span>Panchayat code</span>{{ beneficiary.panchayatCode }}</p>
-                <p><span>Village code</span>{{ beneficiary.villCode || '—' }}</p>
-                <p><span>Ward code</span>{{ beneficiary.wardCode || '—' }}</p>
-                <p><span>Gender</span>{{ genderLabel }}</p>
-                <p><span>Age group</span>{{ ageGroupLabel }}</p>
-                <p><span>Category</span>{{ categoryLabel }}</p>
-                <p><span>Qualification</span>{{ qualificationLabel }}</p>
-                <p><span>Occupation</span>{{ occupationLabel }}</p>
-                <p><span>Device ID</span>{{ beneficiary.deviceId || '—' }}</p>
-                <p><span>Registered on</span>{{ beneficiary.entryDate || '—' }}</p>
+              <!-- Main Card Body -->
+              <div class="profile-card-content">
+                <div class="profile-avatar-wrapper">
+                  <div class="profile-avatar-circle">
+                    <svg viewBox="0 0 24 24" width="46" height="46" fill="currentColor">
+                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                  </div>
+                </div>
+
+               
+                <div class="profile-identity-grid">
+                  <div class="profile-identity-left">
+                    <h3 class="profile-user-name">
+                      {{ beneficiary.name || displayName }}
+                    </h3>
+                    <div class="profile-user-role">
+                      {{ occupationLabel !== '—' ? occupationLabel : 'Registered Beneficiary' }}
+                    </div>
+                    <div class="profile-user-location">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                      <span>
+                        {{ districtLabel }}<ng-container *ngIf="blockLabel !== '—'">, {{ blockLabel }}</ng-container><ng-container *ngIf="districtLabel === '—' && blockLabel === '—'">Bihar, India</ng-container>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                
+                <div class="details-card-header">
+                  <div class="details-card-header-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="details-card-title">Personal & Registration Details</h4>
+                    <span class="details-card-subtitle">Verified beneficiary records registered under Sankalp Setu</span>
+                  </div>
+                </div>
+
+                <div class="profile-details-grid">
+                  <div class="detail-item">
+                    <span class="detail-label">Full name:</span>
+                    <span class="detail-value">{{ beneficiary.name || '—' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">User ID:</span>
+                    <span class="detail-value">#{{ beneficiary.userId }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Phone Number:</span>
+                    <span class="detail-value">{{ beneficiary.mobileNo }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{{ beneficiary.email || '—' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Gender:</span>
+                    <span class="detail-value">{{ genderLabel }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Age Group:</span>
+                    <span class="detail-value">{{ ageGroupLabel }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Category:</span>
+                    <span class="detail-value">{{ categoryLabel }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Qualification:</span>
+                    <span class="detail-value">{{ qualificationLabel }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Occupation:</span>
+                    <span class="detail-value">{{ occupationLabel }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Area Type:</span>
+                    <span class="detail-value">{{ areaTypeLabel }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Address:</span>
+                    <span class="detail-value">
+                      <svg class="flag-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="12" rx="2"/>
+                      </svg>
+                      {{ districtLabel }} - {{ blockLabel }}
+                    </span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Nationality:</span>
+                    <span class="detail-value">Indian</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Panchayat Code:</span>
+                    <span class="detail-value">{{ beneficiary.panchayatCode || '—' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Village Code:</span>
+                    <span class="detail-value">{{ beneficiary.villCode || '—' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Ward Code:</span>
+                    <span class="detail-value">{{ beneficiary.wardCode || '—' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Device ID:</span>
+                    <span class="detail-value">{{ beneficiary.deviceId || '—' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Registered On:</span>
+                    <span class="detail-value">{{ beneficiary.entryDate || '—' }}</span>
+                  </div>
+                </div>
               </div>
             </section>
           } @else {
