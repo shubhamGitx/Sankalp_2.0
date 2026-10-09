@@ -641,13 +641,14 @@
             }
           </section>
         } @else {
-          <h2 class="page-title">Beneficiary Dashboard</h2>
-
           @if (profile; as beneficiary) {
             
             <section class="profile-hero-card">
               <div class="profile-banner">
                 <div class="profile-banner-mesh"></div>
+                <div class="profile-banner-title">
+                  <h2>Beneficiary Dashboard</h2>
+                </div>
                 <div class="profile-banner-badge" title="Verified Beneficiary Profile">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -779,6 +780,7 @@
               </div>
             </section>
           } @else {
+            <h2 class="page-title">Beneficiary Dashboard</h2>
             <p class="empty-state">No beneficiary profile is available. Please log in again.</p>
           }
         }

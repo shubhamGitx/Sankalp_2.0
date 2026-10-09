@@ -585,7 +585,7 @@
   box-shadow:
     0 20px 45px -12px rgba(15, 23, 42, 0.08),
     0 4px 16px rgba(0, 0, 0, 0.03);
-  margin-top: 14px;
+  margin-top: calc(-26px + 3vh);
   overflow: hidden;
   position: relative;
   transition: box-shadow 0.3s ease;
@@ -636,6 +636,35 @@
 .profile-banner-badge:hover {
   transform: scale(1.08);
   background: #ffffff;
+}
+
+/* Page title inside banner */
+.profile-banner-title {
+  position: absolute;
+  left: 10%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  color: #ffffff;
+}
+
+.profile-banner-title h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.profile-banner-title::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 3px;
+  border-radius: 3px;
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.85);
 }
 
 /* Card Content & Overlapping Avatar */
