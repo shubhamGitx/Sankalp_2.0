@@ -343,11 +343,28 @@
 
             @if (userInterestOptions.length) {
               <div class="interest-chip-grid">
+                <button
+                  type="button"
+                  class="interest-chip all-interest-chip"
+                  [class.active]="showAllInterests"
+                  (click)="openAllInterests()"
+                  title="View messages for all your selected interests at once">
+                  <span class="interest-chip-icon">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="7" height="7" rx="1" ry="1"></rect>
+                      <rect x="14" y="3" width="7" height="7" rx="1" ry="1"></rect>
+                      <rect x="14" y="14" width="7" height="7" rx="1" ry="1"></rect>
+                      <rect x="3" y="14" width="7" height="7" rx="1" ry="1"></rect>
+                    </svg>
+                  </span>
+                  <span class="interest-chip-label">All Interests</span>
+                  <span class="interest-chip-id">{{ userInterestOptions.length }}</span>
+                </button>
                 @for (item of userInterestOptions; track item.interestId) {
                   <button
                     type="button"
                     class="interest-chip"
-                    [class.active]="activeInterest && activeInterest.interestId === item.interestId"
+                    [class.active]="!showAllInterests && activeInterest && activeInterest.interestId === item.interestId"
                     (click)="openInterest(item)">
                     <span class="interest-chip-icon">
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -367,11 +384,17 @@
             }
           </section>
 
-          @if (activeInterest) {
+          @if (showAllInterests || activeInterest) {
             <section class="interest-messages-section">
               <div class="interest-messages-head">
-                <h3>Messages for <strong>{{ activeInterest.interestName }}</strong></h3>
-                <button type="button" class="interest-refresh" (click)="openInterest(activeInterest)" [disabled]="interestLoading">
+                <h3>
+                  @if (showAllInterests) {
+                    Messages for <strong>All Interests</strong>
+                  } @else {
+                    Messages for <strong>{{ activeInterest?.interestName }}</strong>
+                  }
+                </h3>
+                <button type="button" class="interest-refresh" (click)="showAllInterests ? openAllInterests() : openInterest(activeInterest)" [disabled]="interestLoading">
                   <span *ngIf="!interestLoading">Refresh</span>
                   <span *ngIf="interestLoading">Loading...</span>
                 </button>
@@ -398,18 +421,99 @@
                       </div>
                       <p class="interest-msg-body">{{ resolveMessageBody(msg) }}</p>
                       <div class="interest-msg-meta">
+                        @if (showAllInterests && msg.interest_name) {
+                          <span class="interest-mini-meta interest-mini-tag">
+                            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 4a8 8 0 0 1-8 8 8 8 0 0 1 8-8z"></path></svg>
+                            {{ msg.interest_name }}
+                          </span>
+                        }
                         <span class="interest-mini-meta">Validity: {{ resolveValidity(msg) }}</span>
                         <span class="interest-mini-meta">Published: {{ resolveEntryDate(msg) }}</span>
+                      </div>
+                      <div class="interest-msg-foot">
+                        <button type="button" class="interest-msg-readmore" (click)="openInterestModal(msg)" title="Read full message">
+                          <span>Read more</span>
+                          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                          </svg>
+                        </button>
                       </div>
                     </article>
                   }
                 </div>
               } @else {
                 <div class="interest-empty">
-                  <p>No messages are available for this interest yet.</p>
+                  <p>No messages are available {{ showAllInterests ? 'for your selected interests' : 'for this interest' }} yet.</p>
                 </div>
               }
             </section>
+          }
+
+          @if (selectedInterestMsg; as modalMsg) {
+            <div class="interest-modal-backdrop" (click)="closeInterestModal()">
+              <div class="interest-modal-dialog" (click)="$event.stopPropagation()">
+
+                <div class="interest-modal-head">
+                  <div class="interest-modal-head-title-wrap">
+                    <div class="interest-modal-icon">
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="8" y1="13" x2="16" y2="13"></line>
+                        <line x1="8" y1="17" x2="16" y2="17"></line>
+                      </svg>
+                    </div>
+                    <h3 class="interest-modal-headline">{{ resolveMessageHead(modalMsg) }}</h3>
+                  </div>
+                  <button type="button" class="interest-modal-close" (click)="closeInterestModal()" title="Close dialog">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="interest-modal-divider"></div>
+
+                <div class="interest-modal-scrollable">
+                  @if (showAllInterests && (modalMsg.interest_name || activeInterest?.interestName)) {
+                    <div class="interest-modal-interest-row">
+                      <span class="interest-mini-meta interest-mini-tag">
+                        <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 4a8 8 0 0 1-8 8 8 8 0 0 1 8-8z"></path></svg>
+                        {{ modalMsg.interest_name || activeInterest?.interestName }}
+                      </span>
+                    </div>
+                  }
+                  <p class="interest-modal-body-text">{{ resolveMessageBody(modalMsg) }}</p>
+
+                  <div class="interest-modal-meta-grid">
+                    <div class="interest-modal-meta-card">
+                      <span class="interest-modal-meta-label">Message ID</span>
+                      <span class="interest-modal-meta-val">{{ modalMsg.msg_id || '—' }}</span>
+                    </div>
+                    <div class="interest-modal-meta-card">
+                      <span class="interest-modal-meta-label">Status</span>
+                      <span class="interest-msg-badge" [class.active]="resolveIsActive(modalMsg)">
+                        {{ resolveIsActive(modalMsg) ? 'Active' : 'Inactive' }}
+                      </span>
+                    </div>
+                    <div class="interest-modal-meta-card">
+                      <span class="interest-modal-meta-label">Validity</span>
+                      <span class="interest-modal-meta-val">{{ resolveValidity(modalMsg) }}</span>
+                    </div>
+                    <div class="interest-modal-meta-card">
+                      <span class="interest-modal-meta-label">Published On</span>
+                      <span class="interest-modal-meta-val">{{ resolveEntryDate(modalMsg) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="interest-modal-footer">
+                  <button type="button" class="interest-modal-close-btn" (click)="closeInterestModal()">Dismiss</button>
+                </div>
+
+              </div>
+            </div>
           }
         } @else if (selectedMenu === 'portal') {
           <div class="page-title-row">

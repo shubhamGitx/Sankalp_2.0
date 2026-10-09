@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
 import { BeneficiaryProfile } from '../../models/otp';
 import { MasterService } from '../../services/master';
@@ -36,9 +37,11 @@ export class BeneficiaryComponent implements OnInit {
   selectedBroadcastThemeIndex: number = 0;
 
   activeInterest: { interestId: number; interestName: string } | null = null;
+  showAllInterests: boolean = false;
   interestMessages: InterestWiseMessageData[] = [];
   interestLoading: boolean = false;
   interestError: string = '';
+  selectedInterestMsg: any | null = null;
 
   genders: { code: string; name: string }[] = [];
   ageGroups: { code: string; name: string }[] = [];
@@ -259,6 +262,10 @@ export class BeneficiaryComponent implements OnInit {
       this.loadBroadcastMessages();
     } else if (menu === 'portal') {
       this.loadPortals();
+    } else if (menu === 'interest') {
+      // Auto-select "All Interests" whenever the interest-wise message view
+      // is opened so all messages are shown at once.
+      this.openAllInterests();
     }
   }
 
@@ -344,10 +351,11 @@ export class BeneficiaryComponent implements OnInit {
     return [];
   }
 
-  openInterest(interest: { interestId: number; interestName: string }): void {debugger
+  openInterest(interest: { interestId: number; interestName: string } | null): void {debugger
     if (!interest) {
       return;
     }
+    this.showAllInterests = false;
     this.activeInterest = interest;
     this.interestMessages = [];
     this.interestError = '';
@@ -359,6 +367,49 @@ export class BeneficiaryComponent implements OnInit {
       next: (res: any) => {
         this.interestLoading = false;
         this.interestMessages = this.extractInterestMessages(res);
+        this.refreshView();
+      },
+      error: (err) => {
+        this.interestLoading = false;
+        this.interestError =
+          err?.error?.message || 'Failed to load interest-wise messages.';
+        this.refreshView();
+      },
+    });
+  }
+
+  openAllInterests(): void {
+    const interests = this.userInterestOptions;
+    if (!interests.length) {
+      return;
+    }
+
+    this.activeInterest = null;
+    this.showAllInterests = true;
+    this.interestMessages = [];
+    this.interestError = '';
+    this.interestLoading = true;
+
+    const requests = interests.map((interest) =>
+      this.messageService.getInterestWiseMessages(interest.interestId)
+    );
+
+    forkJoin(requests).subscribe({
+      next: (results: any[]) => {
+        this.interestLoading = false;
+        const merged: any[] = [];
+        results.forEach((res, index) => {
+          const interest = interests[index];
+          const messages = this.extractInterestMessages(res);
+          messages.forEach((msg: any) => {
+            merged.push({
+              ...msg,
+              interest_id: msg?.interest_id ?? interest.interestId,
+              interest_name: msg?.interest_name || interest.interestName
+            });
+          });
+        });
+        this.interestMessages = merged;
         this.refreshView();
       },
       error: (err) => {
@@ -411,6 +462,17 @@ export class BeneficiaryComponent implements OnInit {
   }
 
  
+  openInterestModal(msg: any): void {
+    this.selectedInterestMsg = msg;
+    this.refreshView();
+  }
+
+  closeInterestModal(): void {
+    this.selectedInterestMsg = null;
+    this.refreshView();
+  }
+
+ 
   loadBroadcastMessages(): void {
     this.broadcastLoading = true;
     this.messageService.getBroadcastMessages().subscribe({
@@ -459,7 +521,9 @@ export class BeneficiaryComponent implements OnInit {
 
   @HostListener('document:keydown.escape')
   onEscapePress(): void {
-    if (this.selectedBroadcastMsg) {
+    if (this.selectedInterestMsg) {
+      this.closeInterestModal();
+    } else if (this.selectedBroadcastMsg) {
       this.closeBroadcastModal();
     }
   }

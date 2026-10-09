@@ -1380,6 +1380,24 @@
   color: #ffffff;
 }
 
+.interest-chip.all-interest-chip {
+  border-style: dashed;
+  border-color: #a9d6c1;
+  background: #f0faf5;
+}
+
+.interest-chip.all-interest-chip:hover {
+  border-color: #247d66;
+  background: #e4f5ec;
+}
+
+.interest-chip.all-interest-chip.active {
+  border-style: solid;
+  border-color: transparent;
+  background: linear-gradient(135deg, #247d66, #00b894);
+  box-shadow: 0 8px 18px rgba(36, 125, 102, 0.3);
+}
+
 .interest-empty {
   display: flex;
   flex-direction: column;
@@ -1495,6 +1513,7 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
   margin-top: 1.4rem;
+  grid-auto-rows: 1fr;
 }
 
 @media (max-width: 720px) {
@@ -1511,6 +1530,7 @@
   padding: 18px 18px;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .interest-msg-head {
@@ -1552,6 +1572,12 @@
   line-height: 1.6;
   word-break: break-word;
   flex: 1;
+  
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(13px * 1.6 * 3);
 }
 
 .interest-msg-meta {
@@ -1571,6 +1597,256 @@
   background: #f1f5f9;
   padding: 3px 8px;
   border-radius: 6px;
+}
+
+.interest-mini-meta.interest-mini-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e2f4ea;
+  color: #0b6e50;
+}
+
+.interest-msg-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.interest-msg-readmore {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0b7a5b;
+  background: #f8fafc;
+  border: 1px solid #d7e6dd;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.interest-msg-readmore svg {
+  transition: transform 0.2s ease;
+}
+
+.interest-msg-readmore:hover {
+  background: linear-gradient(135deg, #247d66, #00b894);
+  color: #ffffff;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(36, 125, 102, 0.3);
+}
+
+.interest-msg-readmore:hover svg {
+  transform: translateX(2px);
+}
+
+/* ============================================================
+   Interest Message Detail Modal ("Read more")
+   ============================================================ */
+.interest-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: backdropFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes interestModalZoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.88) translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.interest-modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 26px 26px 18px;
+  box-shadow:
+    0 25px 50px -12px rgba(15, 23, 42, 0.3),
+    0 0 0 1px rgba(226, 232, 240, 0.9),
+    inset 0 1px 0 #ffffff;
+  animation: interestModalZoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.interest-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.interest-modal-head-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.interest-modal-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #247d66, #00b894);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(36, 125, 102, 0.28);
+}
+
+.interest-modal-headline {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #144e3e;
+  word-break: break-word;
+}
+
+.interest-modal-close {
+  flex-shrink: 0;
+  background: #f1f5f9;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.interest-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: scale(1.08) rotate(90deg);
+}
+
+.interest-modal-divider {
+  height: 1px;
+  background: linear-gradient(90deg, #247d66 0%, #00b894 45%, #e8eef2 100%);
+  margin: 14px 0 16px;
+}
+
+.interest-modal-scrollable {
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.interest-modal-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.interest-modal-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.interest-modal-scrollable::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+}
+
+.interest-modal-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.interest-modal-interest-row {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.interest-modal-body-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #334155;
+  margin: 12px 0 18px;
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.interest-modal-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.interest-modal-meta-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.interest-modal-meta-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+.interest-modal-meta-val {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.interest-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 14px;
+  margin-top: 6px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.interest-modal-close-btn {
+  background: linear-gradient(135deg, #247d66, #00b894);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 26px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(36, 125, 102, 0.3);
+  transition: all 0.2s ease;
+}
+
+.interest-modal-close-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  box-shadow: 0 5px 14px rgba(36, 125, 102, 0.38);
 }
 
 /* ============================================================
