@@ -10,6 +10,7 @@ export interface MapUserPortalData {
   user_type_id?: number;
   user_type_name?: string;
   mobile?: string;
+  name?: string;
   userid?: string;
   deviceid?: string;
   district_code?: number | null;

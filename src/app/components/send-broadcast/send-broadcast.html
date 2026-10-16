@@ -133,6 +133,7 @@
               <th>ID</th>
               <th>Portal</th>
               <th>User Type</th>
+              <th>Name</th>
               <th>Mobile</th>
               <th>User ID</th>
               <th>Device ID</th>
@@ -156,6 +157,7 @@
                 <td class="font-mono">{{ rec.user_portal_id === null ? '—' : '#' + rec.user_portal_id }}</td>
                 <td><strong>{{ rec.portal_name || '—' }}</strong></td>
                 <td>{{ rec.user_type_name || '—' }}</td>
+                <td>{{ rec.name || '—' }}</td>
                 <td class="font-mono">{{ rec.mobile || '—' }}</td>
                 <td class="font-mono">{{ rec.userid || '—' }}</td>
                 <td class="cell-body">
@@ -169,7 +171,7 @@
               </tr>
             } @empty {
               <tr>
-                <td colspan="12" class="empty-state">
+                <td colspan="13" class="empty-state">
                   @if (errorMessage) {
                     {{ errorMessage }}
                   } @else if (hasSearched) {
