@@ -132,7 +132,7 @@
                       id="noticePhotoFile1"
                       type="file"
                       class="attachment-file-input"
-                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                      accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                       (change)="onPhotoSelected($event, 1)" />
                     <label for="noticePhotoFile1" class="photo-upload-slot">
                       <span class="photo-add-icon" aria-hidden="true">{{ attachmentFiles.photo ? '✓' : '+' }}</span>
@@ -144,7 +144,7 @@
                       id="noticePhotoFile2"
                       type="file"
                       class="attachment-file-input"
-                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                      accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                       (change)="onPhotoSelected($event, 2)" />
                     <label for="noticePhotoFile2" class="photo-upload-slot">
                       <span class="photo-add-icon" aria-hidden="true">{{ secondPhotoFile ? '✓' : '+' }}</span>
@@ -152,7 +152,7 @@
                     </label>
                   </div>
                 </div>
-                <small class="attachment-rule-text">Both photos are required · JPG, PNG or WEBP · Max 5 MB each</small>
+                <small class="attachment-rule-text">Upload one or two photos · JPG, JPEG or PNG · Max 5 MB each</small>
                 @if (attachmentErrors.photo) {
                   <small class="error-text">{{ attachmentErrors.photo }}</small>
                 }
@@ -197,7 +197,7 @@
                   (change)="onAttachmentSelected($event, 'document')" />
                 <label for="noticeDocumentFile" class="attachment-file-picker">
                   <span class="upload-icon" aria-hidden="true">↑</span>
-                  <span><strong>{{ attachmentFiles.document?.name || 'Choose file' }}</strong><small>PDF, Office, TXT or CSV · Max 10 MB</small></span>
+                  <span><strong>{{ attachmentFiles.document?.name || 'Choose file' }}</strong><small>PDF, Office, TXT or CSV · Max 5 MB</small></span>
                 </label>
                 @if (attachmentErrors.document) {
                   <small class="error-text">{{ attachmentErrors.document }}</small>
@@ -220,7 +220,7 @@
                   (change)="onAttachmentSelected($event, 'audio')" />
                 <label for="noticeAudioFile" class="attachment-file-picker">
                   <span class="upload-icon" aria-hidden="true">↑</span>
-                  <span><strong>{{ attachmentFiles.audio?.name || 'Choose audio' }}</strong><small>MP3, WAV, M4A, AAC or OGG · Max 10 MB</small></span>
+                  <span><strong>{{ attachmentFiles.audio?.name || 'Choose audio' }}</strong><small>MP3, WAV, M4A, AAC or OGG · Max 5 MB</small></span>
                 </label>
                 @if (attachmentErrors.audio) {
                   <small class="error-text">{{ attachmentErrors.audio }}</small>

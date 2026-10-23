@@ -86,8 +86,8 @@ export class BroadcastComponent implements OnInit {
   private readonly attachmentRules: Record<AttachmentType, AttachmentRule> = {
     photo: {
       maxBytes: 5 * 1024 * 1024,
-      extensions: ['jpg', 'jpeg', 'png', 'webp'],
-      description: 'JPG, PNG or WEBP · Max 5 MB'
+      extensions: ['jpg', 'jpeg', 'png'],
+      description: 'JPG, JPEG or PNG · Max 5 MB'
     },
     video: {
       maxBytes: 25 * 1024 * 1024,
@@ -95,14 +95,14 @@ export class BroadcastComponent implements OnInit {
       description: 'MP4, WEBM or MOV · Max 25 MB'
     },
     document: {
-      maxBytes: 10 * 1024 * 1024,
+      maxBytes: 5 * 1024 * 1024,
       extensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv'],
-      description: 'PDF, Office, TXT or CSV · Max 10 MB'
+      description: 'PDF, Office, TXT or CSV · Max 5 MB'
     },
     audio: {
-      maxBytes: 10 * 1024 * 1024,
+      maxBytes: 5 * 1024 * 1024,
       extensions: ['mp3', 'wav', 'm4a', 'aac', 'ogg'],
-      description: 'MP3, WAV, M4A, AAC or OGG · Max 10 MB'
+      description: 'MP3, WAV, M4A, AAC or OGG · Max 5 MB'
     }
   };
 
@@ -186,7 +186,7 @@ export class BroadcastComponent implements OnInit {
     if (!file) {
       if (slot === 1) this.attachmentFiles.photo = null;
       else this.secondPhotoFile = null;
-      this.updatePhotoValidationMessage();
+      this.attachmentErrors.photo = '';
       return;
     }
 
@@ -201,7 +201,7 @@ export class BroadcastComponent implements OnInit {
 
     if (slot === 1) this.attachmentFiles.photo = file;
     else this.secondPhotoFile = file;
-    this.updatePhotoValidationMessage();
+    this.attachmentErrors.photo = '';
   }
 
   onAttachmentSelected(event: Event, type: AttachmentType): void {
@@ -235,11 +235,6 @@ export class BroadcastComponent implements OnInit {
     return '';
   }
 
-  private updatePhotoValidationMessage(): void {
-    const selectedCount = Number(!!this.attachmentFiles.photo) + Number(!!this.secondPhotoFile);
-    this.attachmentErrors.photo = selectedCount === 1 ? 'Upload one more photo.' : '';
-  }
-
   private resetAttachmentSelection(): void {
     (Object.keys(this.attachmentEnabled) as AttachmentType[]).forEach(type => {
       this.attachmentEnabled[type] = false;
@@ -258,11 +253,8 @@ export class BroadcastComponent implements OnInit {
     }
 
     let missingAttachment = false;
-    if (this.attachmentEnabled.photo && (!this.attachmentFiles.photo || !this.secondPhotoFile)) {
-      const selectedCount = Number(!!this.attachmentFiles.photo) + Number(!!this.secondPhotoFile);
-      this.attachmentErrors.photo = selectedCount === 1
-        ? 'Upload one more photo.'
-        : 'Upload both required photos before publishing.';
+    if (this.attachmentEnabled.photo && !this.attachmentFiles.photo && !this.secondPhotoFile) {
+      this.attachmentErrors.photo = 'Select at least one photo before publishing.';
       missingAttachment = true;
     }
 
