@@ -398,6 +398,48 @@
   transform: translateY(-1px);
 }
 
+.government-brand-marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding-left: 10px;
+  margin-left: 2px;
+  border-left: 1px solid rgba(6, 78, 107, 0.14);
+  flex-shrink: 0;
+}
+
+.government-brand-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 3px 5px;
+  border-radius: 8px;
+  background: #ffffff;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.government-brand-link:hover {
+  background: rgba(6, 78, 107, 0.05);
+  transform: translateY(-1px);
+}
+
+.government-brand-image {
+  display: block;
+  width: auto;
+  max-height: 32px;
+  object-fit: contain;
+}
+
+.nic-brand-image {
+  width: 112px;
+}
+
+.digital-india-brand-image {
+  width: 84px;
+}
+
 .mobile-menu-btn {
   display: none;
   flex-direction: column;
@@ -619,7 +661,55 @@
 }
 
 .footer-right {
-  text-align: right;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.footer-right-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+  margin-left: auto;
+}
+
+.footer-government-marks {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.footer-government-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 5px 8px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.footer-government-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.footer-government-image {
+  display: block;
+  width: auto;
+  max-height: 36px;
+  object-fit: contain;
+}
+
+.footer-nic-image {
+  width: 126px;
+}
+
+.footer-digital-india-image {
+  width: 94px;
 }
 
 /* =========================================================
@@ -677,6 +767,18 @@
   }
 
   .footer-right {
-    text-align: center;
+    text-align: left;
+  }
+
+  .footer-right-cluster {
+    margin-left: 0;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .government-brand-marks {
+    display: none;
   }
 }
