@@ -26,6 +26,8 @@ interface AttachmentRule {
 export class BroadcastComponent implements OnInit {
   private messageService = inject(MessageService);
   private cdr = inject(ChangeDetectorRef);
+  private readonly currentRole = (localStorage.getItem('Role') || '').trim().toUpperCase();
+  readonly canCreateBroadcast = !['CKR', 'CHECKER', 'APR', 'APPROVER'].includes(this.currentRole);
 
   loading: boolean = false;
   listLoading: boolean = false;
@@ -36,6 +38,7 @@ export class BroadcastComponent implements OnInit {
   @ViewChild('createNoticeDialog') createNoticeDialog!: ElementRef<HTMLDialogElement>;
 
   openCreateModal(): void {
+    if (!this.canCreateBroadcast) return;
     this.errorMessage = '';
     this.createNoticeDialog.nativeElement.showModal();
   }
@@ -114,7 +117,9 @@ export class BroadcastComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadBroadcastMessages();
-    this.loadMessageTypes();
+    if (this.canCreateBroadcast) {
+      this.loadMessageTypes();
+    }
   }
 
   loadBroadcastMessages(): void {

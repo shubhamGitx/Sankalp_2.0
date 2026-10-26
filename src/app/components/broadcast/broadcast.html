@@ -15,9 +15,11 @@
         <span>State-wide Advisories</span>
       </div>
 
-      <button type="button" class="btn-submit btn-create" (click)="openCreateModal()" aria-haspopup="dialog">
-        <span aria-hidden="true">+</span> Create New Broadcast Notice
-      </button>
+      @if (canCreateBroadcast) {
+        <button type="button" class="btn-submit btn-create" (click)="openCreateModal()" aria-haspopup="dialog">
+          <span aria-hidden="true">+</span> Create New Broadcast Notice
+        </button>
+      }
     </div>
   </div>
 
