@@ -18,8 +18,9 @@ import { environment } from '../../environments/environment';
 })
 export class CampaignService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl + '/MessageCampaign';
-  private messageApiUrl = environment.apiUrl + '/Message';
+  private baseUrl = environment.apiUrl;
+  private apiUrl = this.baseUrl + '/MessageCampaign';
+  private messageApiUrl = this.baseUrl + '/Message';
 
   /**
    * Current logged in user ID from localStorage

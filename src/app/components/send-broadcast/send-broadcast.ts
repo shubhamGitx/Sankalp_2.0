@@ -128,10 +128,10 @@ export class SendBroadcastComponent implements OnInit {
   getDetails(): void {
     const portalId = this.selectedPortalId && this.selectedPortalId !== this.ALL_CODE
       ? this.selectedPortalId
-      : null;
+      : 0;
     const userTypeId = this.selectedUserTypeId && this.selectedUserTypeId !== this.ALL_CODE
       ? this.selectedUserTypeId
-      : null;
+      : 0;
 
     this.loading = true;
     this.errorMessage = '';
@@ -209,7 +209,7 @@ export class SendBroadcastComponent implements OnInit {
     }
   }
 
-  sendToUsers(): void {debugger
+  sendToUsers(): void {
     this.sendSuccessMessage = '';
     this.sendError = '';
 
@@ -240,17 +240,17 @@ export class SendBroadcastComponent implements OnInit {
       return;
     }
 
-    const validRecords = selectedRecords.filter(r => (r.mobile ?? '').trim().length > 0);
+    const validRecords = selectedRecords.filter(r => (r.userid ?? '').trim().length > 0);
     const skippedCount = selectedRecords.length - validRecords.length;
 
     if (validRecords.length === 0) {
-      this.sendError = 'None of the selected users have a mobile number registered to receive notifications.';
+      this.sendError = 'None of the selected records contain a valid user ID for notification delivery.';
       return;
     }
 
     const requests = validRecords.map(r => {
       const payload: SendToUserRequest = {
-        userId: r.mobile!.trim(),
+        userId: r.userid!.trim(),
         title,
         body: bodyText,
         imageUrl: '',
@@ -297,7 +297,7 @@ export class SendBroadcastComponent implements OnInit {
           this.sendSuccessMessage =
             `Notification sent successfully. Total devices: ${totalDevices}, ` +
             `Sent: ${successCount}, Failed: ${failureCount}, Deactivated tokens: ${deactivatedTokenCount}.` +
-            (skippedCount > 0 ? ` (${skippedCount} user(s) skipped - no mobile number.)` : '');
+            (skippedCount > 0 ? ` (${skippedCount} user(s) skipped - no user ID.)` : '');
           this.sendTitle = '';
           this.clearEditor();
           this.selectedRecordKeys = new Set<string>();
@@ -306,7 +306,7 @@ export class SendBroadcastComponent implements OnInit {
           const failedUsers = responses.filter(res => !res.success).length;
           this.sendError =
             `${errors[0]} (${failedUsers}/${validRecords.length} user(s) failed.)` +
-            (skippedCount > 0 ? ` ${skippedCount} user(s) skipped - no mobile number.` : '');
+            (skippedCount > 0 ? ` ${skippedCount} user(s) skipped - no user ID.` : '');
         }
         this.cdr.detectChanges();
       },

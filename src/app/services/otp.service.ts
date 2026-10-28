@@ -18,11 +18,11 @@ export class OtpService {
   private http = inject(HttpClient);
 
   sendOtp(request: SendOtpRequest): Observable<OtpResponse> {
-    return this.http.post<OtpResponse>(`${this.baseUrl}/api/Otp/SendOtp`, request);
+    return this.http.post<OtpResponse>(`${this.baseUrl}/Otp/SendOtp`, request);
   }
 
   verifyOtp(request: VerifyOtpRequest): Observable<OtpResponse> {
-    return this.http.post<OtpResponse>(`${this.baseUrl}/api/Otp/VerifyOtp`, request);
+    return this.http.post<OtpResponse>(`${this.baseUrl}/Otp/VerifyOtp`, request);
   }
 
 }
