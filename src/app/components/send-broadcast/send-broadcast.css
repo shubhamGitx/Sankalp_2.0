@@ -627,3 +627,230 @@ tr.selected-row:hover {
   }
 }
 
+.approved-message-form {
+  gap: 20px;
+}
+
+.approved-selector-intro {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+  background: #f0f9ff;
+  color: #0c4a6e;
+}
+
+.approved-selector-intro p {
+  margin: 3px 0 0;
+  color: #52758c;
+  font-size: 12px;
+}
+
+.approved-selector-icon {
+  display: inline-flex;
+  flex: 0 0 36px;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.approved-preview-backdrop {
+  z-index: 2100;
+}
+
+.broadcast-modal.approved-preview-modal {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 920px);
+  max-height: min(92vh, 820px);
+  padding: 0;
+  overflow: hidden;
+  border-top-color: #16805f;
+}
+
+.approved-preview-header {
+  flex: 0 0 auto;
+  align-items: center;
+  margin: 0;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f0fdf7 0%, #ffffff 100%);
+}
+
+.approved-preview-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.approved-status-chip {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.preview-alert {
+  margin: 16px 24px 0;
+}
+
+.approved-preview-content {
+  display: grid;
+  gap: 14px;
+  padding: 20px 24px;
+  overflow-y: auto;
+}
+
+.approved-message-summary,
+.approved-message-body,
+.approved-attachments {
+  padding: 15px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.approved-message-summary {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: #f8fafc;
+}
+
+.message-reference {
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-family: monospace;
+  font-weight: 800;
+}
+
+.approved-message-summary h4 {
+  margin: 3px 0 0;
+  color: #1e293b;
+  font-size: 16px;
+}
+
+.detail-label {
+  display: block;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.approved-message-body p {
+  margin: 7px 0 0;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.approved-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.approved-detail-item {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #f8fafc;
+}
+
+.approved-detail-item strong {
+  display: block;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  color: #26364d;
+  font-size: 12px;
+}
+
+.approved-attachment-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.approved-attachment-row {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  background: #f8fafc;
+  font-size: 11px;
+}
+
+.approved-attachment-row span {
+  overflow: hidden;
+  color: #52637a;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.approved-preview-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+@media (max-width: 760px) {
+  .approved-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .approved-preview-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .broadcast-modal.approved-preview-modal {
+    width: 100%;
+    max-height: 94vh;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .approved-preview-header,
+  .approved-preview-content,
+  .approved-preview-actions {
+    padding-inline: 16px;
+  }
+
+  .approved-preview-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .approved-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

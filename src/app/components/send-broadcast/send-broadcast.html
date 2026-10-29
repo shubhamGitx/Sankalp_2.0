@@ -201,7 +201,7 @@
         <header class="broadcast-modal-header">
           <div>
             <h3 id="broadcast-modal-title">Send Broadcast to Selected Users</h3>
-            <p>Compose a message for {{ selectedCount }} selected user(s).</p>
+            <p>Select an approved message for {{ selectedCount }} selected user(s).</p>
           </div>
           <button type="button" class="modal-close-btn" (click)="closeBroadcastModal()" [disabled]="sending" aria-label="Close broadcast message form">&times;</button>
         </header>
@@ -216,64 +216,125 @@
           </div>
         }
 
-        <div class="send-form">
-          <div class="form-group">
-            <label for="sendTitle">Title <span class="text-danger">*</span></label>
-            <input
-              id="sendTitle"
-              type="text"
-              class="form-control"
-              [(ngModel)]="sendTitle"
-              placeholder="e.g. Monsoon Alert: Heavy Rainfall Expected" />
+        <div class="send-form approved-message-form">
+          <div class="approved-selector-intro">
+            <span class="approved-selector-icon" aria-hidden="true">✓</span>
+            <div>
+              <strong>Select an approved broadcast message</strong>
+              <p>Only messages whose approval status is Y can be sent to the selected users.</p>
+            </div>
           </div>
 
           <div class="form-group">
-            <label for="sendMessage">Message <span class="text-danger">*</span></label>
-            <div class="rte">
-              <div class="rte-toolbar">
-                <button type="button" class="rte-btn" title="Bold" (mousedown)="$event.preventDefault()" (click)="execCommand('bold')"><strong>B</strong></button>
-                <button type="button" class="rte-btn" title="Italic" (mousedown)="$event.preventDefault()" (click)="execCommand('italic')"><em>I</em></button>
-                <button type="button" class="rte-btn" title="Underline" (mousedown)="$event.preventDefault()" (click)="execCommand('underline')"><u>U</u></button>
-                <button type="button" class="rte-btn" title="Strikethrough" (mousedown)="$event.preventDefault()" (click)="execCommand('strikeThrough')"><s>S</s></button>
-                <span class="rte-sep"></span>
-                <button type="button" class="rte-btn" title="Bullet list" (mousedown)="$event.preventDefault()" (click)="execCommand('insertUnorderedList')">• List</button>
-                <button type="button" class="rte-btn" title="Numbered list" (mousedown)="$event.preventDefault()" (click)="execCommand('insertOrderedList')">1. List</button>
-                <span class="rte-sep"></span>
-                <button type="button" class="rte-btn" title="Align left" (mousedown)="$event.preventDefault()" (click)="execCommand('justifyLeft')">⯇</button>
-                <button type="button" class="rte-btn" title="Align center" (mousedown)="$event.preventDefault()" (click)="execCommand('justifyCenter')">≡</button>
-                <button type="button" class="rte-btn" title="Align right" (mousedown)="$event.preventDefault()" (click)="execCommand('justifyRight')">⯈</button>
-                <span class="rte-sep"></span>
-                <button type="button" class="rte-btn" title="Heading" (mousedown)="$event.preventDefault()" (click)="execCommand('formatBlock', 'H3')">H</button>
-                <button type="button" class="rte-btn" title="Normal text" (mousedown)="$event.preventDefault()" (click)="execCommand('formatBlock', 'P')">¶</button>
-                <span class="rte-sep"></span>
-                <button type="button" class="rte-btn" title="Undo" (mousedown)="$event.preventDefault()" (click)="execCommand('undo')">↶</button>
-                <button type="button" class="rte-btn" title="Redo" (mousedown)="$event.preventDefault()" (click)="execCommand('redo')">↷</button>
-                <button type="button" class="rte-btn" title="Clear formatting" (mousedown)="$event.preventDefault()" (click)="execCommand('removeFormat')">✕</button>
-              </div>
-              <div
-                #messageEditor
-                class="rte-editor"
-                contenteditable="true"
-                role="textbox"
-                aria-multiline="true"
-                (input)="onMessageInput()"
-                (blur)="onMessageInput()"
-                data-placeholder="Enter the message to broadcast to the selected users..."></div>
-            </div>
+            <label for="approvedBroadcastMessage">Approved Broadcast Message <span class="text-danger">*</span></label>
+            <app-select-dropdown
+              id="approvedBroadcastMessage"
+              [(ngModel)]="selectedApprovedMessageId"
+              [options]="approvedMessageOptions"
+              [placeholder]="approvedMessagesLoading ? 'Loading approved messages...' : '-- Select an Approved Broadcast Message --'"
+              (changed)="onApprovedMessageChanged($event)">
+            </app-select-dropdown>
+            @if (approvedMessagesLoading) {
+              <small class="hint-text">Loading approved broadcast messages...</small>
+            } @else if (approvedMessagesError) {
+              <small class="error-text">{{ approvedMessagesError }}</small>
+            } @else {
+              <small class="hint-text">Selecting a message opens its complete details for confirmation.</small>
+            }
           </div>
 
           <div class="send-actions modal-actions">
             <span class="selected-count has-selection">{{ selectedCount }} user(s) selected</span>
             <div class="modal-action-buttons">
               <button type="button" class="btn-modal-cancel" (click)="closeBroadcastModal()" [disabled]="sending">Cancel</button>
-              <button type="button" class="btn-submit send-btn" (click)="sendToUsers()" [disabled]="sending">
-                @if (sending) {
-                  <span class="spinner-small"></span> Broadcasting...
-                } @else {
-                  <span>📢 Broadcast Message</span>
-                }
-              </button>
             </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (showApprovedMessagePreview && selectedApprovedMessage; as message) {
+    <div class="broadcast-modal-backdrop approved-preview-backdrop" (click)="closeApprovedMessagePreview()">
+      <section class="broadcast-modal approved-preview-modal" role="dialog" aria-modal="true"
+        aria-labelledby="approved-preview-title" (click)="$event.stopPropagation()">
+        <header class="broadcast-modal-header approved-preview-header">
+          <div class="approved-preview-heading">
+            <span class="approved-selector-icon" aria-hidden="true">✓</span>
+            <div>
+              <span class="approved-status-chip">Approved</span>
+              <h3 id="approved-preview-title">Review Broadcast Message</h3>
+              <p>Confirm the approved message before sending it to {{ selectedCount }} selected user(s).</p>
+            </div>
+          </div>
+          <button type="button" class="modal-close-btn" (click)="closeApprovedMessagePreview()"
+            [disabled]="sending" aria-label="Close message details">&times;</button>
+        </header>
+
+        @if (sendError) {
+          <div class="alert alert-danger modal-alert preview-alert">
+            <span class="alert-icon">⚠</span>
+            <div><strong>Broadcast failed</strong><p>{{ sendError }}</p></div>
+          </div>
+        }
+
+        <div class="approved-preview-content">
+          <div class="approved-message-summary">
+            <span class="message-reference">#{{ message.bmsg_id }}</span>
+            <div>
+              <span class="detail-label">Notice Header / Title</span>
+              <h4>{{ message.message_head || 'Untitled broadcast message' }}</h4>
+            </div>
+          </div>
+
+          <div class="approved-message-body">
+            <span class="detail-label">Notice Content / Message Body</span>
+            <p>{{ message.message_body }}</p>
+          </div>
+
+          <div class="approved-detail-grid">
+            <div class="approved-detail-item"><span class="detail-label">Message Type</span><strong>{{ messageTypeLabel(message.mesg_type_id) }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Validity</span><strong>{{ message.validity_in_minutes ? message.validity_in_minutes + ' mins' : '—' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Status</span><strong>{{ message.is_active === 'Y' ? 'Active' : 'Inactive' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Scope</span><strong>{{ message.is_all_district === 'Y' ? 'All districts' : 'Configured recipients' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Portal ID</span><strong>{{ message.portal_id || '—' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">User Type ID</span><strong>{{ message.user_type_id || '—' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Created By</span><strong>{{ message.entryby || '—' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Created Date</span><strong>{{ (message.entrydate | date:'medium') || '—' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Verified By</span><strong>{{ message.verified_by || '—' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Verified Date</span><strong>{{ (message.verified_date | date:'medium') || '—' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Approved By</span><strong>{{ message.approved_by || '—' }}</strong></div>
+            <div class="approved-detail-item"><span class="detail-label">Approved Date</span><strong>{{ (message.approved_date | date:'medium') || '—' }}</strong></div>
+          </div>
+
+          @if (attachmentEntries(message).length) {
+            <section class="approved-attachments" aria-labelledby="approved-attachments-title">
+              <span class="detail-label" id="approved-attachments-title">Attachment Paths</span>
+              <div class="approved-attachment-list">
+                @for (attachment of attachmentEntries(message); track attachment.label) {
+                  <div class="approved-attachment-row">
+                    <strong>{{ attachment.label }}</strong>
+                    <span [title]="attachment.path">{{ attachment.path }}</span>
+                  </div>
+                }
+              </div>
+            </section>
+          }
+        </div>
+
+        <div class="approved-preview-actions">
+          <span class="selected-count has-selection">{{ selectedCount }} user(s) selected</span>
+          <div class="modal-action-buttons">
+            <button type="button" class="btn-modal-cancel" (click)="closeApprovedMessagePreview(true)" [disabled]="sending">
+              Change Selection
+            </button>
+            <button type="button" class="btn-submit send-btn" (click)="sendToUsers()" [disabled]="sending">
+              @if (sending) {
+                <span class="spinner-small"></span> Broadcasting...
+              } @else {
+                <span>📢 Broadcast Message</span>
+              }
+            </button>
           </div>
         </div>
       </section>

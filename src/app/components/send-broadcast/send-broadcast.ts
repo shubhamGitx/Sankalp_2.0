@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
@@ -8,6 +8,7 @@ import { MessageService } from '../../services/message.service';
 import { CryptoService } from '../../services/crypto.service';
 import { SelectDropdownComponent, DropdownOption } from '../select-dropdown/select-dropdown';
 import { MapUserPortalData, SendToUserRequest, SendToUserResponse } from '../../models/map-user-portal';
+import { BroadcastMessageData } from '../../models/broadcast-message';
 
 @Component({
   selector: 'app-send-broadcast',
@@ -36,14 +37,18 @@ export class SendBroadcastComponent implements OnInit {
 
   selectedRecordKeys: Set<string> = new Set<string>();
 
-  sendTitle: string = '';
-  sendMessage: string = '';
   sending: boolean = false;
   sendSuccessMessage: string = '';
   sendError: string = '';
   showBroadcastModal: boolean = false;
-
-  @ViewChild('messageEditor') messageEditor?: ElementRef<HTMLDivElement>;
+  approvedMessages: BroadcastMessageData[] = [];
+  approvedMessageOptions: DropdownOption[] = [];
+  selectedApprovedMessageId: string = '';
+  selectedApprovedMessage: BroadcastMessageData | null = null;
+  approvedMessagesLoading: boolean = false;
+  approvedMessagesError: string = '';
+  showApprovedMessagePreview: boolean = false;
+  messageTypeOptions: DropdownOption[] = [];
 
   loading: boolean = false;
   portalLoading: boolean = false;
@@ -200,24 +205,121 @@ export class SendBroadcastComponent implements OnInit {
 
     this.sendSuccessMessage = '';
     this.sendError = '';
+    this.selectedApprovedMessageId = '';
+    this.selectedApprovedMessage = null;
+    this.showApprovedMessagePreview = false;
     this.showBroadcastModal = true;
+    this.loadApprovedMessages();
+    this.loadMessageTypes();
   }
 
   closeBroadcastModal(): void {
     if (!this.sending) {
+      this.showApprovedMessagePreview = false;
       this.showBroadcastModal = false;
+      this.selectedApprovedMessageId = '';
+      this.selectedApprovedMessage = null;
+      this.sendError = '';
     }
+  }
+
+  loadApprovedMessages(): void {
+    this.approvedMessagesLoading = true;
+    this.approvedMessagesError = '';
+
+    this.messageService.getBroadcastMessages().subscribe({
+      next: (res: any) => {
+        this.approvedMessagesLoading = false;
+        const messages = res?.status && Array.isArray(res.data)
+          ? res.data as BroadcastMessageData[]
+          : [];
+
+        this.approvedMessages = messages.filter(message => this.isApproved(message.is_approved));
+        this.approvedMessageOptions = this.approvedMessages.map(message => ({
+          code: String(message.bmsg_id),
+          name: `#${message.bmsg_id} — ${message.message_head?.trim() || 'Untitled broadcast message'}`
+        }));
+
+        if (!this.approvedMessages.length) {
+          this.approvedMessagesError = 'No approved broadcast messages are available.';
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.approvedMessagesLoading = false;
+        this.approvedMessages = [];
+        this.approvedMessageOptions = [];
+        this.approvedMessagesError = 'Failed to load approved broadcast messages. Please try again.';
+        console.error('Failed to load approved broadcast messages:', err);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private loadMessageTypes(): void {
+    this.messageService.getMessageTypes().subscribe({
+      next: (res: any) => {
+        this.messageTypeOptions = Array.isArray(res?.data)
+          ? res.data.map((item: any) => {
+              const code = String(item.mesg_type_id ?? item.MesgTypeID ?? '');
+              const name = String(item.mesg_type_name ?? item.MesgTypeName ?? '').trim();
+              const abbreviation = String(item.msg_abbr_code ?? item.MsgAbbrCode ?? '').trim();
+              return {
+                code,
+                name: abbreviation ? `${name} - (${abbreviation})` : name
+              };
+            }).filter((item: DropdownOption) => item.code && item.name)
+          : [];
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Failed to load message types:', err)
+    });
+  }
+
+  onApprovedMessageChanged(value: string | string[]): void {
+    const selectedValue = Array.isArray(value) ? value[0] : value;
+    this.selectedApprovedMessageId = selectedValue ? String(selectedValue) : '';
+    const selectedId = Number(this.selectedApprovedMessageId);
+    this.selectedApprovedMessage = this.approvedMessages.find(message => message.bmsg_id === selectedId) ?? null;
+    this.sendError = '';
+
+    if (this.selectedApprovedMessage) {
+      this.showApprovedMessagePreview = true;
+    }
+  }
+
+  closeApprovedMessagePreview(resetSelection = false): void {
+    if (this.sending) return;
+
+    this.showApprovedMessagePreview = false;
+    this.sendError = '';
+    if (resetSelection) {
+      this.selectedApprovedMessageId = '';
+      this.selectedApprovedMessage = null;
+    }
+  }
+
+  private isApproved(value: boolean | string | number | null | undefined): boolean {
+    if (value === true || value === 1) return true;
+    const normalized = String(value ?? '').trim().toUpperCase();
+    return normalized === 'Y' || normalized === 'YES' || normalized === 'TRUE' || normalized === '1';
   }
 
   sendToUsers(): void {
     this.sendSuccessMessage = '';
     this.sendError = '';
 
-    const title = this.sendTitle.trim();
-    const bodyText = this.sendMessage || this.getMessageText();
+    const approvedMessage = this.selectedApprovedMessage;
+    if (!approvedMessage || !this.isApproved(approvedMessage.is_approved)) {
+      this.sendError = 'Please select an approved broadcast message.';
+      return;
+    }
+
+    const title = approvedMessage.message_head?.trim() || '';
+    const bodyText = approvedMessage.message_body?.trim() || '';
 
     if (!title) {
-      this.sendError = 'Please enter a message title.';
+      this.sendError = 'The selected approved message does not contain a title.';
       return;
     }
     if (title.length > 255) {
@@ -226,7 +328,7 @@ export class SendBroadcastComponent implements OnInit {
     }
 
     if (!bodyText) {
-      this.sendError = 'Please enter the message body.';
+      this.sendError = 'The selected approved message does not contain a message body.';
       return;
     }
     if (bodyText.length > 4000) {
@@ -298,9 +400,10 @@ export class SendBroadcastComponent implements OnInit {
             `Notification sent successfully. Total devices: ${totalDevices}, ` +
             `Sent: ${successCount}, Failed: ${failureCount}, Deactivated tokens: ${deactivatedTokenCount}.` +
             (skippedCount > 0 ? ` (${skippedCount} user(s) skipped - no user ID.)` : '');
-          this.sendTitle = '';
-          this.clearEditor();
           this.selectedRecordKeys = new Set<string>();
+          this.selectedApprovedMessageId = '';
+          this.selectedApprovedMessage = null;
+          this.showApprovedMessagePreview = false;
           this.showBroadcastModal = false;
         } else {
           const failedUsers = responses.filter(res => !res.success).length;
@@ -319,28 +422,20 @@ export class SendBroadcastComponent implements OnInit {
     });
   }
 
-  execCommand(command: string, value?: string): void {
-    document.execCommand(command, false, value);
-    this.onMessageInput();
-    this.messageEditor?.nativeElement.focus();
+  messageTypeLabel(messageTypeId: number | undefined): string {
+    if (!messageTypeId) return '—';
+    return this.messageTypeOptions.find(option => Number(option.code) === messageTypeId)?.name
+      ?? `Type #${messageTypeId}`;
   }
 
-  onMessageInput(): void {
-    this.sendMessage = this.messageEditor?.nativeElement.innerHTML ?? '';
-    this.sendError = '';
-  }
-
-  getMessageText(): string {
-    const el = this.messageEditor?.nativeElement;
-    if (!el) return '';
-    return (el.innerText || '').trim();
-  }
-
-  clearEditor(): void {
-    this.sendMessage = '';
-    if (this.messageEditor?.nativeElement) {
-      this.messageEditor.nativeElement.innerHTML = '';
-    }
+  attachmentEntries(message: BroadcastMessageData): Array<{ label: string; path: string }> {
+    return [
+      { label: 'Photo 1', path: message.photo1path || '' },
+      { label: 'Photo 2', path: message.photo2path || '' },
+      { label: 'Video', path: message.videopath || '' },
+      { label: 'Document', path: message.documentpath || '' },
+      { label: 'Audio', path: message.audiopath || '' }
+    ].filter(item => item.path.trim().length > 0);
   }
 
   private getRecordKey(record: MapUserPortalData): string {

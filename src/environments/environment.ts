@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
 
-  apiUrl: 'https://localhost:7131/api',
-  uploadUrl: 'https://localhost:7131'
+  apiUrl: 'http://10.133.20.161/SankalpAPI/api',
+  uploadUrl: 'http://10.133.20.161/SankalpAPI'
 };
